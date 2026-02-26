@@ -21,6 +21,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Point;
 import javax.swing.JScrollPane;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class ActividadesOfertadasView extends JFrame {
 
@@ -101,8 +103,30 @@ public class ActividadesOfertadasView extends JFrame {
 		contentPane.add(scrollPane_1);
 		
 		
+		//Detalles de la actividad
+		JTextPane detallesActividad = new JTextPane();
+		detallesActividad.setText("Texto de ejemplo");
+		detallesActividad.setBounds(10, 410, 822, 214);
+		contentPane.add(detallesActividad);
+		
+		//Texto que dice "Detalles de la actividad" NO SE MODIFICA
+		JTextPane detallesActividadNoModificable = new JTextPane();
+		detallesActividadNoModificable.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		detallesActividadNoModificable.setText("Detalles de la Actividad");
+		detallesActividadNoModificable.setBounds(10, 379, 822, 27);
+		contentPane.add(detallesActividadNoModificable);
+
 		//Tabla
 		table = new JTable();
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int fila = table.getSelectedRow();
+				System.out.println("Click en fila: "+fila);
+				detallesActividad.setText(String.valueOf(fila));
+			}
+		});
+		
 		table.setDefaultEditor(Object.class, null); //Hace que no se pueda editar las tablas pero si seleccionarlas
 		scrollPane_1.setViewportView(table);
 		table.setModel(new DefaultTableModel(
@@ -131,16 +155,7 @@ public class ActividadesOfertadasView extends JFrame {
 		));
 		
 		
-		JTextPane detallesActividad = new JTextPane();
-		detallesActividad.setText("Texto de ejemplo");
-		detallesActividad.setBounds(10, 410, 822, 214);
-		contentPane.add(detallesActividad);
-		
-		JTextPane detallesActividadNoModificable = new JTextPane();
-		detallesActividadNoModificable.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		detallesActividadNoModificable.setText("Detalles de la Actividad");
-		detallesActividadNoModificable.setBounds(10, 379, 822, 27);
-		contentPane.add(detallesActividadNoModificable);
+
 
 	}
 }
