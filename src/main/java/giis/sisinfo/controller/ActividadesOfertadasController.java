@@ -1,16 +1,27 @@
 package giis.sisinfo.controller;
 
-import giis.sisinfo.model.ActividadesModel;
+import java.util.ArrayList;
+import java.util.List;
+
+import giis.sisinfo.dto.ActividadesOfertadasDTO;
+import giis.sisinfo.model.ActividadesOfertadasModel;
 import giis.sisinfo.view.ActividadesOfertadasView;
 
 public class ActividadesOfertadasController {
 	
 	private final ActividadesOfertadasView view;
-	private final ActividadesModel model;
+	private final ActividadesOfertadasModel model;
 	
-	public ActividadesOfertadasController(ActividadesOfertadasView nview, ActividadesModel nmodel){
+	List<ActividadesOfertadasDTO> listaActividades;
+	
+	public ActividadesOfertadasController(ActividadesOfertadasView nview, ActividadesOfertadasModel nmodel){
 		view = nview;
 		model = nmodel;
+		listaActividades = new ArrayList<>();
+		
+	}
+	
+	public void getListaActividades() {
 		
 	}
 	
