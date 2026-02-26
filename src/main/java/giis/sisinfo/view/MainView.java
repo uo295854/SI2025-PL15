@@ -22,6 +22,7 @@ public class MainView extends JFrame {
 	private JButton btnReservas;
 	private JButton btnActividadesOfertadas;
 	private JButton btnReservaInstalacionAdmin;
+	private JButton btnReservaInstalacionAdminSocio;
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
@@ -68,6 +69,14 @@ public class MainView extends JFrame {
 			ReservaInstalacionAdminView ventanaReservaInstalacionAdmin = new ReservaInstalacionAdminView();
 			ventanaReservaInstalacionAdmin.setVisible(true);
 			
+		});
+		
+		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
+		btnReservaInstalacionAdminSocio.setPreferredSize(new Dimension(210, 45));
+		panelButtons.add(btnReservaInstalacionAdminSocio);
+		btnReservaInstalacionAdminSocio.addActionListener(e -> {
+		    ReservaInstalacionAdminSocioView ventana = new ReservaInstalacionAdminSocioView();
+		    ventana.setVisible(true);
 		});
 		
 		
