@@ -21,6 +21,7 @@ public class MainView extends JFrame {
 	private JButton btnGestionActividades;
 	private JButton btnReservas;
 	private JButton btnActividadesOfertadas;
+	private JButton btnReservaInstalacionAdmin;
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
@@ -59,6 +60,20 @@ public class MainView extends JFrame {
 			ActividadesOfertadasView ventanaActividadesOfertadas = new ActividadesOfertadasView();
 			ventanaActividadesOfertadas.setVisible(true);
 		});
+		
+		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones (Admin)");
+		btnReservaInstalacionAdmin.setPreferredSize(new Dimension(210, 45));
+		panelButtons.add(btnReservaInstalacionAdmin);
+		btnReservaInstalacionAdmin.addActionListener(e->{
+			ReservaInstalacionAdminView ventanaReservaInstalacionAdmin = new ReservaInstalacionAdminView();
+			ventanaReservaInstalacionAdmin.setVisible(true);
+			
+		});
+		
+		
+		
+		
+		//Botón Reserva Instalación
 
 		// Pie
 		JLabel lblFooter = new JLabel("Grupo SisInfo", SwingConstants.CENTER);
