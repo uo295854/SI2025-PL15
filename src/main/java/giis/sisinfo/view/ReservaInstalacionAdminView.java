@@ -14,7 +14,6 @@ import javax.swing.UIManager;
 import java.awt.TextField;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerModel;
 import java.awt.Button;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
