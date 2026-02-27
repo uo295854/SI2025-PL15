@@ -16,15 +16,29 @@ import java.awt.*;
 import java.util.ArrayList;
 public class ReservaInstalacionAdminSocioView extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	//tablas
 	private JTable tablaSocios;
 	private JTable tablaDías;
 	private JTable tablaHoras;
 	
+	public JTable gettablaSocios() { return tablaSocios; }
+	public JTable gettablaDias() { return tablaDías; }
+	public JTable gettablaHoras() { return tablaHoras; }
+	
 	//combo box
 	private JComboBox<String> cbDeporte;
 	private JComboBox<String> cbPista;
 	
+	public JComboBox<String> getcbDeporte() { return cbDeporte; }
+	public JComboBox<String> getcbPista() { return cbPista; }
+	
+
+	
+
 	
 	//Resumen, lista de días
 	private JTextField textfieldNombre, textfieldNumSocio, textfieldEmail, textfieldTelefono;
@@ -34,8 +48,26 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 	private JTextField textfieldDeporte, textfieldLugar, textfieldDia, textfieldHora,textfieldCoste;
 	
 	
+	public JTextField getTextfieldNombre() { return textfieldNombre; }
+	public JTextField getTextfieldNumSocio() { return textfieldNumSocio; }
+	public JTextField getTextfieldEmail() { return textfieldEmail; }
+	public JTextField getTextfieldTelefono() { return textfieldTelefono; }
+
+	public JTextField getTextfieldDeporte() { return textfieldDeporte; }
+	public JTextField getTextfieldLugar() { return textfieldLugar; }
+	public JTextField getTextfieldDia() { return textfieldDia; }
+	public JTextField getTextfieldHora() { return textfieldHora; }
+	public JTextField getTextfieldCoste() { return textfieldCoste; }
+	
+	
 	//Botones cancelar y reservar
 	private JButton cancelar,reservar;
+	public JButton getcancelar() { return cancelar; }
+	public JButton getreservar() { return reservar; }
+	
+	//Boton busar
+	private JButton Buscar;
+	public JButton getBuscar() { return Buscar; }
 	
 	
 	public ReservaInstalacionAdminSocioView() {
@@ -97,7 +129,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 		    panel.add(scroll, BorderLayout.CENTER);
 
 		    // Botón lupa
-		    JButton Buscar = new JButton("🔍");
+		    Buscar = new JButton("🔍");
 		    JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		    south.add(Buscar);
 		    panel.add(south, BorderLayout.EAST);
