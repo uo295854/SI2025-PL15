@@ -22,10 +22,6 @@ CREATE TABLE IF NOT EXISTS NoSocio (
 
 -- =========================
 -- USUARIO (login)
---  Regla lógica (en app):
---   rol=ADMIN -> id_socio e id_nosocio NULL
---   rol=SOCIO -> id_socio NOT NULL, id_nosocio NULL
---   rol=NOSOCIO -> id_nosocio NOT NULL, id_socio NULL
 -- =========================
 CREATE TABLE IF NOT EXISTS Usuario (
   id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,8 +51,8 @@ CREATE TABLE IF NOT EXISTS Instalacion (
 CREATE TABLE IF NOT EXISTS PeriodoOficial (
   id_periodo_oficial INTEGER PRIMARY KEY AUTOINCREMENT,
   nombre TEXT NOT NULL CHECK (nombre IN ('SEPTIEMBRE','ENERO','JUNIO')),
-  fecha_ini TEXT NOT NULL, -- 'YYYY-MM-DD'
-  fecha_fin TEXT NOT NULL, -- 'YYYY-MM-DD'
+  fecha_ini TEXT NOT NULL,
+  fecha_fin TEXT NOT NULL,
   CHECK (fecha_ini <= fecha_fin)
 );
 
@@ -79,20 +75,17 @@ CREATE TABLE IF NOT EXISTS Actividad (
   id_periodo_oficial INTEGER NOT NULL,
   id_periodo_inscripcion INTEGER NOT NULL,
   id_instalacion INTEGER NOT NULL,
-
   nombre TEXT NOT NULL,
   tipo TEXT NOT NULL CHECK (tipo IN ('CULTURAL','DEPORTIVA','CLASE','CAMPEONATO')),
   aforo INTEGER NOT NULL CHECK (aforo > 0),
   dias INTEGER,
-  duracion INTEGER, -- minutos (recomendado)
+  duracion INTEGER,
   fecha_inicio TEXT NOT NULL,
   fecha_fin TEXT NOT NULL,
   descripcion TEXT,
   cuota_socio REAL NOT NULL DEFAULT 0 CHECK (cuota_socio >= 0),
   cuota_nosocio REAL NOT NULL DEFAULT 0 CHECK (cuota_nosocio >= 0),
-
   CHECK (fecha_inicio <= fecha_fin),
-
   FOREIGN KEY (id_periodo_oficial) REFERENCES PeriodoOficial(id_periodo_oficial)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   FOREIGN KEY (id_periodo_inscripcion) REFERENCES PeriodoInscripcion(id_periodo_inscripcion)
@@ -108,10 +101,9 @@ CREATE TABLE IF NOT EXISTS Reserva_Instalacion (
   id_reservains INTEGER PRIMARY KEY AUTOINCREMENT,
   id_instalacion INTEGER NOT NULL,
   id_socio INTEGER NOT NULL,
-  inicio_datetime TEXT NOT NULL, -- 'YYYY-MM-DD HH:MM'
-  fin_datetime TEXT NOT NULL,    -- 'YYYY-MM-DD HH:MM'
+  inicio_datetime TEXT NOT NULL,
+  fin_datetime TEXT NOT NULL,
   CHECK (inicio_datetime < fin_datetime),
-
   FOREIGN KEY (id_instalacion) REFERENCES Instalacion(id_instalacion)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   FOREIGN KEY (id_socio) REFERENCES Socio(id_socio)
@@ -120,8 +112,6 @@ CREATE TABLE IF NOT EXISTS Reserva_Instalacion (
 
 -- =========================
 -- BLOQUEO POR ACTIVIDAD (ocupación del centro)
---  Nota: no metemos id_instalacion aquí porque ya viene por Actividad.id_instalacion,
---  así evitamos inconsistencias.
 -- =========================
 CREATE TABLE IF NOT EXISTS Reserva_Actividad_Instalacion (
   id_reserva INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -142,7 +132,7 @@ CREATE TABLE IF NOT EXISTS Parametro (
 );
 
 -- =========================
--- Índices útiles (rendimiento en búsquedas y conflictos)
+-- Índices útiles
 -- =========================
 CREATE INDEX IF NOT EXISTS idx_reserva_instalacion_rango
   ON Reserva_Instalacion(id_instalacion, inicio_datetime, fin_datetime);
