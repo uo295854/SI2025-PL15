@@ -19,6 +19,9 @@ import javax.swing.UIManager;
 import java.awt.ScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import giis.sisinfo.controller.ActividadesOfertadasController;
+
 import java.awt.Point;
 import javax.swing.JScrollPane;
 import java.awt.event.MouseAdapter;
@@ -29,6 +32,9 @@ public class ActividadesOfertadasView extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable table;
+	private JTextPane detallesActividad;
+
+
 
 	/**
 	 * Launch the application.
@@ -104,7 +110,7 @@ public class ActividadesOfertadasView extends JFrame {
 		
 		
 		//Detalles de la actividad
-		JTextPane detallesActividad = new JTextPane();
+		detallesActividad = new JTextPane();
 		detallesActividad.setText("Texto de ejemplo");
 		detallesActividad.setBounds(10, 410, 822, 214);
 		contentPane.add(detallesActividad);
@@ -153,9 +159,21 @@ public class ActividadesOfertadasView extends JFrame {
 				"NombreActividad", "Tipo de Actividad", "Instalaci\u00F3n", "Fecha Inicial", "Fecha Final", "Numero de Plazas", "Precio Socios", "Precio No Socios"
 			}
 		));
-		
-		
+	}
 
+	public JTable getTable() {
+		return table;
+	}
 
+	public void setTable(JTable table) {
+		this.table = table;
+	}
+	
+	public JTextPane getDetallesActividad() {
+		return detallesActividad;
+	}
+	
+	public void setDetallesActividad(JTextPane detallesActividad) {
+		this.detallesActividad = detallesActividad;
 	}
 }
