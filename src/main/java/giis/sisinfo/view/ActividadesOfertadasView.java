@@ -33,6 +33,9 @@ public class ActividadesOfertadasView extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
 	private JTextPane detallesActividad;
+	private JButton searchButton;
+	private JComboBox yearSelector;
+	private JComboBox periodSelector;
 
 
 
@@ -63,21 +66,24 @@ public class ActividadesOfertadasView extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton searchButton = new JButton("Buscar");
+		searchButton = new JButton("Buscar");
 		searchButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
+		
+		
+		
 		searchButton.setBounds(340, 13, 124, 38);
 		contentPane.add(searchButton);
 		
-		JComboBox periodSelector = new JComboBox();
+		periodSelector = new JComboBox();
 		periodSelector.setModel(new DefaultComboBoxModel(new String[] {"Enero", "Junio", "Septiembre"}));
 		periodSelector.setBounds(79, 23, 78, 22);
 		contentPane.add(periodSelector);
 		
-		JComboBox yearSelector = new JComboBox();
+		yearSelector = new JComboBox();
 		yearSelector.setModel(new DefaultComboBoxModel(new String[] {"2025", "2026", "2027", "2028", "2029", "2030", "2031"}));
 		yearSelector.setBounds(228, 23, 78, 22);
 		contentPane.add(yearSelector);
@@ -124,14 +130,17 @@ public class ActividadesOfertadasView extends JFrame {
 
 		//Tabla
 		table = new JTable();
+		/*
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int fila = table.getSelectedRow();
 				System.out.println("Click en fila: "+fila);
+				//ActividadesOfertadasController.getDetallesActividad(fila);
 				detallesActividad.setText(String.valueOf(fila));
 			}
 		});
+		*/
 		
 		table.setDefaultEditor(Object.class, null); //Hace que no se pueda editar las tablas pero si seleccionarlas
 		scrollPane_1.setViewportView(table);
@@ -161,6 +170,14 @@ public class ActividadesOfertadasView extends JFrame {
 		));
 	}
 
+	public JComboBox getYearSelector() {
+		return yearSelector;
+	}
+	
+	public JComboBox getPeriodSelector() {
+		return periodSelector;
+	}
+
 	public JTable getTable() {
 		return table;
 	}
@@ -169,11 +186,17 @@ public class ActividadesOfertadasView extends JFrame {
 		this.table = table;
 	}
 	
-	public JTextPane getDetallesActividad() {
+	public JTextPane getDetallesActividadView() {
 		return detallesActividad;
 	}
 	
-	public void setDetallesActividad(JTextPane detallesActividad) {
-		this.detallesActividad = detallesActividad;
+	public void setDetallesActividad(String nuevoTexto) {
+		detallesActividad.setText(nuevoTexto);
 	}
+	
+	public JButton getSearchButton() {
+		return searchButton;
+	}
+
+	
 }

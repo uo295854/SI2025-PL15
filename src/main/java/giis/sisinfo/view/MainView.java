@@ -11,6 +11,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import giis.sisinfo.controller.ActividadesOfertadasController;
+import giis.sisinfo.model.ActividadesOfertadasModel;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -53,13 +57,15 @@ public class MainView extends JFrame {
 		btnReservas.setPreferredSize(new Dimension(210, 45));
 		panelButtons.add(btnReservas);
 
-		//Botón Actividades Ofertadas
+		//Botón Actividades Ofertadas - Alex - HU33746 
 		btnActividadesOfertadas = new JButton("Lista Actividades Ofertadas");
 		btnActividadesOfertadas.setPreferredSize(new Dimension(210, 45));
 		panelButtons.add(btnActividadesOfertadas);
 		btnActividadesOfertadas.addActionListener(e ->{
+			ActividadesOfertadasController controller = new ActividadesOfertadasController(new ActividadesOfertadasView(), new ActividadesOfertadasModel());
+			controller.initController();
 			ActividadesOfertadasView ventanaActividadesOfertadas = new ActividadesOfertadasView();
-			ventanaActividadesOfertadas.setVisible(true);
+			//ventanaActividadesOfertadas.setVisible(true);
 		});
 		
 		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones (Admin)");
