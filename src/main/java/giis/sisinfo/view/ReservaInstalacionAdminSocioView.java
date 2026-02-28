@@ -356,5 +356,26 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 	 public static void main(String[] args) {
 	        SwingUtilities.invokeLater(() -> new ReservaInstalacionAdminSocioView().setVisible(true));
 	    }
+	 
+	 
+	 public void setResumenSocio(String nombre, String num, String email, String tel) {
+		    textfieldNombre.setText(nombre);
+		    textfieldNumSocio.setText(num);
+		    textfieldEmail.setText(email);
+		    textfieldTelefono.setText(tel);
+		}
+
+		public void setResumenReserva(String deporte, String lugar, String dia, String hora, String coste) {
+		    textfieldDeporte.setText(deporte);
+		    textfieldLugar.setText(lugar);
+		    textfieldDia.setText(dia);
+		    textfieldHora.setText(hora);
+		    textfieldCoste.setText(coste);
+		}
+
+		public void limpiarHorasYResumenReserva() {
+		    ((DefaultTableModel) tablaHoras.getModel()).setRowCount(0);
+		    setResumenReserva("", "", "", "", "");
+		}
 	
 }
