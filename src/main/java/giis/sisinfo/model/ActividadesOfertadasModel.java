@@ -29,25 +29,6 @@ public class ActividadesOfertadasModel {
 				+ "WHERE po.nombre = ? "
 				+ "  AND strftime('%Y', po.fecha_ini) = ?;";
 		
-		String fechaIni, fechaFin;
-		fechaIni= año+"-";
-		fechaFin= año+"-";
-		
-		
-		if(periodo.equals("Enero")) {
-			//Si el periodo es Enero, se coge el rango de fechas 01-01 a 31-05
-			fechaIni+="01-01";
-			fechaFin+="05-31";
-			
-		} else if (periodo.equals("Junio")) {
-			//Si el periodo es Junio, se coge el rango de fechas 01-06 a 08-31
-			
-			
-		} else {
-			//Si el periodo es Septiembre, se coge el rango de fechas de 01-09 a 31-12
-			
-			
-		}
 		
 		return db.executeQueryPojo(ActividadesOfertadasDTO.class, SQL, periodo.toUpperCase(), String.valueOf(año));
 	}

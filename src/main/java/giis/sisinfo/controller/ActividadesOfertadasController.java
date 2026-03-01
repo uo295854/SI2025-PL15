@@ -25,19 +25,21 @@ public class ActividadesOfertadasController {
 		view = nview;
 		model = nmodel;
 		
-		initView();
+		int año = Integer.valueOf(view.getYearSelector().getSelectedItem().toString());
+		String periodo = view.getPeriodSelector().getSelectedItem().toString();
+		listaActividades=model.getListaActividadesOfertadas(periodo, año);
+		setListaActividades();
 		
-		listaActividades = new ArrayList<>();
-		this.rellenarActividadesOfertadasEjemplo();
+		initView();
 		
 	}
 	
 	
 	public void initView() {
-		view.setVisible(true); ;
+		view.setVisible(true);
 	}
 
-	//función para testear, se comentará una vez se implemente la base de datos 
+	//función hecha para testear
 	private void rellenarActividadesOfertadasEjemplo() {
 		listaActividades = new ArrayList<>();
 		for (int i = 0; i<10; i++) {
@@ -51,6 +53,8 @@ public class ActividadesOfertadasController {
 	
 	
 	public void initController() {
+		
+		
 		//cuando se hace click en una fila de la tabla, se copian los detalles de esa actividad
 		view.getTable().addMouseListener(new MouseAdapter() {
 			@Override
