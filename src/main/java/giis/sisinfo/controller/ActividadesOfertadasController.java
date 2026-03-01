@@ -43,7 +43,7 @@ public class ActividadesOfertadasController {
 		for (int i = 0; i<10; i++) {
 			listaActividades.add(i, new ActividadesOfertadasDTO(
 					"Nombre Actividad "+i, "Tipo Actividad "+i, "Instalación "+i, 
-					LocalDateTime.now(), LocalDateTime.now(), 64, 0, 15, 
+					"01/01/2026", "01/01/2026", 64, 0, 15, 
 					"Descripcion Actividad "+i));
 		}
 		setListaActividades();
@@ -70,8 +70,16 @@ public class ActividadesOfertadasController {
 				String periodo = view.getPeriodSelector().getSelectedItem().toString();
 				System.out.printf("ActividadesOfertadasController | Año: %d, Periodo: %s\n",año,periodo);
 				//TODO: descomentar cuando este implementada la BBDD
+				listaActividades=model.getListaActividadesOfertadas(periodo, año);
 				//listaActividades = model.getListaActividadesOfertadas(periodo,año);
+				
+				//para depuración
 				System.out.printf("ActividadesOfertadasController | Se han cargado %d actividades\n",listaActividades.size());
+				for (int i = 0; i<listaActividades.size(); i++) {
+					System.out.print(listaActividades.get(i).toString());
+					System.out.println();
+				}
+
 				setListaActividades();
 			}
 			
