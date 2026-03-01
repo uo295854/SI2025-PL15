@@ -6,6 +6,8 @@ import giis.sisinfo.model.ActividadesModel;
 import giis.sisinfo.util.CentroDB;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
+import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
+import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 
 public class MainController {
 
@@ -42,6 +44,7 @@ public class MainController {
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+        view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
     }
 
     private void abrirGestionActividades() {
@@ -66,5 +69,11 @@ public class MainController {
     public void inicializarTodo() {
         crearBD();
         cargarDatos();
+    }
+    
+    private void abrirReservaInstalacionAdminSocio() {
+        ReservaInstalacionAdminSocioView v = new ReservaInstalacionAdminSocioView();
+        ReservaInstalacionAdminSocioModel m = new ReservaInstalacionAdminSocioModel();
+        new ReservaInstalacionAdminSocioController(m, v);
     }
 }

@@ -2,16 +2,7 @@ package giis.sisinfo.view;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableRowSorter;
-
 import java.awt.*;
 import java.util.ArrayList;
 public class ReservaInstalacionAdminSocioView extends JFrame {
@@ -48,17 +39,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 	private JTextField textfieldDeporte, textfieldLugar, textfieldDia, textfieldHora,textfieldCoste;
 	
 	
-	public JTextField getTextfieldNombre() { return textfieldNombre; }
-	public JTextField getTextfieldNumSocio() { return textfieldNumSocio; }
-	public JTextField getTextfieldEmail() { return textfieldEmail; }
-	public JTextField getTextfieldTelefono() { return textfieldTelefono; }
 
-	public JTextField getTextfieldDeporte() { return textfieldDeporte; }
-	public JTextField getTextfieldLugar() { return textfieldLugar; }
-	public JTextField getTextfieldDia() { return textfieldDia; }
-	public JTextField getTextfieldHora() { return textfieldHora; }
-	public JTextField getTextfieldCoste() { return textfieldCoste; }
-	
 	
 	//Botones cancelar y reservar
 	private JButton cancelar,reservar;
@@ -120,7 +101,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 
 
 			//fila separadora
-			 tabladatos.addRow(new Object[]{"", "", "", ""}); 
+			 tabladatos.addRow(new Object[]{"", "", ""}); 
 			 tablaSocios.setRowHeight(22);
 			 tablaSocios.setRowHeight(1, 6); 
 		    
@@ -135,7 +116,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 		    panel.add(south, BorderLayout.EAST);
 
 		    
-		    //Datos Ejemplo
+		   /* //Datos Ejemplo
 		    ArrayList<Object[]> datos = new ArrayList<>();
 		    datos.add(new Object[]{"Rodríguez Fernández", "Cristian", "33215"});
 		    datos.add(new Object[]{"Rodríguez Fernández", "Eduardo", "47211"});
@@ -167,7 +148,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 
 		            tabladatos.insertRow(tabladatos.getRowCount(), d);
 		        }
-		    });
+		    });*/
 		    
 		    panel.setPreferredSize(new Dimension(300,200));
 		    return panel;
@@ -375,6 +356,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 
 		public void limpiarHorasYResumenReserva() {
 		    ((DefaultTableModel) tablaHoras.getModel()).setRowCount(0);
+		    tablaHoras.clearSelection();
 		    setResumenReserva("", "", "", "", "");
 		}
 	

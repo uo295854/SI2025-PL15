@@ -104,19 +104,9 @@ public class MainView extends JFrame {
 
 		// Botón Reserva Instalaciones para los Socios (Admin)
 		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
-		btnReservaInstalacionAdminSocio.setPreferredSize(new Dimension(260, 45));
+		btnReservaInstalacionAdminSocio.setPreferredSize(new Dimension(360, 45));
 		panelButtons.add(btnReservaInstalacionAdminSocio);
-		btnReservaInstalacionAdminSocio.addActionListener(e -> {
-			try {
-				ReservaInstalacionAdminSocioView ventana = new ReservaInstalacionAdminSocioView();
-				ventana.setVisible(true);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(this,
-						"Error abriendo Reserva Instalaciones (Admin Socio):\n" + ex.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
+
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 		btnCrearBD = new JButton("Crear BD (schema)");
@@ -140,6 +130,10 @@ public class MainView extends JFrame {
 
 	public JButton getBtnReservas() {
 		return btnReservas;
+	}
+	
+	public JButton getBtnReservaInstalacionAdminSocio() {
+	    return btnReservaInstalacionAdminSocio;
 	}
 
 	public JButton getBtnCrearBD() {

@@ -24,7 +24,7 @@ public class ReservaInstalacionAdminSocioModel {
 	public List<SocioDTO> buscadorSocios(String apellidos, String nombre, String numSocio){
 		
 		String sql = 
-		        "SELECT id_socio, num_socio, nombre " +
+		        "SELECT id_socio, num_socio, nombre, email, telefono " +
 		                "FROM Socio " +
 		                "WHERE estado='ACTIVO' AND al_corriente_pago=1 " +
 		                "  AND (? IS NULL OR CAST(num_socio AS TEXT) LIKE ?) " +
@@ -53,11 +53,11 @@ public class ReservaInstalacionAdminSocioModel {
 			int idSocio = ((Number) f[0]).intValue();
 			String nu = String.valueOf(f[1]);
 			String nombreSocio = String.valueOf(f[2]);
-			String email = String.valueOf(f[3]);
-			String telefono = String.valueOf(f[4]);
+			String email = (f[3] == null) ? "" : f[3].toString();
+			String tel   = (f[4] == null) ? "" : f[4].toString();
 
 			
-			resultado.add(new SocioDTO(idSocio, "", nombreSocio, nu,email, telefono));
+			resultado.add(new SocioDTO(idSocio, "", nombreSocio, nu,email, tel));
 		}
 
 		
@@ -94,7 +94,7 @@ public class ReservaInstalacionAdminSocioModel {
 	
 	
 	public List<String> getDeportes(){
-		String sql = "SELECT DISTINCT tipo_deporte FROM Instalacion ORDER BY tipo_deporte";
+		String sql = "SELECT DISTINCT tipo_deporte FROM Instalacion WHERE tipo_deporte IS NOT NULL ORDER BY tipo_deporte";
 		List<Object[]> filas = db.executeQueryArray(sql);
 		
 		List<String> resultado = new ArrayList<>();
@@ -165,26 +165,36 @@ public class ReservaInstalacionAdminSocioModel {
     public List<HoraReservaSocioDTO> getHorasDia(int idInstalacion, LocalDate fecha) {
 
         String sql =
-            "SELECT inicio_datetime, fin_datetime " +
-            "FROM Reserva_Instalacion " +
-            "WHERE id_instalacion=? AND date(inicio_datetime)=?";
+         "SELECT datetime_ini, datetime_fin " +
+        	"FROM Reserva_Instalacion " +
+        	"WHERE id_instalacion=? " +
+        	"AND datetime_ini >= ? " +
+        	"AND datetime_ini < ? ";
 
-        List<Object[]> filasReservas =
-            db.executeQueryArray(sql, idInstalacion, fecha.toString());
+        LocalDateTime iniDia = LocalDateTime.of(fecha, LocalTime.MIN);
+        LocalDateTime finDia = iniDia.plusDays(1);
+
+        List<Object[]> filasreservas = db.executeQueryArray(sql,
+            idInstalacion,
+            Timestamp.valueOf(iniDia),
+            Timestamp.valueOf(finDia)
+        );
 
         List<LocalDateTime[]> reservas = new ArrayList<>();
-
-        for (Object[] r : filasReservas) {
+        for (Object[] r : filasreservas) {
             LocalDateTime ini = toLdt(r[0]);
             LocalDateTime fin = toLdt(r[1]);
-            reservas.add(new LocalDateTime[]{ini, fin});
+            reservas.add(new LocalDateTime[] { ini, fin });
         }
-
+        
+        
         String sqlBloqueos =
-            "SELECT rai.inicio_datetime, rai.fin_datetime " +
-            "FROM Reserva_Actividad_Instalacion rai " +
-            "JOIN Actividad a ON a.id_actividad = rai.id_actividad " +
-            "WHERE a.id_instalacion=? AND date(rai.inicio_datetime)=?";
+        	    "SELECT b.datetime_ini, b.datetime_fin " +
+        	    	    "FROM Bloqueo_por_Actividad b " +
+        	    	    "JOIN Actividad a ON a.id_actividad = b.id_actividad " +
+        	    	    "WHERE a.id_instalacion=? " +
+        	    	    "AND b.datetime_ini >= ? " +
+        	    	    "AND b.datetime_ini < ?";
 
         List<Object[]> rowsBloqueos =
             db.executeQueryArray(sqlBloqueos, idInstalacion, fecha.toString());
@@ -254,7 +264,7 @@ public class ReservaInstalacionAdminSocioModel {
         }
 
         String sql =
-            "INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, inicio_datetime, fin_datetime) " +
+            "INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) " +
             "VALUES (?,?,?,?)";
 
         db.executeUpdate(sql,
@@ -272,8 +282,8 @@ public class ReservaInstalacionAdminSocioModel {
             "SELECT COUNT(*) " +
             "FROM Reserva_Instalacion " +
             "WHERE id_instalacion=? " +
-            "AND inicio_datetime < ? " +
-            "AND fin_datetime > ?";
+            "AND datetime_ini < ? " +
+            "AND datetime_fin > ?";
 
         long c1 = ((Number) db.executeQueryArray(sql1,
             idInstalacion,
@@ -285,11 +295,11 @@ public class ReservaInstalacionAdminSocioModel {
 
         String sql2 =
             "SELECT COUNT(*) " +
-            "FROM Reserva_Actividad_Instalacion rai " +
+            "FROM Bloqueo_por_Actividad rai " +
             "JOIN Actividad a ON a.id_actividad = rai.id_actividad " +
             "WHERE a.id_instalacion=? " +
-            "AND rai.inicio_datetime < ? " +
-            "AND rai.fin_datetime > ?";
+            "AND rai.datetime_ini < ? " +
+            "AND rai.datetime_fin > ?";
 
         long c2 = ((Number) db.executeQueryArray(sql2,
             idInstalacion,
