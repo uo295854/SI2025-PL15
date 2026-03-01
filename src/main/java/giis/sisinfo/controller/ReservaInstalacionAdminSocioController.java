@@ -35,6 +35,9 @@ public class ReservaInstalacionAdminSocioController {
 	private LocalTime horaInicioSeleccionada;
 	
 	
+	private double costeSeleccionado;
+	
+	
 	public ReservaInstalacionAdminSocioController(ReservaInstalacionAdminSocioModel model, ReservaInstalacionAdminSocioView view) {
 		
 		this.model = model;
@@ -106,6 +109,9 @@ public class ReservaInstalacionAdminSocioController {
 	
 	
 	private void onBuscarSocios() {
+		  if (view.gettablaSocios().isEditing()) {
+		        view.gettablaSocios().getCellEditor().stopCellEditing();
+		    }
 		DefaultTableModel t = (DefaultTableModel) view.gettablaSocios().getModel();
 		
 		String apellidos = String.valueOf(t.getValueAt(0, 0)).trim();
@@ -127,6 +133,7 @@ public class ReservaInstalacionAdminSocioController {
 					s.getNumSocio()
 			});
 		}
+
 		
 	 //se resetea el socio seleccionado
 		socioSeleccionado = null;
@@ -145,7 +152,7 @@ public class ReservaInstalacionAdminSocioController {
 		
 		socioSeleccionado = sociosMostrados.get(indice);
 		view.setResumenSocio(
-			    socioSeleccionado.getNombre(),
+			    socioSeleccionado.getNombre()+ " " + socioSeleccionado.getApellidos(),
 			    socioSeleccionado.getNumSocio(),
 			    socioSeleccionado.getEmail(),
 			    socioSeleccionado.getTelefono()
@@ -212,6 +219,8 @@ public class ReservaInstalacionAdminSocioController {
 		List<DiaReservaSocioDTO> dias = model.getDiasDisponibilidad(idInstalacionSeleccionada);
 		DefaultTableModel t = (DefaultTableModel) view.gettablaDias().getModel();
 		limpiarTodo(view.gettablaDias());
+		
+		costeSeleccionado = model.getCosteInstalacion(idInstalacionSeleccionada);
 		
 		for(DiaReservaSocioDTO d: dias)
 			t.addRow(new Object[] {
@@ -291,7 +300,7 @@ public class ReservaInstalacionAdminSocioController {
 		    instalacionSeleccionada == null ? "" : instalacionSeleccionada,
 		    diaSeleccionado == null ? "" : diaSeleccionado.toString(),
 		    horaTxt,
-		    ""
+		    costeSeleccionado + " €"
 		);
 		
 		
