@@ -19,6 +19,9 @@ import javax.swing.UIManager;
 import java.awt.ScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import giis.sisinfo.controller.ActividadesOfertadasController;
+
 import java.awt.Point;
 import javax.swing.JScrollPane;
 import java.awt.event.MouseAdapter;
@@ -29,6 +32,12 @@ public class ActividadesOfertadasView extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable table;
+	private JTextPane detallesActividad;
+	private JButton searchButton;
+	private JComboBox yearSelector;
+	private JComboBox periodSelector;
+
+
 
 	/**
 	 * Launch the application.
@@ -57,21 +66,24 @@ public class ActividadesOfertadasView extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton searchButton = new JButton("Buscar");
+		searchButton = new JButton("Buscar");
 		searchButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
+		
+		
+		
 		searchButton.setBounds(340, 13, 124, 38);
 		contentPane.add(searchButton);
 		
-		JComboBox periodSelector = new JComboBox();
+		periodSelector = new JComboBox();
 		periodSelector.setModel(new DefaultComboBoxModel(new String[] {"Enero", "Junio", "Septiembre"}));
 		periodSelector.setBounds(79, 23, 78, 22);
 		contentPane.add(periodSelector);
 		
-		JComboBox yearSelector = new JComboBox();
+		yearSelector = new JComboBox();
 		yearSelector.setModel(new DefaultComboBoxModel(new String[] {"2025", "2026", "2027", "2028", "2029", "2030", "2031"}));
 		yearSelector.setBounds(228, 23, 78, 22);
 		contentPane.add(yearSelector);
@@ -104,7 +116,7 @@ public class ActividadesOfertadasView extends JFrame {
 		
 		
 		//Detalles de la actividad
-		JTextPane detallesActividad = new JTextPane();
+		detallesActividad = new JTextPane();
 		detallesActividad.setText("Texto de ejemplo");
 		detallesActividad.setBounds(10, 410, 822, 214);
 		contentPane.add(detallesActividad);
@@ -118,14 +130,17 @@ public class ActividadesOfertadasView extends JFrame {
 
 		//Tabla
 		table = new JTable();
+		/*
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int fila = table.getSelectedRow();
 				System.out.println("Click en fila: "+fila);
+				//ActividadesOfertadasController.getDetallesActividad(fila);
 				detallesActividad.setText(String.valueOf(fila));
 			}
 		});
+		*/
 		
 		table.setDefaultEditor(Object.class, null); //Hace que no se pueda editar las tablas pero si seleccionarlas
 		scrollPane_1.setViewportView(table);
@@ -153,9 +168,35 @@ public class ActividadesOfertadasView extends JFrame {
 				"NombreActividad", "Tipo de Actividad", "Instalaci\u00F3n", "Fecha Inicial", "Fecha Final", "Numero de Plazas", "Precio Socios", "Precio No Socios"
 			}
 		));
-		
-		
-
-
 	}
+
+	public JComboBox getYearSelector() {
+		return yearSelector;
+	}
+	
+	public JComboBox getPeriodSelector() {
+		return periodSelector;
+	}
+
+	public JTable getTable() {
+		return table;
+	}
+
+	public void setTable(JTable table) {
+		this.table = table;
+	}
+	
+	public JTextPane getDetallesActividadView() {
+		return detallesActividad;
+	}
+	
+	public void setDetallesActividad(String nuevoTexto) {
+		detallesActividad.setText(nuevoTexto);
+	}
+	
+	public JButton getSearchButton() {
+		return searchButton;
+	}
+
+	
 }

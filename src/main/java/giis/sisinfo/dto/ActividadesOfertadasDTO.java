@@ -7,15 +7,15 @@ public class ActividadesOfertadasDTO {
 	String nombreActividad;
 	String tipoActividad;
 	String instalacion;
-	LocalDateTime fechaInicial;
-	LocalDateTime fechaFinal;
+	String fechaInicial;
+	String fechaFinal;
 	int plazas;
-	int precioSocios;
-	int precioNoSocios;
+	double precioSocios;
+	double precioNoSocios;
 	String detalles;
 	
 	public ActividadesOfertadasDTO() {}
-	public ActividadesOfertadasDTO(String n, String t, String i, LocalDateTime fI, LocalDateTime fF, int p, int pS, int pNS, String d) {
+	public ActividadesOfertadasDTO(String n, String t, String i, String fI, String fF, int p, double pS, double pNS, String d) {
 		nombreActividad=n;
 		tipoActividad=t;
 		instalacion=i;
@@ -26,6 +26,25 @@ public class ActividadesOfertadasDTO {
 		precioNoSocios = pNS;
 		detalles = d;
 	}
+	
+	public String toString() {
+		String result = String.format(
+				"nombreActividad: %s\n"
+				+ "tipoActividad: %s\n"
+				+ "instalacion: %s\n"
+				+ "fechaInicial: %s\n"
+				+ "fechaFinal: %s\n"
+				+ "plazas: %s\n"
+				+ "precioSocios: %s\n"
+				+ "precioNoSocios: %s\n"
+				+ "detalles: %s\n",
+				nombreActividad, tipoActividad, instalacion, fechaInicial, fechaFinal, plazas, precioSocios, precioNoSocios, detalles);
+		return result;
+	}
+	
+	
+	
+	
 	public String getNombreActividad() {
 		return nombreActividad;
 	}
@@ -44,16 +63,16 @@ public class ActividadesOfertadasDTO {
 	public void setInstalacion(String instalacion) {
 		this.instalacion = instalacion;
 	}
-	public LocalDateTime getFechaInicial() {
+	public String getFechaInicial() {
 		return fechaInicial;
 	}
-	public void setFechaInicial(LocalDateTime fechaInicial) {
+	public void setFechaInicial(String fechaInicial) {
 		this.fechaInicial = fechaInicial;
 	}
-	public LocalDateTime getFechaFinal() {
+	public String getFechaFinal() {
 		return fechaFinal;
 	}
-	public void setFechaFinal(LocalDateTime fechaFinal) {
+	public void setFechaFinal(String fechaFinal) {
 		this.fechaFinal = fechaFinal;
 	}
 	public int getPlazas() {
@@ -62,16 +81,16 @@ public class ActividadesOfertadasDTO {
 	public void setPlazas(int plazas) {
 		this.plazas = plazas;
 	}
-	public int getPrecioSocios() {
+	public double getPrecioSocios() {
 		return precioSocios;
 	}
-	public void setPrecioSocios(int precioSocios) {
+	public void setPrecioSocios(double precioSocios) {
 		this.precioSocios = precioSocios;
 	}
-	public int getPrecioNoSocios() {
+	public double getPrecioNoSocios() {
 		return precioNoSocios;
 	}
-	public void setPrecioNoSocios(int precioNoSocios) {
+	public void setPrecioNoSocios(double precioNoSocios) {
 		this.precioNoSocios = precioNoSocios;
 	}
 	public String getDetalles() {

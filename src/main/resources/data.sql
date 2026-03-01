@@ -1,5 +1,17 @@
 PRAGMA foreign_keys = ON;
 
+DELETE FROM Reserva_Actividad_Instalacion;
+DELETE FROM Reserva_Instalacion;
+DELETE FROM Actividad;
+DELETE FROM Usuario;
+DELETE FROM NoSocio;
+DELETE FROM Socio;
+DELETE FROM PeriodoInscripcion;
+DELETE FROM PeriodoOficial;
+DELETE FROM Instalacion;
+DELETE FROM Parametro;
+
+
 -- =========================
 -- PARAMETROS
 -- =========================

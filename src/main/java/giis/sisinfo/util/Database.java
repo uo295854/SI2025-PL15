@@ -3,8 +3,8 @@ package giis.sisinfo.util;
 public class Database extends DbUtil {
 
 	public Database() {
-		executeScript("src/main/resources/sql/schema.sql");
-		executeScript("src/main/resources/sql/data.sql");
+		executeScript("src/main/resources/schema.sql");
+		executeScript("src/main/resources/data.sql");
 	}
 
 	@Override
