@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,16 +22,19 @@ public class ReservaInstalacionAdminSocioModel {
 	private static final int duracion = 60;
 	
 	
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	
+	
 	public List<SocioDTO> buscadorSocios(String apellidos, String nombre, String numSocio){
 		
 		String sql = 
-		        "SELECT id_socio, num_socio, nombre, email, telefono " +
+		        "SELECT id_socio, num_socio, nombre,apellidos, email, telefono " +
 		                "FROM Socio " +
 		                "WHERE estado='ACTIVO' AND al_corriente_pago=1 " +
 		                "  AND (? IS NULL OR CAST(num_socio AS TEXT) LIKE ?) " +
 		                "  AND (? IS NULL OR LOWER(nombre) LIKE ?) " +
-		                "  AND (? IS NULL OR LOWER(nombre) LIKE ?) " + 
-		                "ORDER BY nombre";
+		                "  AND (? IS NULL OR LOWER(apellidos) LIKE ?) " + 
+		                "ORDER BY apellidos,nombre";
 		
 		String nsocio = comprobador(numSocio);
 		String nom = comprobador(nombre);
@@ -49,15 +53,19 @@ public class ReservaInstalacionAdminSocioModel {
 			//posicion 0 para id_socio
 			//posicion 1 para num_socio
 			//posicion 2 para nombre
+			//posicion 3 para apellidos
+			//posicion 4 para email
+			//posicion 5 para telefono
 			
 			int idSocio = ((Number) f[0]).intValue();
 			String nu = String.valueOf(f[1]);
 			String nombreSocio = String.valueOf(f[2]);
-			String email = (f[3] == null) ? "" : f[3].toString();
-			String tel   = (f[4] == null) ? "" : f[4].toString();
+			String apellidosSocio = String.valueOf(f[3]);
+			String email = (f[4] == null) ? "" : f[4].toString();
+			String tel   = (f[5] == null) ? "" : f[5].toString();
 
 			
-			resultado.add(new SocioDTO(idSocio, "", nombreSocio, nu,email, tel));
+			resultado.add(new SocioDTO(idSocio, apellidosSocio, nombreSocio, nu,email, tel));
 		}
 
 		
@@ -164,50 +172,66 @@ public class ReservaInstalacionAdminSocioModel {
     
     public List<HoraReservaSocioDTO> getHorasDia(int idInstalacion, LocalDate fecha) {
 
-        String sql =
-         "SELECT datetime_ini, datetime_fin " +
-        	"FROM Reserva_Instalacion " +
-        	"WHERE id_instalacion=? " +
-        	"AND datetime_ini >= ? " +
-        	"AND datetime_ini < ? ";
-
+        // rango del día seleccionado
         LocalDateTime iniDia = LocalDateTime.of(fecha, LocalTime.MIN);
         LocalDateTime finDia = iniDia.plusDays(1);
 
-        List<Object[]> filasreservas = db.executeQueryArray(sql,
+        // ========= RESERVAS =========
+        String sqlReservas =
+            "SELECT datetime_ini, datetime_fin " +
+            "FROM Reserva_Instalacion " +
+            "WHERE id_instalacion=? " +
+            "AND datetime_ini >= ? " +
+            "AND datetime_ini < ?";
+
+        List<Object[]> filasReservas = db.executeQueryArray(
+            sqlReservas,
             idInstalacion,
-            Timestamp.valueOf(iniDia),
-            Timestamp.valueOf(finDia)
+            iniDia.format(FMT),
+            finDia.format(FMT)
         );
 
         List<LocalDateTime[]> reservas = new ArrayList<>();
-        for (Object[] r : filasreservas) {
-            LocalDateTime ini = toLdt(r[0]);
-            LocalDateTime fin = toLdt(r[1]);
-            reservas.add(new LocalDateTime[] { ini, fin });
-        }
-        
-        
-        String sqlBloqueos =
-        	    "SELECT b.datetime_ini, b.datetime_fin " +
-        	    	    "FROM Bloqueo_por_Actividad b " +
-        	    	    "JOIN Actividad a ON a.id_actividad = b.id_actividad " +
-        	    	    "WHERE a.id_instalacion=? " +
-        	    	    "AND b.datetime_ini >= ? " +
-        	    	    "AND b.datetime_ini < ?";
 
-        List<Object[]> rowsBloqueos =
-            db.executeQueryArray(sqlBloqueos, idInstalacion, fecha.toString());
+        for (Object[] r : filasReservas) {
+            reservas.add(new LocalDateTime[]{
+                toLdt(r[0]),
+                toLdt(r[1])
+            });
+        }
+
+        // 🔎 DEBUG reservas cargadas
+        System.out.println("DEBUG reservas cargadas:");
+        for (LocalDateTime[] r : reservas) {
+            System.out.println(" -> " + r[0] + " / " + r[1]);
+        }
+
+        // ========= BLOQUEOS POR ACTIVIDAD =========
+        String sqlBloqueos =
+            "SELECT b.datetime_ini, b.datetime_fin " +
+            "FROM Bloqueo_por_Actividad b " +
+            "JOIN Actividad a ON a.id_actividad = b.id_actividad " +
+            "WHERE a.id_instalacion=? " +
+            "AND b.datetime_ini >= ? " +
+            "AND b.datetime_ini < ?";
+
+        List<Object[]> filasBloqueos = db.executeQueryArray(
+            sqlBloqueos,
+            idInstalacion,
+            iniDia.format(FMT),
+            finDia.format(FMT)
+        );
 
         List<LocalDateTime[]> bloqueos = new ArrayList<>();
 
-        for (Object[] r : rowsBloqueos) {
-            LocalDateTime ini = toLdt(r[0]);
-            LocalDateTime fin = toLdt(r[1]);
-            bloqueos.add(new LocalDateTime[]{ini, fin});
+        for (Object[] r : filasBloqueos) {
+            bloqueos.add(new LocalDateTime[]{
+                toLdt(r[0]),
+                toLdt(r[1])
+            });
         }
 
-
+        // ========= GENERAR HORAS =========
         List<HoraReservaSocioDTO> resultado = new ArrayList<>();
 
         for (LocalTime hora = hora_apertura;
@@ -220,22 +244,21 @@ public class ReservaInstalacionAdminSocioModel {
             boolean ocupadaReserva = solapa(reservas, inicioSlot, finSlot);
             boolean ocupadaActividad = solapa(bloqueos, inicioSlot, finSlot);
 
-            String estado;
-            String motivo = "";
-
-            if (ocupadaReserva) {
-                estado = "OCUPADA";
-                motivo = "Reservada";
-            } else if (ocupadaActividad) {
-                estado = "OCUPADA";
-                motivo = "Actividad";
-            } else {
-                estado = "LIBRE";
+            // 🔎 DEBUG detección
+            if (ocupadaReserva || ocupadaActividad) {
+                System.out.println("OCUPADA detectada:");
+                System.out.println(" slot: " + inicioSlot + " - " + finSlot);
+                System.out.println(" reserva? " + ocupadaReserva);
+                System.out.println(" actividad? " + ocupadaActividad);
             }
 
+            String estado = (ocupadaReserva || ocupadaActividad) ? "OCUPADA" : "LIBRE";
+            String motivo = ocupadaReserva ? "Reservada" :
+                            (ocupadaActividad ? "Actividad" : "");
+
             resultado.add(new HoraReservaSocioDTO(
-                hora.toString(),                     // hora entrada
-                finSlot.toLocalTime().toString(),   // hora salida
+                hora.toString(),
+                finSlot.toLocalTime().toString(),
                 estado,
                 motivo
             ));
@@ -243,25 +266,34 @@ public class ReservaInstalacionAdminSocioModel {
 
         return resultado;
     }
+    
+    public double getCosteInstalacion(int idInstalacion) {
+        String sql = "SELECT coste FROM Instalacion WHERE id_instalacion=?";
+        List<Object[]> filas = db.executeQueryArray(sql, idInstalacion);
+        if (filas.isEmpty()) 
+        	return 0.0;
+        
+        return ((Number) filas.get(0)[0]).doubleValue();
+    }
 
     
+
+  
+
     public void crearReserva(int idInstalacion, int idSocio, LocalDate fecha, LocalTime horaInicio) {
 
-        if (!puedeSocioReservar(idSocio)) {
+        if (!puedeSocioReservar(idSocio))
             throw new IllegalStateException("Socio no autorizado para reservar.");
-        }
 
         LocalDate hoy = LocalDate.now();
-        if (fecha.isAfter(hoy.plusDays(15))) {
+        if (fecha.isAfter(hoy.plusDays(15)))
             throw new IllegalStateException("No se puede reservar con más de 15 días de antelación.");
-        }
 
         LocalDateTime inicio = LocalDateTime.of(fecha, horaInicio);
         LocalDateTime fin = inicio.plusMinutes(duracion);
 
-        if (!estaLibre(idInstalacion, inicio, fin)) {
+        if (!estaLibre(idInstalacion, inicio, fin))
             throw new IllegalStateException("La franja horaria ya no está disponible.");
-        }
 
         String sql =
             "INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) " +
@@ -270,46 +302,45 @@ public class ReservaInstalacionAdminSocioModel {
         db.executeUpdate(sql,
             idInstalacion,
             idSocio,
-            Timestamp.valueOf(inicio),
-            Timestamp.valueOf(fin)
+            inicio.format(FMT),
+            fin.format(FMT)
         );
+        
     }
 
 
     public boolean estaLibre(int idInstalacion, LocalDateTime inicio, LocalDateTime fin) {
 
         String sql1 =
-            "SELECT COUNT(*) " +
-            "FROM Reserva_Instalacion " +
+            "SELECT COUNT(*) FROM Reserva_Instalacion " +
             "WHERE id_instalacion=? " +
             "AND datetime_ini < ? " +
             "AND datetime_fin > ?";
 
         long c1 = ((Number) db.executeQueryArray(sql1,
             idInstalacion,
-            Timestamp.valueOf(fin),
-            Timestamp.valueOf(inicio)
+            fin.format(FMT),
+            inicio.format(FMT)
         ).get(0)[0]).longValue();
 
         if (c1 > 0) return false;
 
         String sql2 =
             "SELECT COUNT(*) " +
-            "FROM Bloqueo_por_Actividad rai " +
-            "JOIN Actividad a ON a.id_actividad = rai.id_actividad " +
+            "FROM Bloqueo_por_Actividad b " +
+            "JOIN Actividad a ON a.id_actividad=b.id_actividad " +
             "WHERE a.id_instalacion=? " +
-            "AND rai.datetime_ini < ? " +
-            "AND rai.datetime_fin > ?";
+            "AND b.datetime_ini < ? " +
+            "AND b.datetime_fin > ?";
 
         long c2 = ((Number) db.executeQueryArray(sql2,
             idInstalacion,
-            Timestamp.valueOf(fin),
-            Timestamp.valueOf(inicio)
+            fin.format(FMT),
+            inicio.format(FMT)
         ).get(0)[0]).longValue();
 
         return c2 == 0;
     }
-
 
     private static boolean solapa(List<LocalDateTime[]> rangos, LocalDateTime ini, LocalDateTime fin) {
         for (LocalDateTime[] r : rangos) {
@@ -320,9 +351,7 @@ public class ReservaInstalacionAdminSocioModel {
 
     private static LocalDateTime toLdt(Object o) {
         if (o == null) return null;
-        if (o instanceof Timestamp) return ((Timestamp) o).toLocalDateTime();
-
-        String s = o.toString().replace('T', ' ');
+        String s = o.toString().replace('T', ' ').trim(); // "2026-03-01 09:00" o "2026-03-01 09:00:00"
         if (s.length() == 16) s = s + ":00";
         return LocalDateTime.parse(s.replace(' ', 'T'));
     }
