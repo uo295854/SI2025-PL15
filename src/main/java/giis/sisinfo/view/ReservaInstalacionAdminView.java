@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.util.Date;
 import java.util.Calendar;
 import java.awt.TextArea;
+import java.awt.Choice;
 
 public class ReservaInstalacionAdminView extends JFrame {
 
@@ -31,6 +32,9 @@ public class ReservaInstalacionAdminView extends JFrame {
 	JDateChooser selectorFechaFinal;
 	JDateChooser selectorFechaInicial;
 	TextArea panelConflictos;
+	Button botonReservar;
+	JComboBox campoActividad;
+	TextField detallesActividad;
 
 
 	/**
@@ -78,9 +82,9 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnMotivoDeReserva.setBounds(58, 43, 65, 18);
 		contentPane.add(txtpnMotivoDeReserva);
 		
-		TextField textField = new TextField();
-		textField.setBounds(133, 41, 198, 20);
-		contentPane.add(textField);
+		campoActividad = new JComboBox();
+		campoActividad.setBounds(133, 41, 198, 20);
+		contentPane.add(campoActividad);
 		
 		JTextPane txtpnFechaYHora = new JTextPane();
 		txtpnFechaYHora.setEditable(false);
@@ -90,7 +94,6 @@ public class ReservaInstalacionAdminView extends JFrame {
 		contentPane.add(txtpnFechaYHora);
 		
 		selectorFechaInicial = new JDateChooser();
-		selectorFechaInicial.setDateFormatString("yyyy-mm-dd");
 		selectorFechaInicial.setBounds(133, 71, 124, 18);
 		contentPane.add(selectorFechaInicial);
 		
@@ -102,7 +105,6 @@ public class ReservaInstalacionAdminView extends JFrame {
 		contentPane.add(txtpnFechaYHora_2);
 		
 		selectorFechaFinal = new JDateChooser();
-		selectorFechaFinal.setDateFormatString("yyyy-mm-dd");
 		selectorFechaFinal.setBounds(133, 99, 124, 18);
 		contentPane.add(selectorFechaFinal);
 		
@@ -129,9 +131,9 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnDetalles.setBounds(10, 127, 86, 18);
 		contentPane.add(txtpnDetalles);
 		
-		TextField textField_1 = new TextField();
-		textField_1.setBounds(10, 151, 546, 94);
-		contentPane.add(textField_1);
+		detallesActividad = new TextField();
+		detallesActividad.setBounds(10, 151, 546, 94);
+		contentPane.add(detallesActividad);
 		
 		panelConflictos = new TextArea();
 		panelConflictos.setEditable(false);
@@ -145,13 +147,13 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnConflictos.setBounds(10, 251, 86, 18);
 		contentPane.add(txtpnConflictos);
 		
-		Button button = new Button("Reservar");
-		button.addActionListener(new ActionListener() {
+		botonReservar = new Button("Reservar");
+		botonReservar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		button.setBounds(401, 43, 86, 35);
-		contentPane.add(button);
+		botonReservar.setBounds(401, 43, 86, 35);
+		contentPane.add(botonReservar);
 
 	}
 	
@@ -203,6 +205,32 @@ public class ReservaInstalacionAdminView extends JFrame {
 	public void setPanelConflictos(TextArea panelConflictos) {
 		this.panelConflictos = panelConflictos;
 	}
+
+	public Button getBotonReservar() {
+		return botonReservar;
+	}
+
+	public void setBotonReservar(Button botonReservar) {
+		this.botonReservar = botonReservar;
+	}
+
+	public JComboBox getCampoActividad() {
+		return campoActividad;
+	}
+
+	public void setCampoActividad(JComboBox campoActividad) {
+		this.campoActividad = campoActividad;
+	}
+
+	public TextField getDetallesActividad() {
+		return detallesActividad;
+	}
+
+	public void setDetallesActividad(TextField detallesActividad) {
+		this.detallesActividad = detallesActividad;
+	}
+	
+	
 	
 	
 }

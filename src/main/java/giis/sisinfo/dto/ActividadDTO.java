@@ -15,6 +15,8 @@ public class ActividadDTO {
 	private int cuotaNoSocios;
 	private String descripcion;
 
+	public ActividadDTO() {}
+	
 	public ActividadDTO(String nombreActividad, String instalacion, String tipoActividad,
 			int aforo, Map<String, String[]> horariosPorDia,
 			int duracionMin, String periodoInscripcion,
@@ -31,6 +33,11 @@ public class ActividadDTO {
 		this.cuotaNoSocios = cuotaNoSocios;
 		this.descripcion = descripcion;
 	}
+	
+	public ActividadDTO(String nNA, String nD) {
+		nombreActividad=nNA;
+		descripcion=nD;
+	}
 
 	public String getNombreActividad() { return nombreActividad; }
 	public String getInstalacion() { return instalacion; }
@@ -42,4 +49,9 @@ public class ActividadDTO {
 	public int getCuotaSocios() { return cuotaSocios; }
 	public int getCuotaNoSocios() { return cuotaNoSocios; }
 	public String getDescripcion() { return descripcion; }
+
+	public void setNombreActividad(String nombreActividad) {this.nombreActividad = nombreActividad;}
+	public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
+	
+	
 }

@@ -1,8 +1,10 @@
 package giis.sisinfo.model;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
+import giis.sisinfo.dto.ActividadDTO;
 import giis.sisinfo.dto.InstalacionDTO;
 import giis.sisinfo.dto.ReservaAdminDTO;
 import giis.sisinfo.util.Database;
@@ -49,6 +51,36 @@ public class ReservaInstalacionAdminModel {
 		return db.executeQueryPojo(ReservaAdminDTO.class, SQL, instalacion, fechaHoraInicial, fechaHoraFinal);
 	}
 	
+	public void hacerReserva(String fechaHoraInicial, String fechaHoraFinal, String instalacion, String nombreActividad) {
+		String SQL = "INSERT INTO Reserva_Actividad_Instalacion (\r\n"
+				+ "    id_actividad,\r\n"
+				+ "    inicio_datetime,\r\n"
+				+ "    fin_datetime\r\n"
+				+ ")\r\n"
+				+ "VALUES (\r\n"
+				+ "    (\r\n"
+				+ "        SELECT a.id_actividad\r\n"
+				+ "        FROM Actividad a\r\n"
+				+ "        JOIN Instalacion i ON a.id_instalacion = i.id_instalacion\r\n"
+				+ "        WHERE a.nombre = ?\r\n"
+				+ "          AND i.nombre_instalacion = ?\r\n"
+				+ "    ),\r\n"
+				+ "    ?,\r\n"
+				+ "    ?\r\n"
+				+ ");";
+		db.executeUpdate(SQL, nombreActividad,instalacion,fechaHoraInicial,fechaHoraFinal);		
+	}
+	
+	public List<ActividadDTO> getActividadesEnInstalacion(String instalacion) {
+		String SQL = "SELECT a.nombre AS nombreActividad, a.descripcion AS descripcion\r\n"
+				+ "FROM Actividad a\r\n"
+				+ "JOIN Instalacion i \r\n"
+				+ "    ON a.id_instalacion = i.id_instalacion\r\n"
+				+ "WHERE i.nombre_instalacion = ?\r\n"
+				+ "ORDER BY a.nombre;";
+		
+		return db.executeQueryPojo(ActividadDTO.class, SQL, instalacion);
+	}
 
 
 }
