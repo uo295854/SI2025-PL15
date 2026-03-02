@@ -331,6 +331,7 @@ public class ReservaInstalacionAdminSocioController {
 		try {
 			model.crearReserva(idInstalacionSeleccionada, socioSeleccionado.getIdSocio(), diaSeleccionado, horaInicioSeleccionada);
 			JOptionPane.showMessageDialog(view, "Reserva realizada.");
+			view.dispose();
 		}catch(Exception e) {
 			JOptionPane.showMessageDialog(view, e.getMessage(), "No se pudo reservar", JOptionPane.ERROR_MESSAGE);
 		}
