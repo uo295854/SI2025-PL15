@@ -8,6 +8,8 @@ import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
+import giis.sisinfo.model.PeriodoInscripcionModel;
+import giis.sisinfo.view.PeriodoInscripcionView;
 
 public class MainController {
 
@@ -35,6 +37,8 @@ public class MainController {
             }
         });
 
+        view.getBtnPeriodoInscripcion().addActionListener(e -> abrirPeriodoInscripcion());
+        
         view.getBtnCargarDatos().addActionListener(e -> {
             try {
                 Database db = new Database();
@@ -66,5 +70,20 @@ public class MainController {
         ReservaInstalacionAdminSocioView v = new ReservaInstalacionAdminSocioView();
         ReservaInstalacionAdminSocioModel m = new ReservaInstalacionAdminSocioModel();
         new ReservaInstalacionAdminSocioController(m, v);
+    }
+    
+    private void abrirPeriodoInscripcion() {
+        try {
+            PeriodoInscripcionView v = new PeriodoInscripcionView();
+            Database db = new Database();
+            PeriodoInscripcionModel m = new PeriodoInscripcionModel(db);
+            new PeriodoInscripcionController(v, m);
+            // El controller ya hace v.setVisible(true) en initView
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(view,
+                    "Error abriendo Periodo de inscripción:\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
