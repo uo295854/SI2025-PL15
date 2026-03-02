@@ -4,34 +4,25 @@ import java.util.Map;
 
 public class ActividadDTO {
 
-	private final String nombre;
-	private final String instalacionNombre;     // Instalacion.nombre_instalacion
-	private final String tipoUi;                // "Deportiva", "Cultural", "Formativa", "Campeonato"...
-	private final int aforo;
+	private String nombre;
+	private String instalacionNombre;     // Instalacion.nombre_instalacion
+	private String tipoUi;                // "Deportiva", "Cultural", "Formativa", "Campeonato"...
+	private int aforo;
 
-<<<<<<< HEAD
-	public ActividadDTO() {}
-	
-	public ActividadDTO(String nombreActividad, String instalacion, String tipoActividad,
-			int aforo, Map<String, String[]> horariosPorDia,
-			int duracionMin, String periodoInscripcion,
-			int cuotaSocios, int cuotaNoSocios, String descripcion) {
-=======
 	// dia -> ["HH:mm","HH:mm"] (ej: "Lunes" -> ["10:00","11:30"])
-	private final Map<String, String[]> horariosPorDia;
->>>>>>> branch 'main' of https://github.com/uo295854/SI2025-PL15.git
+	private Map<String, String[]> horariosPorDia;
 
-	private final int duracionMinutos;
+	private int duracionMinutos;
 
-	private final String periodoInscripcionNombre; // PeriodoInscripcion.nombre
+	private String periodoInscripcionNombre; // PeriodoInscripcion.nombre
 
-	private final String fechaInicio; // yyyy-MM-dd
-	private final String fechaFin;    // yyyy-MM-dd
+	private String fechaInicio; // yyyy-MM-dd
+	private String fechaFin;    // yyyy-MM-dd
 
-	private final double cuotaSocio;
-	private final double cuotaNoSocio;
+	private double cuotaSocio;
+	private double cuotaNoSocio;
 
-	private final String descripcion;
+	private String descripcion;
 
 	public ActividadDTO(
 			String nombre,
@@ -61,10 +52,7 @@ public class ActividadDTO {
 		this.descripcion = descripcion;
 	}
 	
-	public ActividadDTO(String nNA, String nD) {
-		nombreActividad=nNA;
-		descripcion=nD;
-	}
+	public ActividadDTO() {}
 
 	public String getNombre() { return nombre; }
 	public String getInstalacionNombre() { return instalacionNombre; }
@@ -79,7 +67,7 @@ public class ActividadDTO {
 	public double getCuotaNoSocio() { return cuotaNoSocio; }
 	public String getDescripcion() { return descripcion; }
 
-	public void setNombreActividad(String nombreActividad) {this.nombreActividad = nombreActividad;}
+	public void setNombreActividad(String nombreActividad) {this.nombre = nombreActividad;}
 	public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
 	
 	

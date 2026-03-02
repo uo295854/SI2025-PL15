@@ -21,6 +21,7 @@ public class ReservaInstalacionAdminModel {
 	
 	public List<ReservaAdminDTO> getReservas(String fechaHoraInicial, String fechaHoraFinal, String instalacion){
 		//las fechas deben estar en formato YYYY-MM-DD HH:MM:SS
+
 		String SQL = "WITH parametros AS (\r\n"
 				+ "    SELECT\r\n"
 				+ "        (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion=?) AS id_instalacion,\r\n"
@@ -29,23 +30,16 @@ public class ReservaInstalacionAdminModel {
 				+ ")\r\n"
 				+ "SELECT \r\n"
 				+ "    a.nombre AS NombreActividad,\r\n"
-				+ "    i.nombre_instalacion AS instalacion,\r\n"
-				+ "    r.inicio_datetime AS FechaHoraInicial,\r\n"
-				+ "    r.fin_datetime AS FechaHoraFinal\r\n"
-				+ "FROM Reserva_Actividad_Instalacion r\r\n"
-				+ "JOIN Actividad a ON a.id_actividad = r.id_actividad\r\n"
-				+ "JOIN Instalacion i ON i.id_instalacion = a.id_instalacion\r\n"
-				+ "JOIN parametros p ON i.id_instalacion = p.id_instalacion\r\n"
+				+ "    r.datetime_ini AS FechaHoraInicial,\r\n"
+				+ "    r.datetime_fin AS FechaHoraFinal\r\n"
+				+ "FROM Reserva_Instalacion r\r\n"
+				+ "JOIN Instalacion i ON r.id_instalacion = i.id_instalacion\r\n"
+				+ "JOIN parametros p ON r.id_instalacion = p.id_instalacion\r\n"
+				+ "JOIN Actividad a ON a.id_instalacion = r.id_instalacion\r\n"
 				+ "WHERE \r\n"
-				+ "    -- Solapamiento 1: inicio dentro del rango\r\n"
-				+ "    (r.inicio_datetime > p.nuevo_inicio AND r.inicio_datetime < p.nuevo_fin)\r\n"
-				+ "    OR\r\n"
-				+ "    -- Solapamiento 2: fin dentro del rango\r\n"
-				+ "    (r.fin_datetime > p.nuevo_inicio AND r.fin_datetime < p.nuevo_fin)\r\n"
-				+ "    OR\r\n"
-				+ "    -- Solapamiento 3: actividad completamente dentro del rango\r\n"
-				+ "    (r.inicio_datetime >= p.nuevo_inicio AND r.fin_datetime <= p.nuevo_fin)\r\n"
-				+ "ORDER BY r.inicio_datetime;";
+				+ "    r.datetime_ini < p.nuevo_fin\r\n"
+				+ "    AND r.datetime_fin > p.nuevo_inicio\r\n"
+				+ "ORDER BY r.datetime_ini;";
 		
 		System.out.println("ReservaInstalacionAdminModel | Consulta SQL realizada");
 		return db.executeQueryPojo(ReservaAdminDTO.class, SQL, instalacion, fechaHoraInicial, fechaHoraFinal);

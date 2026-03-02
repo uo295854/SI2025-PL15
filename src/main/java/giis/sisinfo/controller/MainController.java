@@ -3,12 +3,14 @@ package giis.sisinfo.controller;
 import javax.swing.JOptionPane;
 
 import giis.sisinfo.model.PlanificarActividadesModel;
+import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.util.Database;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
 import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
+import giis.sisinfo.view.ReservaInstalacionAdminView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
@@ -31,6 +33,7 @@ public class MainController {
         view.getBtnPeriodoInscripcion().addActionListener(e -> abrirPeriodoInscripcion());
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
         view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
+        view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
     }
 
     private void abrirGestionActividades() {
@@ -55,6 +58,13 @@ public class MainController {
     	VisualizarReservasInstalacionesAdminView v = new VisualizarReservasInstalacionesAdminView();
     	VisualizarReservasInstalacionesAdminModel m = new VisualizarReservasInstalacionesAdminModel();
     	new VisualizarReservasInstalacionesAdminController(m, v);
+    }
+    
+    private void abrirReservaInstalacionesAdmin() {
+    	ReservaInstalacionAdminView v = new ReservaInstalacionAdminView();
+    	ReservaInstalacionAdminModel m = new ReservaInstalacionAdminModel();
+    	new ReservaInstalacionAdminController(v, m);
+    }
     
     private void abrirPeriodoInscripcion() {
         try {

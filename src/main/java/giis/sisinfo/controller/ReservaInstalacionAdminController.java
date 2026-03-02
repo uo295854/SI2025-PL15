@@ -36,6 +36,7 @@ public class ReservaInstalacionAdminController {
 		listaInstalaciones = this.getNombreInstalaciones();
 		initSelectorInstalaciones();
 		initView();
+		initController();
 	}
 	
 	public void initView() {
@@ -122,7 +123,7 @@ public class ReservaInstalacionAdminController {
 	public List<ActividadDTO> getActividadesDisponibles(){
 		String instalacionSeleccionada = view.getSelectorInstalaciones().getSelectedItem().toString();
 		return model.getActividadesEnInstalacion(instalacionSeleccionada);
-	}
+	} 
 	
 	public void actualizarActividadesDisponibles() {
 		miSelectorActividades = view.getCampoActividad();
@@ -133,8 +134,8 @@ public class ReservaInstalacionAdminController {
 			return;
 		}
 		for (int i = 0; i<getActividadesDisponibles().size(); i++) {
-			miSelectorActividades.addItem(listaActividades.get(i).getNombreActividad());
-			System.out.println("Actividad " +i +": " + listaActividades.get(i).getNombreActividad());
+			miSelectorActividades.addItem(listaActividades.get(i).getNombre());
+			System.out.println("Actividad " +i +": " + listaActividades.get(i).getNombre());
 		}
 	}
 	
@@ -209,6 +210,7 @@ public class ReservaInstalacionAdminController {
 		
 		List<ReservaAdminDTO> listaConflictos = model.getReservas(fechaHoraInicial, fechaHoraFinal, instalacion);
 		
+		System.out.println(listaConflictos.size());
 		if (listaConflictos.size()<=0) {
 			System.out.printf("ReservaInstalacionAdminController | No se han detectado conflictos\n");
 			view.getPanelConflictos().setText("");
