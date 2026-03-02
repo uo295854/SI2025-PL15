@@ -27,12 +27,13 @@ public class MainView extends JFrame {
 	private JButton btnActividadesOfertadas;
 	private JButton btnReservaInstalacionAdmin;
 	private JButton btnReservaInstalacionAdminSocio;
+	private JButton btnVisualizarReservasInstalacionesAdmin;
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(new Dimension(520, 520));
-		setLocationRelativeTo(null);
+		setSize(new Dimension(620, 528));
+		setLocationRelativeTo(null); // centrar
 		getContentPane().setLayout(new BorderLayout(10, 10));
 
 		JLabel lblTitle = new JLabel("Menú principal", SwingConstants.CENTER);
@@ -97,7 +98,18 @@ public class MainView extends JFrame {
 
 		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
 		btnReservaInstalacionAdminSocio.setPreferredSize(appBtnSize);
-		panelAppButtons.add(btnReservaInstalacionAdminSocio);
+		panelButtons.add(btnReservaInstalacionAdminSocio);
+		
+		// Botón Visualizar Reservas Instalaciones (Admin)
+		btnVisualizarReservasInstalacionesAdmin = new JButton("Visualizar Reservas de Instalaciones");
+		btnVisualizarReservasInstalacionesAdmin.setPreferredSize(appBtnSize);
+		panelButtons.add(btnVisualizarReservasInstalacionesAdmin);
+
+
+		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
+		btnCrearBD = new JButton("Crear BD (schema)");
+		btnCrearBD.setPreferredSize(new Dimension(210, 45));
+		panelButtons.add(btnCrearBD);
 
 		JLabel lblFooter = new JLabel("Grupo SisInfo", SwingConstants.CENTER);
 		lblFooter.setBorder(new EmptyBorder(0, 10, 10, 10));
@@ -109,6 +121,24 @@ public class MainView extends JFrame {
 	public JButton getBtnPeriodoInscripcion() { return btnPeriodoInscripcion; }
 	public JButton getBtnReservaInstalacionAdminSocio() { return btnReservaInstalacionAdminSocio; }
 
+	public JButton getBtnReservas() {
+		return btnReservas;
+	}
+	
+	public JButton getBtnReservaInstalacionAdminSocio() {
+	    return btnReservaInstalacionAdminSocio;
+	}
+	public JButton getBtnVisualizarReservasInstalaciones() {
+		return btnVisualizarReservasInstalacionesAdmin;
+	}
+
+	public JButton getBtnCrearBD() {
+		return btnCrearBD;
+	}
+
+	public JButton getBtnCargarDatos() {
+		return btnCargarDatos;
+	}
 	// opcionales
 	public JButton getBtnActividadesOfertadas() { return btnActividadesOfertadas; }
 	public JButton getBtnReservaInstalacionAdmin() { return btnReservaInstalacionAdmin; }

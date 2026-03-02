@@ -7,7 +7,9 @@ import giis.sisinfo.util.Database;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
+import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
+import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
 import giis.sisinfo.session.Session;
@@ -28,6 +30,7 @@ public class MainController {
         view.getBtnReservas().addActionListener(e -> abrirReservas());
         view.getBtnPeriodoInscripcion().addActionListener(e -> abrirPeriodoInscripcion());
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
+        view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
     }
 
     private void abrirGestionActividades() {
@@ -48,6 +51,10 @@ public class MainController {
         ReservaInstalacionAdminSocioModel m = new ReservaInstalacionAdminSocioModel();
         new ReservaInstalacionAdminSocioController(m, v);
     }
+    private void abrirVisualizarReservasInstalacionesAdmin() {
+    	VisualizarReservasInstalacionesAdminView v = new VisualizarReservasInstalacionesAdminView();
+    	VisualizarReservasInstalacionesAdminModel m = new VisualizarReservasInstalacionesAdminModel();
+    	new VisualizarReservasInstalacionesAdminController(m, v);
     
     private void abrirPeriodoInscripcion() {
         try {
