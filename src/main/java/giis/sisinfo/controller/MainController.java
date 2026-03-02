@@ -3,7 +3,7 @@ package giis.sisinfo.controller;
 import javax.swing.JOptionPane;
 
 import giis.sisinfo.model.ActividadesModel;
-import giis.sisinfo.util.CentroDB;
+import giis.sisinfo.util.Database;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
@@ -12,7 +12,7 @@ import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 public class MainController {
 
     private final MainView view;
-    private final CentroDB db = new CentroDB();
+
 
     public MainController(MainView view) {
         this.view = view;
@@ -25,7 +25,8 @@ public class MainController {
 
         view.getBtnCrearBD().addActionListener(e -> {
             try {
-                crearBD();
+            	Database db = new Database();
+                db.createDatabase(false);
                 JOptionPane.showMessageDialog(view, "Tablas creadas correctamente.");
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -36,7 +37,8 @@ public class MainController {
 
         view.getBtnCargarDatos().addActionListener(e -> {
             try {
-                cargarDatos();
+                Database db = new Database();
+                db.loadDatabase();
                 JOptionPane.showMessageDialog(view, "Datos cargados correctamente.");
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -58,19 +60,8 @@ public class MainController {
         JOptionPane.showMessageDialog(view, "Pendiente: pantalla de Reservas / Inscripciones");
     }
 
-    public void crearBD() {
-        db.executeScript("src/main/resources/schema.sql");
-    }
 
-    public void cargarDatos() {
-        db.executeScript("src/main/resources/data.sql");
-    }
 
-    public void inicializarTodo() {
-        crearBD();
-        cargarDatos();
-    }
-    
     private void abrirReservaInstalacionAdminSocio() {
         ReservaInstalacionAdminSocioView v = new ReservaInstalacionAdminSocioView();
         ReservaInstalacionAdminSocioModel m = new ReservaInstalacionAdminSocioModel();

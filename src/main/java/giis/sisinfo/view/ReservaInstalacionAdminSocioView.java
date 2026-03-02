@@ -116,40 +116,6 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 		    panel.add(south, BorderLayout.EAST);
 
 		    
-		   /* //Datos Ejemplo
-		    ArrayList<Object[]> datos = new ArrayList<>();
-		    datos.add(new Object[]{"Rodríguez Fernández", "Cristian", "33215"});
-		    datos.add(new Object[]{"Rodríguez Fernández", "Eduardo", "47211"});
-		    datos.add(new Object[]{"Pérez Gómez", "Laura", "12001"});
-
-
-		    // Añadir tantas columnas como datos
-		    for (Object[] d : datos) 
-		    	tabladatos.addRow(d);
-
-		    Buscar.addActionListener(e -> {
-		        // Leer el nombre/nºsocio/apellidos puestos por el administrador en la fila 0
-		        String ap = String.valueOf(tabladatos.getValueAt(0, 0)).trim().toLowerCase();
-		        String no = String.valueOf(tabladatos.getValueAt(0, 1)).trim().toLowerCase();
-		        String ns = String.valueOf(tabladatos.getValueAt(0, 2)).trim().toLowerCase();
-
-		        // Borrar filas 
-		        while (tabladatos.getRowCount() > 2) tabladatos.removeRow(2);
-
-		        // Añadir filas con coincidencias
-		        for (Object[] d : datos) {
-		            String apellidos = String.valueOf(d[0]).toLowerCase();
-		            String nombre = String.valueOf(d[1]).toLowerCase();
-		            String nsocio = String.valueOf(d[2]).toLowerCase();
-
-		            if (!ap.isEmpty() && !apellidos.contains(ap)) continue;
-		            if (!no.isEmpty() && !nombre.contains(no)) continue;
-		            if (!ns.isEmpty() && !nsocio.contains(ns)) continue;
-
-		            tabladatos.insertRow(tabladatos.getRowCount(), d);
-		        }
-		    });*/
-		    
 		    panel.setPreferredSize(new Dimension(300,200));
 		    return panel;
 		
