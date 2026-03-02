@@ -29,8 +29,7 @@ public class MainView extends JFrame {
 	private JButton btnReservaInstalacionAdminSocio;
 	private JButton btnVisualizarReservasInstalacionesAdmin;
 	
-	private JButton btnCrearBD;
-	private JButton btnCargarDatos;
+
 
 
 	public MainView() {
@@ -100,9 +99,6 @@ public class MainView extends JFrame {
 
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
-		btnCrearBD = new JButton("Crear BD (schema)");
-		btnCrearBD.setPreferredSize(new Dimension(210, 45));
-		panelAppButtons.add(btnCrearBD);
 
 		JLabel lblFooter = new JLabel("Grupo SisInfo", SwingConstants.CENTER);
 		lblFooter.setBorder(new EmptyBorder(0, 10, 10, 10));
