@@ -29,7 +29,8 @@ public class MainView extends JFrame {
 	private JButton btnReservaInstalacionAdminSocio;
 	private JButton btnVisualizarReservasInstalacionesAdmin;
 	
-
+	private JButton btnCrearBD;
+	private JButton btnCargarDatos;
 
 
 	public MainView() {
@@ -87,17 +88,6 @@ public class MainView extends JFrame {
 		btnReservaInstalacionAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionAdmin);
 
-		btnReservaInstalacionAdmin.addActionListener(e -> {
-			try {
-				ReservaInstalacionAdminView ventanaReservaInstalacionAdmin = new ReservaInstalacionAdminView();
-				ventanaReservaInstalacionAdmin.setVisible(true);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(this,
-						"Error abriendo Reserva Instalaciones (Admin):\n" + ex.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
 
 		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
 		btnReservaInstalacionAdminSocio.setPreferredSize(appBtnSize);
@@ -109,6 +99,10 @@ public class MainView extends JFrame {
 		panelAppButtons.add(btnVisualizarReservasInstalacionesAdmin);
 
 
+		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
+		btnCrearBD = new JButton("Crear BD (schema)");
+		btnCrearBD.setPreferredSize(new Dimension(210, 45));
+		panelAppButtons.add(btnCrearBD);
 
 		JLabel lblFooter = new JLabel("Grupo SisInfo", SwingConstants.CENTER);
 		lblFooter.setBorder(new EmptyBorder(0, 10, 10, 10));

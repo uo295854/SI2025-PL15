@@ -51,7 +51,6 @@ public class ActividadesOfertadasController {
 		setListaActividades();
 	}
 	
-	
 	public void initController() {
 		
 		
