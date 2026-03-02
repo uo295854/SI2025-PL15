@@ -17,11 +17,21 @@ import javax.swing.JSpinner;
 import java.awt.Button;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Date;
+import java.util.Calendar;
+import java.awt.TextArea;
 
 public class ReservaInstalacionAdminView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	JComboBox selectorInstalaciones;
+	JSpinner selectorHoraFinal;
+	JSpinner selectorHoraInicial;
+	JDateChooser selectorFechaFinal;
+	JDateChooser selectorFechaInicial;
+	TextArea panelConflictos;
+
 
 	/**
 	 * Launch the application.
@@ -57,9 +67,9 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnInstalacinAReservar.setBounds(10, 10, 124, 18);
 		contentPane.add(txtpnInstalacinAReservar);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(133, 10, 198, 20);
-		contentPane.add(comboBox);
+		selectorInstalaciones = new JComboBox();
+		selectorInstalaciones.setBounds(133, 10, 198, 20);
+		contentPane.add(selectorInstalaciones);
 		
 		JTextPane txtpnMotivoDeReserva = new JTextPane();
 		txtpnMotivoDeReserva.setEditable(false);
@@ -79,9 +89,10 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnFechaYHora.setBounds(10, 71, 113, 18);
 		contentPane.add(txtpnFechaYHora);
 		
-		JDateChooser dateChooser = new JDateChooser();
-		dateChooser.setBounds(133, 71, 124, 18);
-		contentPane.add(dateChooser);
+		selectorFechaInicial = new JDateChooser();
+		selectorFechaInicial.setDateFormatString("yyyy-mm-dd");
+		selectorFechaInicial.setBounds(133, 71, 124, 18);
+		contentPane.add(selectorFechaInicial);
 		
 		JTextPane txtpnFechaYHora_2 = new JTextPane();
 		txtpnFechaYHora_2.setEditable(false);
@@ -90,24 +101,26 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnFechaYHora_2.setBounds(10, 99, 113, 18);
 		contentPane.add(txtpnFechaYHora_2);
 		
-		JDateChooser dateChooser_1 = new JDateChooser();
-		dateChooser_1.setBounds(133, 99, 124, 18);
-		contentPane.add(dateChooser_1);
+		selectorFechaFinal = new JDateChooser();
+		selectorFechaFinal.setDateFormatString("yyyy-mm-dd");
+		selectorFechaFinal.setBounds(133, 99, 124, 18);
+		contentPane.add(selectorFechaFinal);
 		
-		// Time spinner 1
-		SpinnerDateModel timeModel = new SpinnerDateModel();
-		JSpinner timeSpinner1 = new JSpinner(timeModel);
-		JSpinner.DateEditor timeEditor1 = new JSpinner.DateEditor(timeSpinner1, "HH:mm:ss");
-		timeSpinner1.setEditor(timeEditor1);
-		timeSpinner1.setBounds(259, 99, 72, 18);
-		contentPane.add(timeSpinner1);
+		// Selector hora final
+		SpinnerDateModel timeModelFinal;
+		selectorHoraFinal = new JSpinner(new SpinnerDateModel(new Date(1772459757224L), null, null, Calendar.MINUTE));
+		JSpinner.DateEditor de_selectorHoraFinal = new JSpinner.DateEditor(selectorHoraFinal, "HH:mm");
+		selectorHoraFinal.setEditor(de_selectorHoraFinal);
+		selectorHoraFinal.setBounds(259, 99, 72, 18);
+		contentPane.add(selectorHoraFinal);
 		
-		// Time spinner 2
-		JSpinner timeSpinner2 = new JSpinner(timeModel);
-		JSpinner.DateEditor timeEditor2 = new JSpinner.DateEditor(timeSpinner2, "HH:mm:ss");
-		timeSpinner2.setEditor(timeEditor2);
-		timeSpinner2.setBounds(259, 71, 72, 18);
-		contentPane.add(timeSpinner2);
+		// Selector hora inicial
+		SpinnerDateModel timeModelInicial; 
+		selectorHoraInicial = new JSpinner(new SpinnerDateModel(new Date(1772459731163L), null, null, Calendar.MINUTE));
+		JSpinner.DateEditor de_selectorHoraInicial = new JSpinner.DateEditor(selectorHoraInicial, "HH:mm");
+		selectorHoraInicial.setEditor(de_selectorHoraInicial);
+		selectorHoraInicial.setBounds(259, 71, 72, 18);
+		contentPane.add(selectorHoraInicial);
 		
 		JTextPane txtpnDetalles = new JTextPane();
 		txtpnDetalles.setText("Detalles:");
@@ -120,10 +133,10 @@ public class ReservaInstalacionAdminView extends JFrame {
 		textField_1.setBounds(10, 151, 546, 94);
 		contentPane.add(textField_1);
 		
-		TextField textField_1_1 = new TextField();
-		textField_1_1.setEditable(false);
-		textField_1_1.setBounds(10, 275, 546, 94);
-		contentPane.add(textField_1_1);
+		panelConflictos = new TextArea();
+		panelConflictos.setEditable(false);
+		panelConflictos.setBounds(10, 275, 546, 94);
+		contentPane.add(panelConflictos);
 		
 		JTextPane txtpnConflictos = new JTextPane();
 		txtpnConflictos.setText("Conflictos:");
@@ -141,4 +154,55 @@ public class ReservaInstalacionAdminView extends JFrame {
 		contentPane.add(button);
 
 	}
+	
+	
+	public JComboBox getSelectorInstalaciones() {
+		return selectorInstalaciones;
+	}
+
+	public void setSelectorInstalaciones(JComboBox selectorInstalaciones) {
+		this.selectorInstalaciones = selectorInstalaciones;
+	}
+	
+	public JSpinner getSelectorHoraFinal() {
+		return selectorHoraFinal;
+	}
+
+	public void setSelectorHoraFinal(JSpinner selectorHoraFinal) {
+		this.selectorHoraFinal = selectorHoraFinal;
+	}
+
+	public JSpinner getSelectorHoraInicial() {
+		return selectorHoraInicial;
+	}
+
+	public void setSelectorHoraInicial(JSpinner selectorHoraInicial) {
+		this.selectorHoraInicial = selectorHoraInicial;
+	}
+
+	public JDateChooser getSelectorFechaFinal() {
+		return selectorFechaFinal;
+	}
+
+	public void setSelectorFechaFinal(JDateChooser selectorFechaFinal) {
+		this.selectorFechaFinal = selectorFechaFinal;
+	}
+
+	public JDateChooser getSelectorFechaInicial() {
+		return selectorFechaInicial;
+	}
+
+	public void setSelectorFechaInicial(JDateChooser selectorFechaInicial) {
+		this.selectorFechaInicial = selectorFechaInicial;
+	}
+
+	public TextArea getPanelConflictos() {
+		return panelConflictos;
+	}
+
+	public void setPanelConflictos(TextArea panelConflictos) {
+		this.panelConflictos = panelConflictos;
+	}
+	
+	
 }

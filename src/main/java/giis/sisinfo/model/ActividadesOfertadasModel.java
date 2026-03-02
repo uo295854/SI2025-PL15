@@ -10,8 +10,7 @@ public class ActividadesOfertadasModel {
 	private Database db = new Database();
 
 	public List<ActividadesOfertadasDTO> getListaActividadesOfertadas(String periodo, int año){
-		//TODO terminar la consulta y la ejecución de la consulta
-		String SQL = "SELECT \r\n"
+		String SQL = "SELECT "
 				+ "    a.nombre                AS nombreActividad,"
 				+ "    a.tipo                  AS tipoActividad,"
 				+ "    i.nombre_instalacion    AS instalacion,"

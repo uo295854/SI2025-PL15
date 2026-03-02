@@ -14,7 +14,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import giis.sisinfo.controller.ActividadesOfertadasController;
+import giis.sisinfo.controller.ReservaInstalacionAdminController;
 import giis.sisinfo.model.ActividadesOfertadasModel;
+import giis.sisinfo.model.ReservaInstalacionAdminModel;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -68,32 +70,22 @@ public class MainView extends JFrame {
 		btnActividadesOfertadas.addActionListener(e ->{
 			ActividadesOfertadasController controller = new ActividadesOfertadasController(new ActividadesOfertadasView(), new ActividadesOfertadasModel());
 			controller.initController();
-			ActividadesOfertadasView ventanaActividadesOfertadas = new ActividadesOfertadasView();
+			//ActividadesOfertadasView ventanaActividadesOfertadas = new ActividadesOfertadasView();
 			//ventanaActividadesOfertadas.setVisible(true);
 		});
 		
-/*
-		btnActividadesOfertadas.addActionListener(e -> {
-			try {
-				ActividadesOfertadasView ventanaActividadesOfertadas = new ActividadesOfertadasView();
-				ventanaActividadesOfertadas.setVisible(true);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(this,
-						"Error abriendo Actividades Ofertadas:\n" + ex.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
-*/
 			
-		// Botón Reserva Instalaciones (Admin)
+		// Botón Reserva Instalaciones (Admin) - Alex - HU 33749
 		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones (Admin)");
 		btnReservaInstalacionAdmin.setPreferredSize(new Dimension(210, 45));
 		panelButtons.add(btnReservaInstalacionAdmin);
+		
 		btnReservaInstalacionAdmin.addActionListener(e -> {
 			try {
-				ReservaInstalacionAdminView ventanaReservaInstalacionAdmin = new ReservaInstalacionAdminView();
-				ventanaReservaInstalacionAdmin.setVisible(true);
+				ReservaInstalacionAdminController controller = new ReservaInstalacionAdminController(new ReservaInstalacionAdminView(), new ReservaInstalacionAdminModel());
+				controller.initController();
+				//ReservaInstalacionAdminView ventanaReservaInstalacionAdmin = new ReservaInstalacionAdminView();
+				//ventanaReservaInstalacionAdmin.setVisible(true);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				JOptionPane.showMessageDialog(this,
