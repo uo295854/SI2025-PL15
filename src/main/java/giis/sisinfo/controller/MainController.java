@@ -51,7 +51,7 @@ public class MainController {
 
     private void abrirGestionActividades() {
         PlanificarActividadView v = new PlanificarActividadView();
-        ActividadesModel model = new ActividadesModel();
+        PlanificarActividadesModel model = new PlanificarActividadesModel();
         new PlanificarActividadController(v, model);
         v.setVisible(true);
     }
