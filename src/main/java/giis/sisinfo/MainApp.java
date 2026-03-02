@@ -1,17 +1,15 @@
 package giis.sisinfo;
 
-import javax.swing.SwingUtilities;
-
-import giis.sisinfo.controller.MainController;
-import giis.sisinfo.view.MainView;
+import giis.sisinfo.controller.LoginController;
+import giis.sisinfo.model.LoginModel;
+import giis.sisinfo.util.Database;
+import giis.sisinfo.view.LoginView;
 
 public class MainApp {
-
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> {
-			MainView view = new MainView();
-			new MainController(view);
-			view.setVisible(true);
-		});
+		Database db = new Database();
+		LoginView v = new LoginView();
+		LoginModel m = new LoginModel(db);
+		new LoginController(v, m, db);
 	}
 }
