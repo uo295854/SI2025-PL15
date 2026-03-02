@@ -35,6 +35,8 @@ public class ReservaInstalacionAdminController {
 		this.model = nmodel;
 		listaInstalaciones = this.getNombreInstalaciones();
 		initSelectorInstalaciones();
+		actualizarActividadesDisponibles();
+		actualizarDetallesActividad();
 		initView();
 		initController();
 	}
@@ -141,12 +143,15 @@ public class ReservaInstalacionAdminController {
 	
 	public void actualizarDetallesActividad() {
 		if (listaActividades.size()<=0) {
+			System.out.println("ReservaInstalacionAdminController | No hay detalles para imprimir porque no hay actividades ofertadas");
 			return;
 		}
-		if (view.getCampoActividad().getSelectedIndex()<=0) {
+		if (view.getCampoActividad().getSelectedIndex()<0) {
+			System.out.println("ReservaInstalacionAdminController | No hay detalles para imprimir porque no hay actividades ofertadas");
 			return;
 		}
 		view.getDetallesActividad().setText(listaActividades.get(view.getCampoActividad().getSelectedIndex()).getDescripcion());
+		System.out.println("ReservaInstalacionAdminController | Detalles de actividades mostrados por pantalla");
 	}
 	
 	
