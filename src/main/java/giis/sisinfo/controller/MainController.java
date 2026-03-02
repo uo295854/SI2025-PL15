@@ -2,7 +2,7 @@ package giis.sisinfo.controller;
 
 import javax.swing.JOptionPane;
 
-import giis.sisinfo.model.ActividadesModel;
+import giis.sisinfo.model.PlanificarActividadesModel;
 import giis.sisinfo.util.Database;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
