@@ -122,13 +122,7 @@ public class MainView extends JFrame {
 		return btnVisualizarReservasInstalacionesAdmin;
 	}
 
-	public JButton getBtnCrearBD() {
-		return btnCrearBD;
-	}
 
-	public JButton getBtnCargarDatos() {
-		return btnCargarDatos;
-	}
 	// opcionales
 	public JButton getBtnActividadesOfertadas() { return btnActividadesOfertadas; }
 	public JButton getBtnReservaInstalacionAdmin() { return btnReservaInstalacionAdmin; }
