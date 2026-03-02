@@ -28,6 +28,7 @@ public class MainView extends JFrame {
 	private JButton btnActividadesOfertadas;
 	private JButton btnReservaInstalacionAdmin;
 	private JButton btnReservaInstalacionAdminSocio;
+	private JButton btnVisualizarReservasInstalacionesAdmin;
 
 	// NUEVOS BOTONES BD
 	private JButton btnCrearBD;
@@ -36,7 +37,7 @@ public class MainView extends JFrame {
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(new Dimension(520, 428));
+		setSize(new Dimension(620, 528));
 		setLocationRelativeTo(null); // centrar
 		getContentPane().setLayout(new BorderLayout(10, 10));
 
@@ -106,6 +107,11 @@ public class MainView extends JFrame {
 		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
 		btnReservaInstalacionAdminSocio.setPreferredSize(new Dimension(360, 45));
 		panelButtons.add(btnReservaInstalacionAdminSocio);
+		
+		// Botón Visualizar Reservas Instalaciones (Admin)
+		btnVisualizarReservasInstalacionesAdmin = new JButton("Visualizar Reservas de Instalaciones");
+		btnVisualizarReservasInstalacionesAdmin.setPreferredSize(new Dimension(360,45));
+		panelButtons.add(btnVisualizarReservasInstalacionesAdmin);
 
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
@@ -134,6 +140,9 @@ public class MainView extends JFrame {
 	
 	public JButton getBtnReservaInstalacionAdminSocio() {
 	    return btnReservaInstalacionAdminSocio;
+	}
+	public JButton getBtnVisualizarReservasInstalaciones() {
+		return btnVisualizarReservasInstalacionesAdmin;
 	}
 
 	public JButton getBtnCrearBD() {

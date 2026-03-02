@@ -7,7 +7,9 @@ import giis.sisinfo.util.Database;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
+import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
+import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 
 public class MainController {
 
@@ -47,6 +49,7 @@ public class MainController {
             }
         });
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
+        view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
     }
 
     private void abrirGestionActividades() {
@@ -66,5 +69,10 @@ public class MainController {
         ReservaInstalacionAdminSocioView v = new ReservaInstalacionAdminSocioView();
         ReservaInstalacionAdminSocioModel m = new ReservaInstalacionAdminSocioModel();
         new ReservaInstalacionAdminSocioController(m, v);
+    }
+    private void abrirVisualizarReservasInstalacionesAdmin() {
+    	VisualizarReservasInstalacionesAdminView v = new VisualizarReservasInstalacionesAdminView();
+    	VisualizarReservasInstalacionesAdminModel m = new VisualizarReservasInstalacionesAdminModel();
+    	new VisualizarReservasInstalacionesAdminController(m, v);
     }
 }
