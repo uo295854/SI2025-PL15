@@ -1,5 +1,14 @@
 PRAGMA foreign_keys = ON;
 
+DELETE FROM Reserva_Instalacion;
+DELETE FROM Bloqueo_por_Actividad;
+DELETE FROM Actividad;
+DELETE FROM Usuario;
+DELETE FROM NoSocio;
+DELETE FROM Socio;
+DELETE FROM PeriodoInscripcion;
+DELETE FROM PeriodoOficial;
+DELETE FROM Instalacion;
 INSERT OR IGNORE INTO Instalacion (nombre_instalacion, tipo_deporte, tipo_instalacion, aforo_max, coste) VALUES
   ('Pista Pádel 1', 'padel', 'CANCHA', 4, 8.0),
   ('Pista Tenis 1', 'tenis', 'CANCHA', 4, 10.0),
@@ -13,10 +22,10 @@ INSERT OR IGNORE INTO PeriodoOficial (nombre, fecha_ini, fecha_fin) VALUES
 INSERT OR IGNORE INTO PeriodoInscripcion (nombre, descripcion, fecha_inicio_socio, fecha_fin_socio, fecha_fin_nosocio) VALUES
   ('Inscripción Septiembre', 'Socios primero, luego no socios', '2025-09-01', '2025-09-05', '2025-09-10');
 
-INSERT OR IGNORE INTO Socio (num_socio, nombre, dni, estado, al_corriente_pago) VALUES
-  (1001, 'Juan Pérez',  '11111111A', 'ACTIVO', 1),
-  (1002, 'María López', '22222222B', 'ACTIVO', 1),
-  (1003, 'Pedro Mora',  '33333333C', 'ACTIVO', 0);
+INSERT OR IGNORE INTO Socio (num_socio, nombre,apellidos, dni, email,telefono,estado, al_corriente_pago) VALUES
+  (1001, 'Juan','Perez', '11111111A','juanp@gmail.com','985342403', 'ACTIVO', 1),
+  (1002, 'María','Fernandez', '22222222B','maria@gmail.com','970345612',  'ACTIVO', 1),
+  (1003, 'Pedro','Mora',  '33333333C', 'pedr@gmail.com','980123456', 'ACTIVO', 0);
 
 INSERT OR IGNORE INTO NoSocio (nombre, dni) VALUES
   ('Carlos García', '44444444D');

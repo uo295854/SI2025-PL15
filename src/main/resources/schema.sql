@@ -15,7 +15,10 @@ CREATE TABLE IF NOT EXISTS Socio (
   id_socio INTEGER PRIMARY KEY AUTOINCREMENT,
   num_socio INTEGER NOT NULL UNIQUE,
   nombre TEXT NOT NULL,
+  apellidos TEXT NOT NULL,
   dni TEXT NOT NULL UNIQUE,
+  email TEXT,
+  telefono TEXT,
   estado TEXT NOT NULL CHECK (estado IN ('ACTIVO','BAJA')),
   al_corriente_pago INTEGER NOT NULL DEFAULT 1 CHECK (al_corriente_pago IN (0,1))
 );
