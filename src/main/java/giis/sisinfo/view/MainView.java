@@ -28,6 +28,7 @@ public class MainView extends JFrame {
 	private JButton btnActividadesOfertadas;
 	private JButton btnReservaInstalacionAdmin;
 	private JButton btnReservaInstalacionAdminSocio;
+	private JButton btnPeriodoInscripcion;
 
 	// NUEVOS BOTONES BD
 	private JButton btnCrearBD;
@@ -107,6 +108,10 @@ public class MainView extends JFrame {
 		btnReservaInstalacionAdminSocio.setPreferredSize(new Dimension(360, 45));
 		panelButtons.add(btnReservaInstalacionAdminSocio);
 
+		// Botón Periodo de inscripción
+		btnPeriodoInscripcion = new JButton("Periodo de inscripción");
+		btnPeriodoInscripcion.setPreferredSize(new Dimension(210, 45));
+		panelButtons.add(btnPeriodoInscripcion);
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 		btnCrearBD = new JButton("Crear BD (schema)");
@@ -142,5 +147,8 @@ public class MainView extends JFrame {
 
 	public JButton getBtnCargarDatos() {
 		return btnCargarDatos;
+	}
+	public JButton getBtnPeriodoInscripcion() {
+	    return btnPeriodoInscripcion;
 	}
 }
