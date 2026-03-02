@@ -2,7 +2,7 @@ package giis.sisinfo.controller;
 
 import javax.swing.JOptionPane;
 
-import giis.sisinfo.model.ActividadesModel;
+import giis.sisinfo.model.PlanificarActividadesModel;
 import giis.sisinfo.util.CentroDB;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
@@ -46,7 +46,7 @@ public class MainController {
 
     private void abrirGestionActividades() {
         PlanificarActividadView v = new PlanificarActividadView();
-        ActividadesModel model = new ActividadesModel();
+        PlanificarActividadesModel model = new PlanificarActividadesModel();
         new PlanificarActividadController(v, model);
         v.setVisible(true);
     }
