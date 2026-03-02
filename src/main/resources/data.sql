@@ -1,5 +1,14 @@
 PRAGMA foreign_keys = ON;
 
+DELETE FROM Reserva_Instalacion;
+DELETE FROM Bloqueo_por_Actividad;
+DELETE FROM Actividad;
+DELETE FROM Usuario;
+DELETE FROM NoSocio;
+DELETE FROM Socio;
+DELETE FROM PeriodoInscripcion;
+DELETE FROM PeriodoOficial;
+DELETE FROM Instalacion;
 INSERT OR IGNORE INTO Instalacion (nombre_instalacion, tipo_deporte, tipo_instalacion, aforo_max, coste) VALUES
   ('Pista Pádel 1', 'padel', 'CANCHA', 4, 8.0),
   ('Pista Tenis 1', 'tenis', 'CANCHA', 4, 10.0),

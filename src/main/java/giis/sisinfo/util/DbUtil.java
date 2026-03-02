@@ -119,6 +119,7 @@ public abstract class DbUtil {
 	 * y se ignoran los fallos en caso de que no exista la tabla (solo para drop)
 	 */
 	public void executeScript(String fileName) {
+
 		List<String> lines;
 		try {
 			lines = Files.readAllLines(Paths.get(fileName));
