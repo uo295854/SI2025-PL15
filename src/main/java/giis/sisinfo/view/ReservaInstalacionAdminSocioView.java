@@ -2,18 +2,8 @@ package giis.sisinfo.view;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableRowSorter;
-
 import java.awt.*;
-import java.util.ArrayList;
 public class ReservaInstalacionAdminSocioView extends JFrame {
 
 	/**
@@ -48,17 +38,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 	private JTextField textfieldDeporte, textfieldLugar, textfieldDia, textfieldHora,textfieldCoste;
 	
 	
-	public JTextField getTextfieldNombre() { return textfieldNombre; }
-	public JTextField getTextfieldNumSocio() { return textfieldNumSocio; }
-	public JTextField getTextfieldEmail() { return textfieldEmail; }
-	public JTextField getTextfieldTelefono() { return textfieldTelefono; }
 
-	public JTextField getTextfieldDeporte() { return textfieldDeporte; }
-	public JTextField getTextfieldLugar() { return textfieldLugar; }
-	public JTextField getTextfieldDia() { return textfieldDia; }
-	public JTextField getTextfieldHora() { return textfieldHora; }
-	public JTextField getTextfieldCoste() { return textfieldCoste; }
-	
 	
 	//Botones cancelar y reservar
 	private JButton cancelar,reservar;
@@ -120,7 +100,7 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 
 
 			//fila separadora
-			 tabladatos.addRow(new Object[]{"", "", "", ""}); 
+			 tabladatos.addRow(new Object[]{"", "", ""}); 
 			 tablaSocios.setRowHeight(22);
 			 tablaSocios.setRowHeight(1, 6); 
 		    
@@ -134,40 +114,6 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 		    south.add(Buscar);
 		    panel.add(south, BorderLayout.EAST);
 
-		    
-		    //Datos Ejemplo
-		    ArrayList<Object[]> datos = new ArrayList<>();
-		    datos.add(new Object[]{"Rodríguez Fernández", "Cristian", "33215"});
-		    datos.add(new Object[]{"Rodríguez Fernández", "Eduardo", "47211"});
-		    datos.add(new Object[]{"Pérez Gómez", "Laura", "12001"});
-
-
-		    // Añadir tantas columnas como datos
-		    for (Object[] d : datos) 
-		    	tabladatos.addRow(d);
-
-		    Buscar.addActionListener(e -> {
-		        // Leer el nombre/nºsocio/apellidos puestos por el administrador en la fila 0
-		        String ap = String.valueOf(tabladatos.getValueAt(0, 0)).trim().toLowerCase();
-		        String no = String.valueOf(tabladatos.getValueAt(0, 1)).trim().toLowerCase();
-		        String ns = String.valueOf(tabladatos.getValueAt(0, 2)).trim().toLowerCase();
-
-		        // Borrar filas 
-		        while (tabladatos.getRowCount() > 2) tabladatos.removeRow(2);
-
-		        // Añadir filas con coincidencias
-		        for (Object[] d : datos) {
-		            String apellidos = String.valueOf(d[0]).toLowerCase();
-		            String nombre = String.valueOf(d[1]).toLowerCase();
-		            String nsocio = String.valueOf(d[2]).toLowerCase();
-
-		            if (!ap.isEmpty() && !apellidos.contains(ap)) continue;
-		            if (!no.isEmpty() && !nombre.contains(no)) continue;
-		            if (!ns.isEmpty() && !nsocio.contains(ns)) continue;
-
-		            tabladatos.insertRow(tabladatos.getRowCount(), d);
-		        }
-		    });
 		    
 		    panel.setPreferredSize(new Dimension(300,200));
 		    return panel;
@@ -356,5 +302,27 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 	 public static void main(String[] args) {
 	        SwingUtilities.invokeLater(() -> new ReservaInstalacionAdminSocioView().setVisible(true));
 	    }
+	 
+	 
+	 public void setResumenSocio(String nombre, String num, String email, String tel) {
+		    textfieldNombre.setText(nombre);
+		    textfieldNumSocio.setText(num);
+		    textfieldEmail.setText(email);
+		    textfieldTelefono.setText(tel);
+		}
+
+		public void setResumenReserva(String deporte, String lugar, String dia, String hora, String coste) {
+		    textfieldDeporte.setText(deporte);
+		    textfieldLugar.setText(lugar);
+		    textfieldDia.setText(dia);
+		    textfieldHora.setText(hora);
+		    textfieldCoste.setText(coste);
+		}
+
+		public void limpiarHorasYResumenReserva() {
+		    ((DefaultTableModel) tablaHoras.getModel()).setRowCount(0);
+		    tablaHoras.clearSelection();
+		    setResumenReserva("", "", "", "", "");
+		}
 	
 }

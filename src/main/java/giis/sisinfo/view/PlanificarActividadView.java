@@ -28,6 +28,9 @@ public class PlanificarActividadView extends JFrame {
 	private JTextField textHoraDe;
 	private JTextField textHoraA;
 
+	private JTextField textFechaInicio;
+	private JTextField textFechaFin;
+
 	private JSpinner spinnerAforo;
 	private JSpinner spinnerDuracion;
 
@@ -38,6 +41,10 @@ public class PlanificarActividadView extends JFrame {
 	private JComboBox<Object> comboBoxDiasMulti;
 
 	private JComboBox<String> comboBoxPeriodoInscripcion;
+
+	private JLabel lblFechaInicioSocio;
+	private JLabel lblFechaFinSocio;
+	private JLabel lblFechaFinNoSocio;
 
 	private JSpinner spinnerCuotaSocios;
 	private JSpinner spinnerCuotaNoSocios;
@@ -86,13 +93,13 @@ public class PlanificarActividadView extends JFrame {
 		JPanel pInstalacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		panelIzq.add(pInstalacion);
 		pInstalacion.add(new JLabel("Instalación:"));
-		comboBoxInstalacion = new JComboBox<>(new String[] { "Cancha 1", "Cancha 2", "Pista 1", "Pabellón" });
+		comboBoxInstalacion = new JComboBox<>();
 		pInstalacion.add(comboBoxInstalacion);
 
 		JPanel pTipo = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		panelIzq.add(pTipo);
 		pTipo.add(new JLabel("Tipo de Actividad:"));
-		comboBoxTipoActividad = new JComboBox<>(new String[] { "Deportiva", "Cultural", "Formativa" });
+		comboBoxTipoActividad = new JComboBox<>(new String[] { "Deportiva", "Cultural", "Formativa", "Campeonato" });
 		pTipo.add(comboBoxTipoActividad);
 
 		JPanel pAforo = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -104,8 +111,6 @@ public class PlanificarActividadView extends JFrame {
 		JPanel pDia = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		panelIzq.add(pDia);
 		pDia.add(new JLabel("Días:"));
-
-		// Controller le pondrá modelo + renderer
 		comboBoxDiasMulti = new JComboBox<>();
 		((DefaultComboBoxModel<Object>) comboBoxDiasMulti.getModel()).addElement("(Selecciona días)");
 		pDia.add(comboBoxDiasMulti);
@@ -133,32 +138,35 @@ public class PlanificarActividadView extends JFrame {
 		JPanel pPeriodo = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		panelIzq.add(pPeriodo);
 		pPeriodo.add(new JLabel("Periodo inscripción:"));
-		comboBoxPeriodoInscripcion = new JComboBox<>(new String[] { "Periodo 1", "Periodo 2", "Periodo 3" });
+		comboBoxPeriodoInscripcion = new JComboBox<>();
 		pPeriodo.add(comboBoxPeriodoInscripcion);
 
 		JPanel pFechasPeriodo1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		panelIzq.add(pFechasPeriodo1);
-		pFechasPeriodo1.add(new JLabel("Fecha inicio socios: 01/09"));
+		lblFechaInicioSocio = new JLabel("Fecha inicio socios: -");
+		pFechasPeriodo1.add(lblFechaInicioSocio);
 
 		JPanel pFechasPeriodo2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		panelIzq.add(pFechasPeriodo2);
-		pFechasPeriodo2.add(new JLabel("Fecha fin socios: 05/09"));
+		lblFechaFinSocio = new JLabel("Fecha fin socios: -");
+		pFechasPeriodo2.add(lblFechaFinSocio);
 
 		JPanel pFechasPeriodo3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		panelIzq.add(pFechasPeriodo3);
-		pFechasPeriodo3.add(new JLabel("Fecha fin no socios: 08/09"));
+		lblFechaFinNoSocio = new JLabel("Fecha fin no socios: -");
+		pFechasPeriodo3.add(lblFechaFinNoSocio);
 
 		JPanel pFechaIni = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		panelIzq.add(pFechaIni);
-		pFechaIni.add(new JLabel("Fecha inicio:"));
-		JTextField textFechaInicio = new JTextField();
+		pFechaIni.add(new JLabel("Fecha inicio (yyyy-MM-dd):"));
+		textFechaInicio = new JTextField();
 		textFechaInicio.setColumns(10);
 		pFechaIni.add(textFechaInicio);
 
 		JPanel pFechaFin = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		panelIzq.add(pFechaFin);
-		pFechaFin.add(new JLabel("Fecha fin:"));
-		JTextField textFechaFin = new JTextField();
+		pFechaFin.add(new JLabel("Fecha fin (yyyy-MM-dd):"));
+		textFechaFin = new JTextField();
 		textFechaFin.setColumns(10);
 		pFechaFin.add(textFechaFin);
 
@@ -206,6 +214,9 @@ public class PlanificarActividadView extends JFrame {
 	public JTextField getTextHoraDe() { return textHoraDe; }
 	public JTextField getTextHoraA() { return textHoraA; }
 
+	public JTextField getTextFechaInicio() { return textFechaInicio; }
+	public JTextField getTextFechaFin() { return textFechaFin; }
+
 	public JSpinner getSpinnerAforo() { return spinnerAforo; }
 	public JSpinner getSpinnerDuracion() { return spinnerDuracion; }
 
@@ -215,6 +226,10 @@ public class PlanificarActividadView extends JFrame {
 	public JComboBox<Object> getComboBoxDiasMulti() { return comboBoxDiasMulti; }
 
 	public JComboBox<String> getComboBoxPeriodoInscripcion() { return comboBoxPeriodoInscripcion; }
+
+	public JLabel getLblFechaInicioSocio() { return lblFechaInicioSocio; }
+	public JLabel getLblFechaFinSocio() { return lblFechaFinSocio; }
+	public JLabel getLblFechaFinNoSocio() { return lblFechaFinNoSocio; }
 
 	public JSpinner getSpinnerCuotaSocios() { return spinnerCuotaSocios; }
 	public JSpinner getSpinnerCuotaNoSocios() { return spinnerCuotaNoSocios; }

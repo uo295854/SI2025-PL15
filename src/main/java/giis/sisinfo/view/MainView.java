@@ -2,8 +2,8 @@ package giis.sisinfo.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,53 +18,54 @@ import giis.sisinfo.controller.ReservaInstalacionAdminController;
 import giis.sisinfo.model.ActividadesOfertadasModel;
 import giis.sisinfo.model.ReservaInstalacionAdminModel;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 public class MainView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
 	private JButton btnGestionActividades;
 	private JButton btnReservas;
+	private JButton btnPeriodoInscripcion;
+
 	private JButton btnActividadesOfertadas;
 	private JButton btnReservaInstalacionAdmin;
 	private JButton btnReservaInstalacionAdminSocio;
-
-	// NUEVOS BOTONES BD
-	private JButton btnCrearBD;
-	private JButton btnCargarDatos;
+	private JButton btnVisualizarReservasInstalacionesAdmin;
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(new Dimension(520, 428));
+		setSize(new Dimension(620, 528));
 		setLocationRelativeTo(null); // centrar
 		getContentPane().setLayout(new BorderLayout(10, 10));
 
-		// Título
 		JLabel lblTitle = new JLabel("Menú principal", SwingConstants.CENTER);
 		lblTitle.setFont(lblTitle.getFont().deriveFont(Font.BOLD, 18f));
 		lblTitle.setBorder(new EmptyBorder(15, 10, 5, 10));
 		getContentPane().add(lblTitle, BorderLayout.NORTH);
 
-		// Panel central con botones
-		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 25));
-		panelButtons.setBorder(new EmptyBorder(10, 10, 10, 10));
-		getContentPane().add(panelButtons, BorderLayout.CENTER);
+		JPanel panelMain = new JPanel(new BorderLayout(10, 10));
+		panelMain.setBorder(new EmptyBorder(10, 14, 10, 14));
+		getContentPane().add(panelMain, BorderLayout.CENTER);
 
-		// Botón gestión actividades
+		JPanel panelAppButtons = new JPanel(new GridLayout(0, 1, 0, 10));
+		panelMain.add(panelAppButtons, BorderLayout.CENTER);
+
+		Dimension appBtnSize = new Dimension(360, 42);
+
 		btnGestionActividades = new JButton("Gestión de actividades");
-		btnGestionActividades.setPreferredSize(new Dimension(210, 45));
-		panelButtons.add(btnGestionActividades);
+		btnGestionActividades.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnGestionActividades);
 
-		// Botón Reservas / Inscripciones
 		btnReservas = new JButton("Reservas / Inscripciones");
-		btnReservas.setPreferredSize(new Dimension(210, 45));
-		panelButtons.add(btnReservas);
+		btnReservas.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnReservas);
 
-		//Botón Actividades Ofertadas - Alex - HU33746 
+		btnPeriodoInscripcion = new JButton("Periodo de inscripción");
+		btnPeriodoInscripcion.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnPeriodoInscripcion);
+
 		btnActividadesOfertadas = new JButton("Lista Actividades Ofertadas");
+<<<<<<< HEAD
 		btnActividadesOfertadas.setPreferredSize(new Dimension(210, 45));
 		panelButtons.add(btnActividadesOfertadas);
 		btnActividadesOfertadas.addActionListener(e ->{
@@ -76,10 +77,35 @@ public class MainView extends JFrame {
 		
 			
 		// Botón Reserva Instalaciones (Admin) - Alex - HU 33749
+=======
+		btnActividadesOfertadas.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnActividadesOfertadas);
+
+		// (Ideal moverlo a MainController, pero lo dejo como lo tenías)
+		btnActividadesOfertadas.addActionListener(e -> {
+			try {
+				ActividadesOfertadasController controller =
+						new ActividadesOfertadasController(new ActividadesOfertadasView(), new ActividadesOfertadasModel());
+				controller.initController();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(this,
+						"Error abriendo Actividades Ofertadas:\n" + ex.getMessage(),
+						"Error", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+
+>>>>>>> branch 'main' of https://github.com/uo295854/SI2025-PL15.git
 		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones (Admin)");
+<<<<<<< HEAD
 		btnReservaInstalacionAdmin.setPreferredSize(new Dimension(210, 45));
 		panelButtons.add(btnReservaInstalacionAdmin);
 		
+=======
+		btnReservaInstalacionAdmin.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnReservaInstalacionAdmin);
+
+>>>>>>> branch 'main' of https://github.com/uo295854/SI2025-PL15.git
 		btnReservaInstalacionAdmin.addActionListener(e -> {
 			try {
 				ReservaInstalacionAdminController controller = new ReservaInstalacionAdminController(new ReservaInstalacionAdminView(), new ReservaInstalacionAdminModel());
@@ -94,44 +120,40 @@ public class MainView extends JFrame {
 			}
 		});
 
-		// Botón Reserva Instalaciones para los Socios (Admin)
 		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
-		btnReservaInstalacionAdminSocio.setPreferredSize(new Dimension(260, 45));
+		btnReservaInstalacionAdminSocio.setPreferredSize(appBtnSize);
 		panelButtons.add(btnReservaInstalacionAdminSocio);
-		btnReservaInstalacionAdminSocio.addActionListener(e -> {
-			try {
-				ReservaInstalacionAdminSocioView ventana = new ReservaInstalacionAdminSocioView();
-				ventana.setVisible(true);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(this,
-						"Error abriendo Reserva Instalaciones (Admin Socio):\n" + ex.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
+		
+		// Botón Visualizar Reservas Instalaciones (Admin)
+		btnVisualizarReservasInstalacionesAdmin = new JButton("Visualizar Reservas de Instalaciones");
+		btnVisualizarReservasInstalacionesAdmin.setPreferredSize(appBtnSize);
+		panelButtons.add(btnVisualizarReservasInstalacionesAdmin);
+
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 		btnCrearBD = new JButton("Crear BD (schema)");
 		btnCrearBD.setPreferredSize(new Dimension(210, 45));
 		panelButtons.add(btnCrearBD);
 
-		btnCargarDatos = new JButton("Cargar datos (data)");
-		btnCargarDatos.setPreferredSize(new Dimension(210, 45));
-		panelButtons.add(btnCargarDatos);
-
-		// Pie
 		JLabel lblFooter = new JLabel("Grupo SisInfo", SwingConstants.CENTER);
 		lblFooter.setBorder(new EmptyBorder(0, 10, 10, 10));
 		getContentPane().add(lblFooter, BorderLayout.SOUTH);
 	}
 
-	// Getters para que el Controller pueda enganchar listeners
-	public JButton getBtnGestionActividades() {
-		return btnGestionActividades;
-	}
+	public JButton getBtnGestionActividades() { return btnGestionActividades; }
+	public JButton getBtnReservas() { return btnReservas; }
+	public JButton getBtnPeriodoInscripcion() { return btnPeriodoInscripcion; }
+	public JButton getBtnReservaInstalacionAdminSocio() { return btnReservaInstalacionAdminSocio; }
 
 	public JButton getBtnReservas() {
 		return btnReservas;
+	}
+	
+	public JButton getBtnReservaInstalacionAdminSocio() {
+	    return btnReservaInstalacionAdminSocio;
+	}
+	public JButton getBtnVisualizarReservasInstalaciones() {
+		return btnVisualizarReservasInstalacionesAdmin;
 	}
 
 	public JButton getBtnCrearBD() {
@@ -141,4 +163,7 @@ public class MainView extends JFrame {
 	public JButton getBtnCargarDatos() {
 		return btnCargarDatos;
 	}
+	// opcionales
+	public JButton getBtnActividadesOfertadas() { return btnActividadesOfertadas; }
+	public JButton getBtnReservaInstalacionAdmin() { return btnReservaInstalacionAdmin; }
 }

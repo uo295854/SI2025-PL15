@@ -2,51 +2,40 @@ package giis.sisinfo.controller;
 
 import javax.swing.JOptionPane;
 
-import giis.sisinfo.model.ActividadesModel;
-import giis.sisinfo.util.CentroDB;
+import giis.sisinfo.model.PlanificarActividadesModel;
+import giis.sisinfo.util.Database;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
+import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
+import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
+import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
+import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
+import giis.sisinfo.model.PeriodoInscripcionModel;
+import giis.sisinfo.view.PeriodoInscripcionView;
+import giis.sisinfo.session.Session;
 
 public class MainController {
 
     private final MainView view;
-    private final CentroDB db = new CentroDB();
+
 
     public MainController(MainView view) {
         this.view = view;
         initController();
+        aplicarPermisosPorRol(); // ✅
     }
 
     private void initController() {
         view.getBtnGestionActividades().addActionListener(e -> abrirGestionActividades());
         view.getBtnReservas().addActionListener(e -> abrirReservas());
-
-        view.getBtnCrearBD().addActionListener(e -> {
-            try {
-                crearBD();
-                JOptionPane.showMessageDialog(view, "Tablas creadas correctamente.");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(view, "Error creando la BD:\n" + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        view.getBtnCargarDatos().addActionListener(e -> {
-            try {
-                cargarDatos();
-                JOptionPane.showMessageDialog(view, "Datos cargados correctamente.");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(view, "Error cargando datos:\n" + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        view.getBtnPeriodoInscripcion().addActionListener(e -> abrirPeriodoInscripcion());
+        view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
+        view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
     }
 
     private void abrirGestionActividades() {
         PlanificarActividadView v = new PlanificarActividadView();
-        ActividadesModel model = new ActividadesModel();
+        PlanificarActividadesModel model = new PlanificarActividadesModel();
         new PlanificarActividadController(v, model);
         v.setVisible(true);
     }
@@ -55,16 +44,49 @@ public class MainController {
         JOptionPane.showMessageDialog(view, "Pendiente: pantalla de Reservas / Inscripciones");
     }
 
-    public void crearBD() {
-        db.executeScript("src/main/resources/schema.sql");
-    }
 
-    public void cargarDatos() {
-        db.executeScript("src/main/resources/data.sql");
-    }
 
-    public void inicializarTodo() {
-        crearBD();
-        cargarDatos();
+    private void abrirReservaInstalacionAdminSocio() {
+        ReservaInstalacionAdminSocioView v = new ReservaInstalacionAdminSocioView();
+        ReservaInstalacionAdminSocioModel m = new ReservaInstalacionAdminSocioModel();
+        new ReservaInstalacionAdminSocioController(m, v);
+    }
+    private void abrirVisualizarReservasInstalacionesAdmin() {
+    	VisualizarReservasInstalacionesAdminView v = new VisualizarReservasInstalacionesAdminView();
+    	VisualizarReservasInstalacionesAdminModel m = new VisualizarReservasInstalacionesAdminModel();
+    	new VisualizarReservasInstalacionesAdminController(m, v);
+    
+    private void abrirPeriodoInscripcion() {
+        try {
+            PeriodoInscripcionView v = new PeriodoInscripcionView();
+            Database db = new Database();
+            PeriodoInscripcionModel m = new PeriodoInscripcionModel(db);
+            new PeriodoInscripcionController(v, m);
+            // El controller ya hace v.setVisible(true) en initView
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(view,
+                    "Error abriendo Periodo de inscripción:\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void aplicarPermisosPorRol() {
+        Session s = Session.get();
+
+        // Si por lo que sea no hay sesión, bloquea todo lo sensible
+        boolean isAdmin = s.isAdmin();
+
+        // Ejemplos típicos (ajusta a vuestras HUs):
+        // Admin-only
+        view.getBtnGestionActividades().setEnabled(isAdmin);
+        view.getBtnPeriodoInscripcion().setEnabled(isAdmin);
+        
+        // Reserva instalaciones para socios (admin)
+        view.getBtnReservaInstalacionAdminSocio().setEnabled(isAdmin);
+
+        // Reservas / Inscripciones: normalmente accesible para todos (o al menos socios)
+        // Si quieres solo SOCIO:
+        // view.getBtnReservas().setEnabled(s.isSocio());
     }
 }

@@ -57,7 +57,7 @@ public class Database extends DbUtil {
 	/** 
 	 * Carga de datos iniciales a partir del script data.sql en src/main/properties
 	 * (si onlyOnce=true solo ejecutara el script la primera vez
-	 */
+	 
 	public void loadDatabase() {
 		executeScript(SQL_LOAD);
 	}

@@ -1,12 +1,21 @@
 PRAGMA foreign_keys = ON;
 
--- =========================
--- SOCIO / NO SOCIO
--- =========================
+DROP TABLE IF EXISTS Bloqueo_por_Actividad;
+DROP TABLE IF EXISTS Reserva_Instalacion;
+DROP TABLE IF EXISTS Actividad;
+DROP TABLE IF EXISTS Usuario;
+DROP TABLE IF EXISTS Admin;
+DROP TABLE IF EXISTS NoSocio;
+DROP TABLE IF EXISTS Socio;
+DROP TABLE IF EXISTS PeriodoInscripcion;
+DROP TABLE IF EXISTS PeriodoOficial;
+DROP TABLE IF EXISTS Instalacion;
+
 CREATE TABLE IF NOT EXISTS Socio (
   id_socio INTEGER PRIMARY KEY AUTOINCREMENT,
   num_socio INTEGER NOT NULL UNIQUE,
   nombre TEXT NOT NULL,
+  apellidos TEXT NOT NULL,
   dni TEXT NOT NULL UNIQUE,
   email TEXT,
   telefono TEXT,
@@ -20,34 +29,38 @@ CREATE TABLE IF NOT EXISTS NoSocio (
   dni TEXT NOT NULL UNIQUE
 );
 
--- =========================
--- USUARIO (login)
--- =========================
+CREATE TABLE IF NOT EXISTS Admin (
+  id_admin INTEGER PRIMARY KEY AUTOINCREMENT,
+  dni TEXT NOT NULL UNIQUE,
+  nombre TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS Usuario (
   id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
-  id_socio INTEGER NULL,
-  id_nosocio INTEGER NULL,
+  email TEXT,
   username TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
   rol TEXT NOT NULL CHECK (rol IN ('ADMIN','SOCIO','NOSOCIO')),
-  FOREIGN KEY (id_socio) REFERENCES Socio(id_socio),
+  id_socio INTEGER NULL,
+  id_nosocio INTEGER NULL,
+  id_admin INTEGER NULL,
+  FOREIGN KEY (id_socio) REFERENCES Socio(id_socio)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
   FOREIGN KEY (id_nosocio) REFERENCES NoSocio(id_nosocio)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (id_admin) REFERENCES Admin(id_admin)
+    ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- =========================
--- INSTALACION
--- =========================
 CREATE TABLE IF NOT EXISTS Instalacion (
   id_instalacion INTEGER PRIMARY KEY AUTOINCREMENT,
   nombre_instalacion TEXT NOT NULL UNIQUE,
   tipo_deporte TEXT,
   tipo_instalacion TEXT NOT NULL CHECK (tipo_instalacion IN ('CANCHA','SALA','OTRA')),
-  aforo_max INTEGER NOT NULL CHECK (aforo_max > 0)
+  aforo_max INTEGER NOT NULL CHECK (aforo_max > 0),
+  coste REAL NOT NULL DEFAULT 0 CHECK (coste >= 0)
 );
 
--- =========================
--- PERIODOS
--- =========================
 CREATE TABLE IF NOT EXISTS PeriodoOficial (
   id_periodo_oficial INTEGER PRIMARY KEY AUTOINCREMENT,
   nombre TEXT NOT NULL CHECK (nombre IN ('SEPTIEMBRE','ENERO','JUNIO')),
@@ -58,7 +71,7 @@ CREATE TABLE IF NOT EXISTS PeriodoOficial (
 
 CREATE TABLE IF NOT EXISTS PeriodoInscripcion (
   id_periodo_inscripcion INTEGER PRIMARY KEY AUTOINCREMENT,
-  nombre TEXT NOT NULL,
+  nombre TEXT NOT NULL UNIQUE,
   descripcion TEXT,
   fecha_inicio_socio TEXT NOT NULL,
   fecha_fin_socio TEXT NOT NULL,
@@ -67,15 +80,12 @@ CREATE TABLE IF NOT EXISTS PeriodoInscripcion (
   CHECK (fecha_fin_socio <= fecha_fin_nosocio)
 );
 
--- =========================
--- ACTIVIDAD (1 actividad -> 1 instalación)
--- =========================
 CREATE TABLE IF NOT EXISTS Actividad (
   id_actividad INTEGER PRIMARY KEY AUTOINCREMENT,
   id_periodo_oficial INTEGER NOT NULL,
   id_periodo_inscripcion INTEGER NOT NULL,
   id_instalacion INTEGER NOT NULL,
-  nombre TEXT NOT NULL,
+  nombre TEXT NOT NULL UNIQUE,
   tipo TEXT NOT NULL CHECK (tipo IN ('CULTURAL','DEPORTIVA','CLASE','CAMPEONATO')),
   aforo INTEGER NOT NULL CHECK (aforo > 0),
   dias INTEGER,
@@ -94,54 +104,37 @@ CREATE TABLE IF NOT EXISTS Actividad (
     ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- =========================
--- RESERVA INSTALACION (hecha por socio)
--- =========================
 CREATE TABLE IF NOT EXISTS Reserva_Instalacion (
   id_reservains INTEGER PRIMARY KEY AUTOINCREMENT,
   id_instalacion INTEGER NOT NULL,
   id_socio INTEGER NOT NULL,
-  inicio_datetime TEXT NOT NULL,
-  fin_datetime TEXT NOT NULL,
-  CHECK (inicio_datetime < fin_datetime),
+  datetime_ini TEXT NOT NULL,
+  datetime_fin TEXT NOT NULL,
+  CHECK (datetime_ini < datetime_fin),
   FOREIGN KEY (id_instalacion) REFERENCES Instalacion(id_instalacion)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   FOREIGN KEY (id_socio) REFERENCES Socio(id_socio)
     ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- =========================
--- BLOQUEO POR ACTIVIDAD (ocupación del centro)
--- =========================
-CREATE TABLE IF NOT EXISTS Reserva_Actividad_Instalacion (
-  id_reserva INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS Bloqueo_por_Actividad (
+  id_bloqueo INTEGER PRIMARY KEY AUTOINCREMENT,
   id_actividad INTEGER NOT NULL,
-  inicio_datetime TEXT NOT NULL,
-  fin_datetime TEXT NOT NULL,
-  CHECK (inicio_datetime < fin_datetime),
+  datetime_ini TEXT NOT NULL,
+  datetime_fin TEXT NOT NULL,
+  CHECK (datetime_ini < datetime_fin),
   FOREIGN KEY (id_actividad) REFERENCES Actividad(id_actividad)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
--- =========================
--- PARAMETROS (config)
--- =========================
-CREATE TABLE IF NOT EXISTS Parametro (
-  clave TEXT PRIMARY KEY,
-  valor TEXT NOT NULL
-);
-
--- =========================
--- Índices útiles
--- =========================
 CREATE INDEX IF NOT EXISTS idx_reserva_instalacion_rango
-  ON Reserva_Instalacion(id_instalacion, inicio_datetime, fin_datetime);
+  ON Reserva_Instalacion(id_instalacion, datetime_ini, datetime_fin);
 
 CREATE INDEX IF NOT EXISTS idx_bloqueo_actividad_rango
-  ON Reserva_Actividad_Instalacion(id_actividad, inicio_datetime, fin_datetime);
-
-CREATE INDEX IF NOT EXISTS idx_actividad_periodo_oficial
-  ON Actividad(id_periodo_oficial);
+  ON Bloqueo_por_Actividad(id_actividad, datetime_ini, datetime_fin);
 
 CREATE INDEX IF NOT EXISTS idx_actividad_instalacion
   ON Actividad(id_instalacion);
+
+CREATE INDEX IF NOT EXISTS idx_actividad_periodo_oficial
+  ON Actividad(id_periodo_oficial);
