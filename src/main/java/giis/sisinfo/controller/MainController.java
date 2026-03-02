@@ -10,6 +10,9 @@ import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
 import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
+import giis.sisinfo.model.PeriodoInscripcionModel;
+import giis.sisinfo.view.PeriodoInscripcionView;
+import giis.sisinfo.session.Session;
 
 public class MainController {
 
@@ -19,35 +22,13 @@ public class MainController {
     public MainController(MainView view) {
         this.view = view;
         initController();
+        aplicarPermisosPorRol(); // ✅
     }
 
     private void initController() {
         view.getBtnGestionActividades().addActionListener(e -> abrirGestionActividades());
         view.getBtnReservas().addActionListener(e -> abrirReservas());
-
-        view.getBtnCrearBD().addActionListener(e -> {
-            try {
-            	Database db = new Database();
-                db.createDatabase(false);
-                JOptionPane.showMessageDialog(view, "Tablas creadas correctamente.");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(view, "Error creando la BD:\n" + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        view.getBtnCargarDatos().addActionListener(e -> {
-            try {
-                Database db = new Database();
-                db.loadDatabase();
-                JOptionPane.showMessageDialog(view, "Datos cargados correctamente.");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(view, "Error cargando datos:\n" + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        view.getBtnPeriodoInscripcion().addActionListener(e -> abrirPeriodoInscripcion());
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
         view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
     }
@@ -74,5 +55,38 @@ public class MainController {
     	VisualizarReservasInstalacionesAdminView v = new VisualizarReservasInstalacionesAdminView();
     	VisualizarReservasInstalacionesAdminModel m = new VisualizarReservasInstalacionesAdminModel();
     	new VisualizarReservasInstalacionesAdminController(m, v);
+    
+    private void abrirPeriodoInscripcion() {
+        try {
+            PeriodoInscripcionView v = new PeriodoInscripcionView();
+            Database db = new Database();
+            PeriodoInscripcionModel m = new PeriodoInscripcionModel(db);
+            new PeriodoInscripcionController(v, m);
+            // El controller ya hace v.setVisible(true) en initView
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(view,
+                    "Error abriendo Periodo de inscripción:\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void aplicarPermisosPorRol() {
+        Session s = Session.get();
+
+        // Si por lo que sea no hay sesión, bloquea todo lo sensible
+        boolean isAdmin = s.isAdmin();
+
+        // Ejemplos típicos (ajusta a vuestras HUs):
+        // Admin-only
+        view.getBtnGestionActividades().setEnabled(isAdmin);
+        view.getBtnPeriodoInscripcion().setEnabled(isAdmin);
+        
+        // Reserva instalaciones para socios (admin)
+        view.getBtnReservaInstalacionAdminSocio().setEnabled(isAdmin);
+
+        // Reservas / Inscripciones: normalmente accesible para todos (o al menos socios)
+        // Si quieres solo SOCIO:
+        // view.getBtnReservas().setEnabled(s.isSocio());
     }
 }
