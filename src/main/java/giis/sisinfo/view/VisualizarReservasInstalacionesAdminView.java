@@ -2,6 +2,8 @@ package giis.sisinfo.view;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
 import java.awt.*;
 public class VisualizarReservasInstalacionesAdminView extends JFrame {
 
@@ -28,6 +30,10 @@ public class VisualizarReservasInstalacionesAdminView extends JFrame {
 	private JButton atras;
 	public JButton getAtras() { return atras;}
 	
+	
+	private TableRowSorter<DefaultTableModel> desplegableDias;
+
+	public TableRowSorter<DefaultTableModel> getDesplegableDias() { return desplegableDias; }
 	
 	public VisualizarReservasInstalacionesAdminView() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -91,9 +97,12 @@ public class VisualizarReservasInstalacionesAdminView extends JFrame {
 	      JPanel panel = new JPanel(new BorderLayout(5,5));
 	        panel.setBorder(new TitledBorder("Seleccionar fecha (lista de días)"));
 
-	        tablaDías = new JTable(new DefaultTableModel(
-	                new Object[]{"Día", "Fecha", "Estado"}, 0));
+	        DefaultTableModel modeloDias = new DefaultTableModel(new Object[]{"Día ▼", "Fecha ▼", "Estado"}, 0);
+	        tablaDías = new JTable(modeloDias);
 	        tablaDías.setRowHeight(22);
+	        
+	        desplegableDias = new TableRowSorter<>(modeloDias);
+	        tablaDías.setRowSorter(desplegableDias);
 	        panel.add(new JScrollPane(tablaDías), BorderLayout.CENTER);
 	       
 	        panel.setPreferredSize(new Dimension(300,200));

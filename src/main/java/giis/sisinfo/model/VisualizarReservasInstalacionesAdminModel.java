@@ -78,25 +78,23 @@ public class VisualizarReservasInstalacionesAdminModel {
 	}
 	  public List<HoraReservaSocioDTO> getHorasDia(int idInstalacion, LocalDate fecha) {
 
-	        String sqlReservas = "SELECT datetime_ini, datetime_fin " +
-	                             "FROM Reserva_Instalacion " +
-	                             "WHERE id_instalacion=? AND date(datetime_ini)=?";
+	        String sqlReservas = "SELECT r.datetime_ini, r.datetime_fin, s.nombre, s.apellidos FROM Reserva_Instalacion r JOIN Socio s ON s.id_socio = r.id_socio WHERE r.id_instalacion=? AND date(r.datetime_ini)=?";
 
 	        List<Object[]> filasReservas = db.executeQueryArray(sqlReservas, idInstalacion, fecha.toString());
-	        List<LocalDateTime[]> reservas = new ArrayList<>();
+	        List<Object[]> reservas = new ArrayList<>();
 	        for (Object[] r : filasReservas) {
-	            reservas.add(new LocalDateTime[]{ toLdt(r[0]), toLdt(r[1]) });
+	            reservas.add(new Object[]{ toLdt(r[0]), toLdt(r[1]), r[2]+ " " + r[3] });
 	        }
 
-	        String sqlBloqueos = "SELECT b.datetime_ini, b.datetime_fin " +
+	        String sqlBloqueos = "SELECT b.datetime_ini, b.datetime_fin,a.nombre " +
 	                             "FROM Bloqueo_por_Actividad b " +
 	                             "JOIN Actividad a ON a.id_actividad = b.id_actividad " +
 	                             "WHERE a.id_instalacion=? AND date(b.datetime_ini)=?";
 
 	        List<Object[]> filasBloqueos = db.executeQueryArray(sqlBloqueos, idInstalacion, fecha.toString());
-	        List<LocalDateTime[]> bloqueos = new ArrayList<>();
+	        List<Object[]> bloqueos = new ArrayList<>();
 	        for (Object[] r : filasBloqueos) {
-	            bloqueos.add(new LocalDateTime[]{ toLdt(r[0]), toLdt(r[1]) });
+	            bloqueos.add(new Object[]{ toLdt(r[0]), toLdt(r[1]), r[2] });
 	        }
 
 	        List<HoraReservaSocioDTO> resultado = new ArrayList<>();
@@ -105,11 +103,38 @@ public class VisualizarReservasInstalacionesAdminModel {
 	            LocalDateTime inicioSlot = LocalDateTime.of(fecha, hora);
 	            LocalDateTime finSlot = inicioSlot.plusMinutes(duracion);
 
-	            boolean ocupadaReserva = solapa(reservas, inicioSlot, finSlot);
-	            boolean ocupadaActividad = solapa(bloqueos, inicioSlot, finSlot);
+	            String socioReserva = null;
+
+	            for (Object[] r : reservas) {
+	                LocalDateTime ini = (LocalDateTime) r[0];
+	                LocalDateTime fin = (LocalDateTime) r[1];
+
+	                if (ini.isBefore(finSlot) && fin.isAfter(inicioSlot)) {
+	                    socioReserva = (String) r[2];
+	                    break;
+	                }
+	            }
+	            String nombreActividad = null;
+
+	            for (Object[] b : bloqueos) {
+	                LocalDateTime ini = (LocalDateTime) b[0];
+	                LocalDateTime fin = (LocalDateTime) b[1];
+
+	                if (ini.isBefore(finSlot) && fin.isAfter(inicioSlot)) {
+	                    nombreActividad = (String) b[2];
+	                    break;
+	                }
+	            }
+
+	            boolean ocupadaReserva = socioReserva != null;
+	            boolean ocupadaActividad = nombreActividad !=null;
+
 
 	            String estado = (ocupadaReserva || ocupadaActividad) ? "RESERVADA" : "LIBRE";
-	            String motivo = ocupadaReserva ? "Reserva: Socio" : (ocupadaActividad ? "Actividad" : "");
+
+	            String motivo =
+	                    ocupadaReserva ? "Reserva: " + socioReserva
+	                    : (ocupadaActividad ? "Actividad " + nombreActividad : "");
 
 	            resultado.add(new HoraReservaSocioDTO(
 	                    hora.toString(),
@@ -141,14 +166,7 @@ public class VisualizarReservasInstalacionesAdminModel {
 	        return c2 == 0;
 	    }
 	    
-	    private static boolean solapa(List<LocalDateTime[]> rangos, LocalDateTime ini, LocalDateTime fin) {
-			for (LocalDateTime[] r : rangos) {
-				if (r[0].isBefore(fin) && r[1].isAfter(ini))
-					return true;
-			}
-			return false;
-		}
-
+	    
 		private static LocalDateTime toLdt(Object o) {
 			if (o == null)
 				return null;
