@@ -28,6 +28,10 @@ public class MainView extends JFrame {
 	private JButton btnReservaInstalacionAdmin;
 	private JButton btnReservaInstalacionAdminSocio;
 	private JButton btnVisualizarReservasInstalacionesAdmin;
+	
+	private JButton btnCrearBD;
+	private JButton btnCargarDatos;
+
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
@@ -98,18 +102,18 @@ public class MainView extends JFrame {
 
 		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
 		btnReservaInstalacionAdminSocio.setPreferredSize(appBtnSize);
-		panelButtons.add(btnReservaInstalacionAdminSocio);
+		panelAppButtons.add(btnReservaInstalacionAdminSocio);
 		
 		// Botón Visualizar Reservas Instalaciones (Admin)
 		btnVisualizarReservasInstalacionesAdmin = new JButton("Visualizar Reservas de Instalaciones");
 		btnVisualizarReservasInstalacionesAdmin.setPreferredSize(appBtnSize);
-		panelButtons.add(btnVisualizarReservasInstalacionesAdmin);
+		panelAppButtons.add(btnVisualizarReservasInstalacionesAdmin);
 
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 		btnCrearBD = new JButton("Crear BD (schema)");
 		btnCrearBD.setPreferredSize(new Dimension(210, 45));
-		panelButtons.add(btnCrearBD);
+		panelAppButtons.add(btnCrearBD);
 
 		JLabel lblFooter = new JLabel("Grupo SisInfo", SwingConstants.CENTER);
 		lblFooter.setBorder(new EmptyBorder(0, 10, 10, 10));
@@ -119,11 +123,8 @@ public class MainView extends JFrame {
 	public JButton getBtnGestionActividades() { return btnGestionActividades; }
 	public JButton getBtnReservas() { return btnReservas; }
 	public JButton getBtnPeriodoInscripcion() { return btnPeriodoInscripcion; }
-	public JButton getBtnReservaInstalacionAdminSocio() { return btnReservaInstalacionAdminSocio; }
 
-	public JButton getBtnReservas() {
-		return btnReservas;
-	}
+
 	
 	public JButton getBtnReservaInstalacionAdminSocio() {
 	    return btnReservaInstalacionAdminSocio;

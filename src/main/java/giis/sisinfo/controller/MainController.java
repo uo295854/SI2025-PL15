@@ -55,6 +55,7 @@ public class MainController {
     	VisualizarReservasInstalacionesAdminView v = new VisualizarReservasInstalacionesAdminView();
     	VisualizarReservasInstalacionesAdminModel m = new VisualizarReservasInstalacionesAdminModel();
     	new VisualizarReservasInstalacionesAdminController(m, v);
+    }
     
     private void abrirPeriodoInscripcion() {
         try {
