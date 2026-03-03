@@ -83,7 +83,7 @@ public class MainView extends JFrame {
 			}
 		});
 
-		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones (Admin)");
+		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones para una Actividad");
 		btnReservaInstalacionAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionAdmin);
 
