@@ -88,7 +88,7 @@ public class MainView extends JFrame {
 		panelAppButtons.add(btnReservaInstalacionAdmin);
 
 
-		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios (Admin)");
+		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios");
 		btnReservaInstalacionAdminSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionAdminSocio);
 		

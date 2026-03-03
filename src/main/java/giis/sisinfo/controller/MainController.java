@@ -94,6 +94,9 @@ public class MainController {
         
         // Reserva instalaciones para socios (admin)
         view.getBtnReservaInstalacionAdminSocio().setEnabled(isAdmin);
+        
+        // Visualizar reservas de instalaciones (admin)
+        view.getBtnVisualizarReservasInstalaciones().setEnabled(isAdmin);
 
         // Reservas / Inscripciones: normalmente accesible para todos (o al menos socios)
         // Si quieres solo SOCIO:
