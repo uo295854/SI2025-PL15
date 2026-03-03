@@ -98,6 +98,12 @@ public class MainController {
         // Visualizar reservas de instalaciones (admin)
         view.getBtnVisualizarReservasInstalaciones().setEnabled(isAdmin);
 
+        // Obtener la lista de actividades ofertadas en un determinado periodo
+        view.getBtnActividadesOfertadas().setEnabled(isAdmin);
+        
+        // Reservar una instalacion para una actividad en un periodo determinado
+        view.getBtnReservaInstalacionAdmin().setEnabled(isAdmin);
+        
         // Reservas / Inscripciones: normalmente accesible para todos (o al menos socios)
         // Si quieres solo SOCIO:
         // view.getBtnReservas().setEnabled(s.isSocio());

@@ -203,7 +203,7 @@ public class ReservaInstalacionAdminSocioModel {
 		return ((Number) filas.get(0)[0]).doubleValue();
 	}
 
-	public void crearReserva(int idInstalacion, int idSocio, LocalDate fecha, LocalTime horaInicio) {
+	public void crearReserva(int idInstalacion, int idSocio, LocalDate fecha, List<LocalTime> horasInicio) {
 
 		if (!puedeSocioReservar(idSocio))
 			throw new IllegalStateException("Socio no autorizado para reservar.");
@@ -212,7 +212,7 @@ public class ReservaInstalacionAdminSocioModel {
 		if (fecha.isAfter(hoy.plusDays(15)))
 			throw new IllegalStateException("No se puede reservar con más de 15 días de antelación.");
 
-		LocalDateTime inicio = LocalDateTime.of(fecha, horaInicio);
+		LocalDateTime inicio = LocalDateTime.of(fecha, horasInicio);
 		LocalDateTime fin = inicio.plusMinutes(duracion);
 
 		if (!estaLibre(idInstalacion, inicio, fin))
