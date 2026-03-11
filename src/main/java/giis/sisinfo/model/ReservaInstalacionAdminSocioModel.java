@@ -212,17 +212,61 @@ public class ReservaInstalacionAdminSocioModel {
 		if (fecha.isAfter(hoy.plusDays(15)))
 			throw new IllegalStateException("No se puede reservar con más de 15 días de antelación.");
 
-		LocalDateTime inicio = LocalDateTime.of(fecha, horasInicio);
-		LocalDateTime fin = inicio.plusMinutes(duracion);
+		List<LocalTime> horas = new ArrayList<>();
+		for (LocalTime h : horasInicio) {
+			if (h != null && !horas.contains(h)) {
+				horas.add(h);
+			}
+		}
 
-		if (!estaLibre(idInstalacion, inicio, fin))
-			throw new IllegalStateException("La franja horaria ya no está disponible.");
+		horas.sort(null);
+		
+		for(LocalTime h: horas) {
+			if(h.isBefore(hora_apertura) || !h.plusMinutes(duracion).isAfter(hora_apertura) || h.plusMinutes(duracion).isAfter(hora_cierre)) {
+				throw new IllegalStateException("Alguna de las horas seleccionadas está fuera del horario permitido ");
+			}
+			LocalDateTime inicio = LocalDateTime.of(fecha, h);
+			LocalDateTime fin = inicio.plusMinutes(duracion);
+			
+			if (!estaLibre(idInstalacion, inicio, fin))
+				throw new IllegalStateException("La franja horaria ya no está disponible.");
+		}
+		
+		validarSocioSinSolapamientosConsigoMismo(idSocio,fecha,horas);
+		validarMaximoDosHorasSeguidas(idSocio,idInstalacion,fecha,horas);
+		validarMaximoTresHorasDia(idSocio,fecha,horas);
+		validarMaximoHoras15Dias(idSocio,horas);
 
 		String sql = "INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) "
 				+ "VALUES (?,?,?,?)";
 
-		db.executeUpdate(sql, idInstalacion, idSocio, inicio.format(FMT), fin.format(FMT));
+		for(LocalTime h: horas) {
+			
+			LocalDateTime inicio = LocalDateTime.of(fecha, h);
+			LocalDateTime fin = inicio.plusMinutes(duracion);
+			db.executeUpdate(sql, idInstalacion, idSocio, inicio.format(FMT), fin.format(FMT));
 
+		}
+	}
+
+	private void validarMaximoHoras15Dias(int idSocio, List<LocalTime> horas) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void validarMaximoTresHorasDia(int idSocio, LocalDate fecha, List<LocalTime> horas) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void validarMaximoDosHorasSeguidas(int idSocio, int idInstalacion, LocalDate fecha, List<LocalTime> horas) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void validarSocioSinSolapamientosConsigoMismo(int idSocio, LocalDate fecha, List<LocalTime> horas) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public boolean estaLibre(int idInstalacion, LocalDateTime inicio, LocalDateTime fin) {
@@ -262,4 +306,6 @@ public class ReservaInstalacionAdminSocioModel {
 			s = s + ":00";
 		return LocalDateTime.parse(s.replace(' ', 'T'));
 	}
+	
+	
 }
