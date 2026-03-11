@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import giis.sisinfo.model.PlanificarActividadesModel;
 import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.util.Database;
+import giis.sisinfo.view.ConsultarReservasSocioView;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
@@ -12,6 +13,7 @@ import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 import giis.sisinfo.view.ReservaInstalacionAdminView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
+import giis.sisinfo.model.ConsultarReservasSocioModel;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
 import giis.sisinfo.session.Session;
@@ -34,6 +36,7 @@ public class MainController {
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
         view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
         view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
+        view.getBtnConsultarReservasSocioView().addActionListener(e->abrirConsultasReservasSocio());
     }
 
     private void abrirGestionActividades() {
@@ -81,6 +84,12 @@ public class MainController {
         }
     }
     
+    private void abrirConsultasReservasSocio() {
+    	ConsultarReservasSocioView v = new ConsultarReservasSocioView();
+    	ConsultarReservasSocioModel m = new ConsultarReservasSocioModel();
+    	new ConsultarReservasSocioController(m,v);
+    }
+    
     private void aplicarPermisosPorRol() {
         Session s = Session.get();
 
@@ -107,5 +116,6 @@ public class MainController {
         // Reservas / Inscripciones: normalmente accesible para todos (o al menos socios)
         // Si quieres solo SOCIO:
         // view.getBtnReservas().setEnabled(s.isSocio());
+        
     }
 }

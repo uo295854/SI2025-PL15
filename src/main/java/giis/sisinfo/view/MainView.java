@@ -28,6 +28,7 @@ public class MainView extends JFrame {
 	private JButton btnReservaInstalacionAdmin;
 	private JButton btnReservaInstalacionAdminSocio;
 	private JButton btnVisualizarReservasInstalacionesAdmin;
+	private JButton btnConsultarReservasSocioView;
 	
 
 
@@ -96,6 +97,11 @@ public class MainView extends JFrame {
 		btnVisualizarReservasInstalacionesAdmin = new JButton("Visualizar Reservas de Instalaciones");
 		btnVisualizarReservasInstalacionesAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnVisualizarReservasInstalacionesAdmin);
+		
+		// Botón Consultar Reservas de instalaciones (Socio)
+		btnConsultarReservasSocioView = new JButton("Consultar Reservas (Socio)");
+		btnConsultarReservasSocioView.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnConsultarReservasSocioView);
 
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
@@ -118,6 +124,9 @@ public class MainView extends JFrame {
 		return btnVisualizarReservasInstalacionesAdmin;
 	}
 
+	public JButton getBtnConsultarReservasSocioView() {
+		return btnConsultarReservasSocioView;
+	}
 
 	// opcionales
 	public JButton getBtnActividadesOfertadas() { return btnActividadesOfertadas; }
