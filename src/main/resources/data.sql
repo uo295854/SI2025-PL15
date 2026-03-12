@@ -4,11 +4,13 @@ DELETE FROM Reserva_Instalacion;
 DELETE FROM Bloqueo_por_Actividad;
 DELETE FROM Actividad;
 DELETE FROM Usuario;
+DELETE FROM Admin;
 DELETE FROM NoSocio;
 DELETE FROM Socio;
 DELETE FROM PeriodoInscripcion;
 DELETE FROM PeriodoOficial;
 DELETE FROM Instalacion;
+
 INSERT OR IGNORE INTO Instalacion (nombre_instalacion, tipo_deporte, tipo_instalacion, aforo_max, coste) VALUES
   ('Pista Pádel 1', 'padel', 'CANCHA', 4, 8.0),
   ('Pista Tenis 1', 'tenis', 'CANCHA', 4, 10.0),
@@ -22,10 +24,10 @@ INSERT OR IGNORE INTO PeriodoOficial (nombre, fecha_ini, fecha_fin) VALUES
 INSERT OR IGNORE INTO PeriodoInscripcion (nombre, descripcion, fecha_inicio_socio, fecha_fin_socio, fecha_fin_nosocio) VALUES
   ('Inscripción Septiembre', 'Socios primero, luego no socios', '2025-09-01', '2025-09-05', '2025-09-10');
 
-INSERT OR IGNORE INTO Socio (num_socio, nombre,apellidos, dni, email,telefono,estado, al_corriente_pago) VALUES
-  (1001, 'Juan','Perez', '11111111A','juanp@gmail.com','985342403', 'ACTIVO', 1),
-  (1002, 'María','Fernandez', '22222222B','maria@gmail.com','970345612',  'ACTIVO', 1),
-  (1003, 'Pedro','Mora',  '33333333C', 'pedr@gmail.com','980123456', 'ACTIVO', 0);
+INSERT OR IGNORE INTO Socio (num_socio, nombre, apellidos, dni, email, telefono, estado, al_corriente_pago) VALUES
+  (1001, 'Juan', 'Perez', '11111111A', 'juanp@gmail.com', '985342403', 'ACTIVO', 1),
+  (1002, 'María', 'Fernandez', '22222222B', 'maria@gmail.com', '970345612', 'ACTIVO', 1),
+  (1003, 'Pedro', 'Mora', '33333333C', 'pedr@gmail.com', '980123456', 'ACTIVO', 0);
 
 INSERT OR IGNORE INTO NoSocio (nombre, dni) VALUES
   ('Carlos García', '44444444D');
@@ -50,6 +52,7 @@ INSERT OR IGNORE INTO Usuario (email, username, password, rol, id_admin, id_soci
    NULL,
    (SELECT id_nosocio FROM NoSocio WHERE dni='44444444D'));
 
+-- ACTIVIDAD SIN INCIDENCIAS
 INSERT OR IGNORE INTO Actividad (
   id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
   nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
@@ -62,6 +65,11 @@ INSERT OR IGNORE INTO Actividad (
   'Charla abierta con inscripción previa', 0, 5
 );
 
+INSERT OR IGNORE INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Conferencia Nutrición Deportiva'),
+   '2025-09-20 10:00', '2025-09-20 11:30');
+
+-- ACTIVIDAD QUE PISA UNA RESERVA DE SOCIO
 INSERT OR IGNORE INTO Actividad (
   id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
   nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
@@ -82,12 +90,47 @@ INSERT OR IGNORE INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetim
   ((SELECT id_actividad FROM Actividad WHERE nombre='Clases Pádel Iniciación'),
    '2025-09-16 18:00', '2025-09-16 19:00');
 
+-- RESERVA DE SOCIO QUE SÍ SOLAPA CON LA ACTIVIDAD DE PÁDEL
 INSERT OR IGNORE INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) VALUES
   ((SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Pádel 1'),
    (SELECT id_socio FROM Socio WHERE dni='11111111A'),
-   '2025-09-15 17:00', '2025-09-15 18:00');
+   '2025-09-15 18:30', '2025-09-15 19:30');
 
+-- OTRA RESERVA NORMAL SIN RELACIÓN
 INSERT OR IGNORE INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) VALUES
   ((SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis 1'),
    (SELECT id_socio FROM Socio WHERE dni='22222222B'),
    '2025-09-16 10:00', '2025-09-16 11:00');
+
+-- DOS ACTIVIDADES EN CONFLICTO ENTRE SÍ
+INSERT OR IGNORE INTO Actividad (
+  id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
+  nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
+  cuota_socio, cuota_nosocio
+) VALUES (
+  (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='SEPTIEMBRE'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Septiembre'),
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis 1'),
+  'Torneo Tenis', 'CAMPEONATO', 8, 1, 120, '2025-09-18', '2025-09-18',
+  'Torneo interno del club', 0, 0
+);
+
+INSERT OR IGNORE INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Torneo Tenis'),
+   '2025-09-18 17:00', '2025-09-18 19:00');
+
+INSERT OR IGNORE INTO Actividad (
+  id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
+  nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
+  cuota_socio, cuota_nosocio
+) VALUES (
+  (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='SEPTIEMBRE'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Septiembre'),
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis 1'),
+  'Clases Tenis Avanzado', 'CLASE', 10, 1, 60, '2025-09-18', '2025-09-18',
+  'Clase avanzada de tenis', 15, 25
+);
+
+INSERT OR IGNORE INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Clases Tenis Avanzado'),
+   '2025-09-18 18:00', '2025-09-18 19:30');
