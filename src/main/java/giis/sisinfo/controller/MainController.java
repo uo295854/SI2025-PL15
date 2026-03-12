@@ -15,6 +15,8 @@ import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
 import giis.sisinfo.session.Session;
+import giis.sisinfo.view.ReservaInstalacionesView;
+import giis.sisinfo.model.ReservaInstalacionesModel;
 
 public class MainController {
 
@@ -34,6 +36,7 @@ public class MainController {
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
         view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
         view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
+        view.getBtnReservaInstalacionesAuto().addActionListener(e -> abrirReservaInstalacionesAuto());
     }
 
     private void abrirGestionActividades() {
@@ -81,6 +84,16 @@ public class MainController {
         }
     }
     
+    
+    private void abrirReservaInstalacionesAuto() {
+    	ReservaInstalacionesView v = new ReservaInstalacionesView();
+    	ReservaInstalacionesModel model = new ReservaInstalacionesModel();
+        new ReservaInstalacionesController(v, model);
+        v.setVisible(true);
+    }
+    
+    
+    // Método para habilitar/deshabilitar botones según el rol del usuario
     private void aplicarPermisosPorRol() {
         Session s = Session.get();
 
