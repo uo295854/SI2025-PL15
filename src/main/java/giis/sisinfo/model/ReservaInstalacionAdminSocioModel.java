@@ -235,7 +235,7 @@ public class ReservaInstalacionAdminSocioModel {
 		validarSocioSinSolapamientosConsigoMismo(idSocio,fecha,horas);
 		validarMaximoDosHorasSeguidas(idSocio,idInstalacion,fecha,horas);
 		validarMaximoTresHorasDia(idSocio,fecha,horas);
-		validarMaximoHoras15Dias(idSocio,horas);
+		validarMaximoReservas15Dias(idSocio,horas);
 
 		String sql = "INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) "
 				+ "VALUES (?,?,?,?)";
@@ -249,13 +249,38 @@ public class ReservaInstalacionAdminSocioModel {
 		}
 	}
 
-	private void validarMaximoHoras15Dias(int idSocio, List<LocalTime> horas) {
-		// TODO Auto-generated method stub
+	private void validarMaximoReservas15Dias(int idSocio, List<LocalTime> horas) {
+		LocalDate hoy = LocalDate.now();
+		LocalDate finPeriodo = hoy.plusDays(15);
 		
+		String sql = "*SELECT COUNT(*) FROM Reserva_Instalacion "
+				+ "WHERE id_socio=? "
+				+ "AND date(datetime_ini) >= ? "
+				+ "AND date(datetime_ini) <= ?";
+		
+		long reservadas = ((Number) db.executeQueryArray(
+				sql, idSocio, hoy.toString(), finPeriodo.toString()).get(0)[0]).longValue();
+		
+		long total = reservadas + horas.size();
+		
+		if(total>8) {
+			throw new IllegalStateException("No puedes reservar más de 8 reservas cada 15 días ");
+		}
 	}
 
 	private void validarMaximoTresHorasDia(int idSocio, LocalDate fecha, List<LocalTime> horas) {
-		// TODO Auto-generated method stub
+		
+		String sql = "SELECT COUNT(*) FROM Reserva_Instalacion "
+				+ "WHERE id_socio=? AND date(datetime_ini)=?";
+		
+		long reservadas = ((Number) db.executeQueryArray(
+				sql, idSocio, fecha.toString()).get(0)[0]).longValue();
+		
+		long total = reservadas + horas.size();
+		
+		if(total>3) {
+			throw new IllegalStateException("No puedes reservar más de 3 horas al día ");
+		}
 		
 	}
 
