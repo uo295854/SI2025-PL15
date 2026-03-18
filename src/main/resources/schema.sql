@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS Socio;
 DROP TABLE IF EXISTS PeriodoInscripcion;
 DROP TABLE IF EXISTS PeriodoOficial;
 DROP TABLE IF EXISTS Instalacion;
+DROP TABLE IF EXISTS Pago;
 
 CREATE TABLE IF NOT EXISTS Socio (
   id_socio INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -126,6 +127,30 @@ CREATE TABLE IF NOT EXISTS Bloqueo_por_Actividad (
   FOREIGN KEY (id_actividad) REFERENCES Actividad(id_actividad)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS Pago (
+  id_pago INTEGER PRIMARY KEY AUTOINCREMENT,
+  id_socio INTEGER NOT NULL,
+  id_actividad INTEGER,
+  id_reservains INTEGER,
+  importe REAL NOT NULL CHECK (importe >= 0),
+  concepto TEXT NOT NULL CHECK (concepto IN ('INSCRIPCION','RESERVA','DEVOLUCION')),
+  fecha TEXT NOT NULL,
+  estado TEXT NOT NULL DEFAULT 'PENDIENTE'
+    CHECK (estado IN ('PENDIENTE','PAGADO','CANCELADO')),
+  FOREIGN KEY (id_socio)
+    REFERENCES Socio(id_socio)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (id_actividad)
+    REFERENCES Actividad(id_actividad)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (id_reservains)
+    REFERENCES Reserva_Instalacion(id_reservains)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_pago_socio
+  ON Pago(id_socio);
 
 CREATE INDEX IF NOT EXISTS idx_reserva_instalacion_rango
   ON Reserva_Instalacion(id_instalacion, datetime_ini, datetime_fin);

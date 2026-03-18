@@ -134,3 +134,13 @@ INSERT OR IGNORE INTO Actividad (
 INSERT OR IGNORE INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
   ((SELECT id_actividad FROM Actividad WHERE nombre='Clases Tenis Avanzado'),
    '2025-09-18 18:00', '2025-09-18 19:30');
+   
+INSERT INTO Pago (id_socio, id_reservains, importe, concepto, fecha, estado)
+VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_reservains FROM Reserva_Instalacion LIMIT 1),
+  8.0,
+  'RESERVA',
+  '2025-09-10 18:00',
+  'PAGADO'
+);
