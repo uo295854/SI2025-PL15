@@ -143,11 +143,6 @@ public class ReservaInstalacionAdminSocioModel {
 
 	public List<HoraReservaSocioDTO> getHorasDia(int idInstalacion, LocalDate fecha) {
 
-		// rango del día seleccionado
-		LocalDateTime iniDia = LocalDateTime.of(fecha, LocalTime.MIN);
-		LocalDateTime finDia = iniDia.plusDays(1);
-
-
 
 		String sqlReservas = "SELECT datetime_ini, datetime_fin " + "FROM Reserva_Instalacion "
 				+ "WHERE id_instalacion=? " + "AND date(datetime_ini)=?";
@@ -203,7 +198,7 @@ public class ReservaInstalacionAdminSocioModel {
 		return ((Number) filas.get(0)[0]).doubleValue();
 	}
 
-	public void crearReserva(int idInstalacion, int idSocio, LocalDate fecha, LocalTime horaInicio) {
+	public void crearReserva(int idInstalacion, int idSocio, LocalDate fecha, List<LocalTime> horasInicio) {
 
 		if (!puedeSocioReservar(idSocio))
 			throw new IllegalStateException("Socio no autorizado para reservar.");
@@ -211,18 +206,139 @@ public class ReservaInstalacionAdminSocioModel {
 		LocalDate hoy = LocalDate.now();
 		if (fecha.isAfter(hoy.plusDays(15)))
 			throw new IllegalStateException("No se puede reservar con más de 15 días de antelación.");
+		
 
-		LocalDateTime inicio = LocalDateTime.of(fecha, horaInicio);
-		LocalDateTime fin = inicio.plusMinutes(duracion);
+		List<LocalTime> horas = new ArrayList<>();
+		for (LocalTime h : horasInicio) {
+			if (h != null && !horas.contains(h)) {
+				horas.add(h);
+			}
+		}
+		
+		if (horas.isEmpty()) {
+			throw new IllegalStateException("Debes seleccionar al menos una hora válida.");
+		}
 
-		if (!estaLibre(idInstalacion, inicio, fin))
-			throw new IllegalStateException("La franja horaria ya no está disponible.");
+		horas.sort(null);
+		
+		for(LocalTime h: horas) {
+			if(h.isBefore(hora_apertura) || h.plusMinutes(duracion).isAfter(hora_cierre)) {
+				throw new IllegalStateException("Alguna de las horas seleccionadas está fuera del horario permitido ");
+			}
+			LocalDateTime inicio = LocalDateTime.of(fecha, h);
+			LocalDateTime fin = inicio.plusMinutes(duracion);
+			
+			if (!estaLibre(idInstalacion, inicio, fin))
+				throw new IllegalStateException("La franja horaria ya no está disponible.");
+		}
+		
+		validarSocioSinSolapamientosConsigoMismo(idSocio,fecha,horas);
+		validarMaximoDosHorasSeguidas(idSocio,idInstalacion,fecha,horas);
+		validarMaximoTresHorasDia(idSocio,fecha,horas);
+		validarMaximoReservas15Dias(idSocio,fecha,horas);
 
 		String sql = "INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) "
 				+ "VALUES (?,?,?,?)";
 
-		db.executeUpdate(sql, idInstalacion, idSocio, inicio.format(FMT), fin.format(FMT));
+		for(LocalTime h: horas) {
+			
+			LocalDateTime inicio = LocalDateTime.of(fecha, h);
+			LocalDateTime fin = inicio.plusMinutes(duracion);
+			db.executeUpdate(sql, idInstalacion, idSocio, inicio.format(FMT), fin.format(FMT));
 
+		}
+	}
+
+	private void validarMaximoReservas15Dias(int idSocio, LocalDate fecha, List<LocalTime> horas) {
+		LocalDate hoy = fecha.minusDays(14);
+		LocalDate finPeriodo = fecha;
+		
+		String sql = "SELECT COUNT(*) FROM Reserva_Instalacion "
+				+ "WHERE id_socio=? "
+				+ "AND date(datetime_ini) >= ? "
+				+ "AND date(datetime_ini) <= ?";
+		
+		long reservadas = ((Number) db.executeQueryArray(
+				sql, idSocio, hoy.toString(), finPeriodo.toString()).get(0)[0]).longValue();
+		
+		long total = reservadas + horas.size();
+		
+		if(total>8) {
+			throw new IllegalStateException("No puedes realizar más de 8 reservas cada 15 días ");
+		}
+	}
+
+	private void validarMaximoTresHorasDia(int idSocio, LocalDate fecha, List<LocalTime> horas) {
+		
+		String sql = "SELECT COUNT(*) FROM Reserva_Instalacion "
+				+ "WHERE id_socio=? AND date(datetime_ini)=?";
+		
+		long reservadas = ((Number) db.executeQueryArray(
+				sql, idSocio, fecha.toString()).get(0)[0]).longValue();
+		
+		long total = reservadas + horas.size();
+		
+		if(total>3) {
+			throw new IllegalStateException("No puedes reservar más de 3 horas al día ");
+		}
+		
+	}
+
+	private void validarMaximoDosHorasSeguidas(int idSocio, int idInstalacion, LocalDate fecha, List<LocalTime> horas) {
+
+		String sql= "SELECT datetime_ini FROM Reserva_Instalacion "
+		+ "WHERE id_socio=? AND id_instalacion=? AND date(datetime_ini)=?";
+		
+		List<Object[]> filas = db.executeQueryArray(sql, idSocio, idInstalacion, fecha.toString());
+		
+		List<LocalTime> todashoras = new ArrayList<>();
+		
+		for (Object[] f : filas) {
+			todashoras.add(toLdt(f[0]).toLocalTime());
+		}
+		
+		for (LocalTime h : horas) {
+			if (!todashoras.contains(h)) {
+				todashoras.add(h);
+			}
+		}
+		
+		todashoras.sort(null);
+
+		int consecutivas = 1;
+
+		for (int i = 1; i < todashoras.size(); i++) {
+			if (todashoras.get(i - 1).plusMinutes(duracion).equals(todashoras.get(i))) {
+				consecutivas++;
+				if (consecutivas > 2) {
+					throw new IllegalStateException(
+						"Un socio no puede reservar más de 2 horas seguidas en la misma instalación"
+					);
+				}
+			} else {
+				consecutivas = 1;
+			}
+		}
+
+		
+	}
+
+	private void validarSocioSinSolapamientosConsigoMismo(int idSocio, LocalDate fecha, List<LocalTime> horas) {
+
+		String sql = "SELECT COUNT(*) FROM Reserva_Instalacion "
+				+ "WHERE id_socio=? AND datetime_ini < ? AND datetime_fin > ?";
+		
+		for (LocalTime h : horas) {
+			LocalDateTime ini = LocalDateTime.of(fecha, h);
+			LocalDateTime fin = ini.plusMinutes(duracion);
+
+			long c = ((Number) db.executeQueryArray(sql, idSocio, fin.format(FMT), ini.format(FMT)).get(0)[0]).longValue();
+
+			if (c > 0) {
+				throw new IllegalStateException("El socio ya tiene otra reserva en alguna de las horas seleccionadas.");
+			}
+		}
+		
 	}
 
 	public boolean estaLibre(int idInstalacion, LocalDateTime inicio, LocalDateTime fin) {
@@ -262,4 +378,6 @@ public class ReservaInstalacionAdminSocioModel {
 			s = s + ":00";
 		return LocalDateTime.parse(s.replace(' ', 'T'));
 	}
+	
+	
 }
