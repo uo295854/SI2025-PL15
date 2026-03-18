@@ -340,6 +340,7 @@ public class ReservaInstalacionAdminSocioController {
 	}
 	
 	private void onReservar() {
+		
 		if(socioSeleccionado == null) {
 			JOptionPane.showMessageDialog(view, "Tienes que seleccionar un socio");
 			return;
@@ -361,7 +362,8 @@ public class ReservaInstalacionAdminSocioController {
 		}
 		
 		try {
-			model.crearReserva(idInstalacionSeleccionada, socioSeleccionado.getIdSocio(), diaSeleccionado, horasSeleccionadas);
+			String estadoPago = view.getEstadoPagoSeleccionado();
+			model.crearReserva(idInstalacionSeleccionada, socioSeleccionado.getIdSocio(), diaSeleccionado, horasSeleccionadas, estadoPago);
 			JOptionPane.showMessageDialog(view, "Reserva realizada.");
 			view.dispose();
 		}catch(Exception e) {
