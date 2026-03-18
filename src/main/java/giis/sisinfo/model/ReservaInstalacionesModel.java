@@ -2,6 +2,8 @@ package giis.sisinfo.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import giis.sisinfo.util.Database;
 
@@ -83,6 +85,7 @@ public class ReservaInstalacionesModel {
 		List<ReservaSolapada> reservasSolapadas = getReservasSolapadas(actividad.idActividad);
 
 		for (ReservaSolapada reserva : reservasSolapadas) {
+			gestionarPagoPorReservaCancelada(reserva.idReserva, reserva.idSocio, actividad.idActividad);
 			eliminarReservaSocio(reserva.idReserva);
 
 			incidencias.add(new Object[] {
@@ -169,6 +172,7 @@ public class ReservaInstalacionesModel {
 		String sql =
 			"SELECT DISTINCT " +
 			"  r.id_reservains, " +
+			"  r.id_socio, " +
 			"  s.nombre || ' ' || s.apellidos AS socio, " +
 			"  i.nombre_instalacion, " +
 			"  substr(r.datetime_ini, 1, 10) AS fecha, " +
@@ -189,10 +193,11 @@ public class ReservaInstalacionesModel {
 		for (Object[] row : rows) {
 			reservas.add(new ReservaSolapada(
 				toInt(row[0]),
-				(String) row[1],
+				toInt(row[1]),
 				(String) row[2],
 				(String) row[3],
-				(String) row[4]
+				(String) row[4],
+				(String) row[5]
 			));
 		}
 
@@ -254,17 +259,88 @@ public class ReservaInstalacionesModel {
 
 	private static class ReservaSolapada {
 		private final int idReserva;
+		private final int idSocio;
 		private final String socio;
 		private final String instalacion;
 		private final String fecha;
 		private final String horas;
 
-		public ReservaSolapada(int idReserva, String socio, String instalacion, String fecha, String horas) {
+		public ReservaSolapada(int idReserva, int idSocio, String socio, String instalacion, String fecha, String horas) {
 			this.idReserva = idReserva;
+			this.idSocio = idSocio;
 			this.socio = socio;
 			this.instalacion = instalacion;
 			this.fecha = fecha;
 			this.horas = horas;
 		}
+	}
+	
+	private void gestionarPagoPorReservaCancelada(int idReserva, int idSocio, int idActividad) {
+		Object[] pago = getPagoReserva(idReserva);
+
+		if (pago == null) {
+			return;
+		}
+
+		int idPago = toInt(pago[0]);
+		double importe = toDouble(pago[1]);
+		String estado = (String) pago[2];
+
+		if ("PENDIENTE".equalsIgnoreCase(estado)) {
+			cancelarPagoPendiente(idPago);
+		} else if ("PAGADO".equalsIgnoreCase(estado)) {
+			crearPagoDevolucion(idSocio, idActividad, importe);
+		}
+	}
+
+	private Object[] getPagoReserva(int idReserva) {
+		String sql =
+			"SELECT id_pago, importe, estado " +
+			"FROM Pago " +
+			"WHERE id_reservains = ? " +
+			"  AND concepto = 'RESERVA' " +
+			"ORDER BY id_pago DESC";
+
+		List<Object[]> rows = db.executeQueryArray(sql, idReserva);
+
+		if (rows.isEmpty()) {
+			return null;
+		}
+		return rows.get(0);
+	}
+
+	private void cancelarPagoPendiente(int idPago) {
+		String sql =
+			"UPDATE Pago " +
+			"SET estado = 'CANCELADO' " +
+			"WHERE id_pago = ?";
+
+		db.executeUpdate(sql, idPago);
+	}
+
+	private void crearPagoDevolucion(int idSocio, int idActividad, double importe) {
+		String sql =
+			"INSERT INTO Pago (id_socio, id_actividad, id_reservains, importe, concepto, fecha, estado) " +
+			"VALUES (?, ?, NULL, ?, 'DEVOLUCION', ?, 'PENDIENTE')";
+
+		db.executeUpdate(sql, idSocio, idActividad, importe, nowAsText());
+	}
+
+	private String nowAsText() {
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		return LocalDateTime.now().format(fmt);
+	}
+
+	private double toDouble(Object value) {
+		if (value instanceof Double) {
+			return (Double) value;
+		}
+		if (value instanceof Integer) {
+			return ((Integer) value).doubleValue();
+		}
+		if (value instanceof Long) {
+			return ((Long) value).doubleValue();
+		}
+		return Double.parseDouble(value.toString());
 	}
 }
