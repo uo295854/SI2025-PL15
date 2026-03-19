@@ -198,8 +198,12 @@ public class ReservaInstalacionAdminSocioModel {
 		return ((Number) filas.get(0)[0]).doubleValue();
 	}
 
-	public void crearReserva(int idInstalacion, int idSocio, LocalDate fecha, List<LocalTime> horasInicio) {
+	public void crearReserva(int idInstalacion, int idSocio, LocalDate fecha, List<LocalTime> horasInicio, String estadoPago) {
 
+		if (!"PAGADO".equals(estadoPago) && !"PENDIENTE".equals(estadoPago)) {
+		    throw new IllegalStateException("Estado de pago no válido.");
+		}
+		
 		if (!puedeSocioReservar(idSocio))
 			throw new IllegalStateException("Socio no autorizado para reservar.");
 
@@ -239,12 +243,21 @@ public class ReservaInstalacionAdminSocioModel {
 
 		String sql = "INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin) "
 				+ "VALUES (?,?,?,?)";
+		
+		double coste = getCosteInstalacion(idInstalacion);
 
 		for(LocalTime h: horas) {
 			
 			LocalDateTime inicio = LocalDateTime.of(fecha, h);
 			LocalDateTime fin = inicio.plusMinutes(duracion);
 			db.executeUpdate(sql, idInstalacion, idSocio, inicio.format(FMT), fin.format(FMT));
+			
+			Integer idReservaIns = getIdReservaCreada(idInstalacion, idSocio, inicio, fin);
+			if (idReservaIns == null) {
+				throw new IllegalStateException("La reserva se creó, pero no se pudo generar el pago asociado.");
+			}
+
+			crearPagoReserva(idSocio, idReservaIns, coste, estadoPago);
 
 		}
 	}
@@ -379,5 +392,26 @@ public class ReservaInstalacionAdminSocioModel {
 		return LocalDateTime.parse(s.replace(' ', 'T'));
 	}
 	
+	private Integer getIdReservaCreada(int idInstalacion, int idSocio, LocalDateTime inicio, LocalDateTime fin) {
+		
+		String sql = "SELECT id_reservains FROM Reserva_Instalacion "
+				+ "WHERE id_instalacion=? AND id_socio=? AND datetime_ini=? AND datetime_fin=?";
+		
+		List<Object[]> filas = db.executeQueryArray(sql, idInstalacion, idSocio, inicio.format(FMT),fin.format(FMT));
+		
+		if(filas.isEmpty()) {
+			return null;
+		}
+		
+		return ((Number) filas.get(0)[0]).intValue();
+		
+	}
+	
+	private void crearPagoReserva(int idSocio, int idReservaIns, double importe, String estadoPago) {
+		String sql = "INSERT INTO Pago (id_socio, id_reservains, importe, concepto, fecha, estado) "
+				+ "VALUES (?,?,?,?,?,?)";
+		
+		db.executeUpdate(sql, idSocio, idReservaIns, importe, "RESERVA", LocalDate.now().toString(), estadoPago);
+	}
 	
 }

@@ -14,8 +14,10 @@ import javax.swing.table.DefaultTableModel;
 
 import giis.sisinfo.dto.DiaReservaSocioDTO;
 import giis.sisinfo.dto.HoraReservaSocioDTO;
+import giis.sisinfo.dto.ResguardoReservaAdminSocioDTO;
 import giis.sisinfo.dto.SocioDTO;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
+import giis.sisinfo.util.ResguardoReservaAdminSocioPdf;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 import java.util.ArrayList;
 
@@ -340,6 +342,7 @@ public class ReservaInstalacionAdminSocioController {
 	}
 	
 	private void onReservar() {
+		
 		if(socioSeleccionado == null) {
 			JOptionPane.showMessageDialog(view, "Tienes que seleccionar un socio");
 			return;
@@ -360,9 +363,33 @@ public class ReservaInstalacionAdminSocioController {
 			return;
 		}
 		
+		if (!view.hayFormaPagoSeleccionada()) {
+		    JOptionPane.showMessageDialog(view, "Debes seleccionar una forma de pago");
+		    return;
+		}
+		
 		try {
-			model.crearReserva(idInstalacionSeleccionada, socioSeleccionado.getIdSocio(), diaSeleccionado, horasSeleccionadas);
-			JOptionPane.showMessageDialog(view, "Reserva realizada.");
+			String estadoPago = view.getEstadoPagoSeleccionado();
+			model.crearReserva(idInstalacionSeleccionada, socioSeleccionado.getIdSocio(), diaSeleccionado, horasSeleccionadas, estadoPago);
+			
+			ResguardoReservaAdminSocioDTO resguardo = new ResguardoReservaAdminSocioDTO(
+					socioSeleccionado.getNombre() + " " + socioSeleccionado.getApellidos(),
+					socioSeleccionado.getNumSocio(),
+					socioSeleccionado.getTelefono(),
+					socioSeleccionado.getEmail(),
+					"Complejo Deportivo La Cruz",
+					"Calle Río Eo 12 4º I",
+					"Gijón",
+					"Asturias",
+					deporteSeleccionado,
+					instalacionSeleccionada,
+					diaSeleccionado,
+					horasSeleccionadas,
+					costeSeleccionado*horasSeleccionadas.size(),
+					estadoPago);
+			String rutadelpdf = new ResguardoReservaAdminSocioPdf().generar(resguardo);
+			
+			JOptionPane.showMessageDialog(view, "Reserva realizada.\nResguardo generado en:\n" + rutadelpdf);
 			view.dispose();
 		}catch(Exception e) {
 			JOptionPane.showMessageDialog(view, e.getMessage(), "No se pudo reservar", JOptionPane.ERROR_MESSAGE);
