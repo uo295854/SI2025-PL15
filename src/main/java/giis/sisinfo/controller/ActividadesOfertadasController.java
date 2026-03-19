@@ -53,7 +53,6 @@ public class ActividadesOfertadasController {
 	
 	public void initController() {
 		
-		
 		//cuando se hace click en una fila de la tabla, se copian los detalles de esa actividad
 		view.getTable().addMouseListener(new MouseAdapter() {
 			@Override

@@ -19,6 +19,7 @@ import giis.sisinfo.dto.InstalacionDTO;
 import giis.sisinfo.dto.ReservaAdminDTO;
 import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminView;
+import giis.sisinfo.util.DateConverter;
 
 public class ReservaInstalacionAdminController {
 
@@ -166,36 +167,26 @@ public class ReservaInstalacionAdminController {
 		
 		
 		//fecha inicial
-		if (view.getSelectorFechaInicial().getDate() == null) {
-			return;
-		}
-		fechaInicial = convertirFecha(view.getSelectorFechaInicial().getDate().toString());
+		if (view.getSelectorFechaInicial().getDate() == null) {return;}
+		fechaInicial = DateConverter.convertirFecha(view.getSelectorFechaInicial().getDate().toString());
 		
 		
 		//fecha final
-		if (view.getSelectorFechaFinal().getDate() == null) {
-			return;
-		}
-		fechaFinal = convertirFecha(view.getSelectorFechaFinal().getDate().toString());
+		if (view.getSelectorFechaFinal().getDate() == null) {return;}
+		fechaFinal = DateConverter.convertirFecha(view.getSelectorFechaFinal().getDate().toString());
 		
 		//hora inicial
-		if (view.getSelectorHoraInicial().getValue() == null) {
-			return;
-		}
-		horaInicial = convertirHora(view.getSelectorHoraInicial().getValue().toString());
+		if (view.getSelectorHoraInicial().getValue() == null) {return;}
+		horaInicial = DateConverter.convertirHora(view.getSelectorHoraInicial().getValue().toString());
 		
 		
 		//hora final
-		if (view.getSelectorHoraFinal().getValue() == null) {
-			return;
-		}
-		horaFinal = convertirHora(view.getSelectorHoraFinal().getValue().toString());
+		if (view.getSelectorHoraFinal().getValue() == null) {return;}
+		horaFinal = DateConverter.convertirHora(view.getSelectorHoraFinal().getValue().toString());
 		
 		
 		//instalación
-		if (view.getSelectorInstalaciones().getSelectedItem() == null) {
-			return;
-		}
+		if (view.getSelectorInstalaciones().getSelectedItem() == null) {return;}
 		instalacion = view.getSelectorInstalaciones().getSelectedItem().toString();
 
 		
@@ -282,10 +273,10 @@ public class ReservaInstalacionAdminController {
 	}
 	
 	public void reservarInstalacion() {
-		String fechaInicial = convertirFecha(view.getSelectorFechaInicial().getDate().toString());
-		String fechaFinal = convertirFecha(view.getSelectorFechaFinal().getDate().toString());
-		String horaInicial = convertirHora(view.getSelectorHoraInicial().getValue().toString());
-		String horaFinal = convertirHora(view.getSelectorHoraFinal().getValue().toString());
+		String fechaInicial = DateConverter.convertirFecha(view.getSelectorFechaInicial().getDate().toString());
+		String fechaFinal = DateConverter.convertirFecha(view.getSelectorFechaFinal().getDate().toString());
+		String horaInicial = DateConverter.convertirHora(view.getSelectorHoraInicial().getValue().toString());
+		String horaFinal = DateConverter.convertirHora(view.getSelectorHoraFinal().getValue().toString());
 		
 		String fechaHoraInicial = fechaInicial + " " + horaInicial;
 		String fechaHoraFinal = fechaFinal + " " + horaFinal;
@@ -299,37 +290,5 @@ public class ReservaInstalacionAdminController {
 		JOptionPane.showMessageDialog(null, "Reserva realizada con éxito");
 	}
 	
-	
-    public static String convertirFecha(String textoFecha) {
-        // Formato de la fecha inicial
-        DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern(
-            "EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH
-        );
 
-        // Parseamos el string a ZonedDateTime
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(textoFecha, formatterEntrada);
-
-        // Obtenemos solo la fecha
-        LocalDate fecha = zonedDateTime.toLocalDate();
-
-        // Formateamos a "yyyy-MM-dd"
-        DateTimeFormatter formatterSalida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return fecha.format(formatterSalida);
-    }
-    
-    public static String convertirHora(String textoHora) {
-    	// Formato de la fecha inicial
-        DateTimeFormatter formatterEntrada = DateTimeFormatter.ofPattern(
-            "EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH
-        );
-        
-        // Parseamos el string a ZonedDateTime
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(textoHora, formatterEntrada);
-        
-     // Obtenemos solo la fecha
-        LocalTime hora = zonedDateTime.toLocalTime();
-        
-        DateTimeFormatter formatterSalida = DateTimeFormatter.ofPattern("HH:mm");
-        return hora.format(formatterSalida);
-    }
 }

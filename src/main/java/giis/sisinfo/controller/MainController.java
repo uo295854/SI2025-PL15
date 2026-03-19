@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import giis.sisinfo.model.PlanificarActividadesModel;
 import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.util.Database;
+import giis.sisinfo.view.ConsultarReservasSocioView;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
@@ -12,6 +13,7 @@ import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 import giis.sisinfo.view.ReservaInstalacionAdminView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
+import giis.sisinfo.model.ConsultarReservasSocioModel;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
 import giis.sisinfo.session.Session;
@@ -37,9 +39,11 @@ public class MainController {
         view.getBtnPeriodoInscripcion().addActionListener(e -> abrirPeriodoInscripcion());
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
         view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
+        view.getBtnConsultarReservasSocioView().addActionListener(e->abrirConsultasReservasSocio());
         view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
         view.getBtnReservaInstalacionesAuto().addActionListener(e -> abrirReservaInstalacionesAuto());
         view.getBtnInscripcionActividad().addActionListener(e -> abrirInscripcionActividad());
+
     }
 
     private void abrirGestionActividades() {
@@ -87,6 +91,14 @@ public class MainController {
         }
     }
     
+
+    private void abrirConsultasReservasSocio() {
+    	ConsultarReservasSocioView v = new ConsultarReservasSocioView();
+    	ConsultarReservasSocioModel m = new ConsultarReservasSocioModel();
+    	new ConsultarReservasSocioController(m,v);
+    }
+    
+
     
     private void abrirReservaInstalacionesAuto() {
     	ReservaInstalacionesView v = new ReservaInstalacionesView();
@@ -134,5 +146,15 @@ public class MainController {
         // Reservas / Inscripciones: normalmente accesible para todos (o al menos socios)
         // Si quieres solo SOCIO:
         // view.getBtnReservas().setEnabled(s.isSocio());
+        
+        //Consultar Reservas hechas por Socios
+        view.getBtnConsultarReservasSocioView().setEnabled(s.isSocio());
+        /*
+        if(isAdmin) { //para depuración y testeo, se borrará mas adelante
+        	view.getBtnConsultarReservasSocioView().setEnabled(true);
+        	System.out.println("MainController | Se habilita botón de Consultar Reservas de Socio siendo el usuario Admin");
+        }
+        */
+        
     }
 }
