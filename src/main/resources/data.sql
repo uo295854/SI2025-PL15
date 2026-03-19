@@ -1,5 +1,7 @@
 PRAGMA foreign_keys = ON;
 
+DELETE FROM Pago;
+DELETE FROM Inscripcion_Actividad;
 DELETE FROM Reserva_Instalacion;
 DELETE FROM Bloqueo_por_Actividad;
 DELETE FROM Actividad;
@@ -143,4 +145,251 @@ VALUES (
   'RESERVA',
   '2025-09-10 18:00',
   'PAGADO'
+);
+
+-- =========================================================
+-- ACTIVIDAD A (la que vamos a "reservar automáticamente")
+-- =========================================================
+
+INSERT OR IGNORE INTO Actividad (
+  id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
+  nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
+  cuota_socio, cuota_nosocio
+) VALUES (
+  (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='SEPTIEMBRE'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Septiembre'),
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis 1'),
+  'Entrenamiento Tenis Avanzado', 'CLASE', 8, 3, 60, '2025-09-20', '2025-09-22',
+  'Entrenamiento intensivo', 15, 25
+);
+
+-- BLOQUES DE ESTA ACTIVIDAD
+-- 3 días → uno con conflicto, uno libre, uno con reserva de socio
+
+-- Día 1 → SIN conflicto
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin)
+VALUES (
+  (SELECT id_actividad FROM Actividad WHERE nombre='Entrenamiento Tenis Avanzado'),
+  '2025-09-20 18:00', '2025-09-20 19:00'
+);
+
+-- Día 2 → CONFLICTO con otra actividad
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin)
+VALUES (
+  (SELECT id_actividad FROM Actividad WHERE nombre='Entrenamiento Tenis Avanzado'),
+  '2025-09-21 18:00', '2025-09-21 19:00'
+);
+
+-- Día 3 → PISA reserva de socio
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin)
+VALUES (
+  (SELECT id_actividad FROM Actividad WHERE nombre='Entrenamiento Tenis Avanzado'),
+  '2025-09-22 18:00', '2025-09-22 19:00'
+);
+
+-- =========================================================
+-- ACTIVIDAD B (para generar CONFLICTO)
+-- =========================================================
+
+INSERT OR IGNORE INTO Actividad (
+  id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
+  nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
+  cuota_socio, cuota_nosocio
+) VALUES (
+  (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='SEPTIEMBRE'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Septiembre'),
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis 1'),
+  'Partido Liga Tenis', 'CAMPEONATO', 4, 1, 60, '2025-09-21', '2025-09-21',
+  'Partido oficial', 0, 0
+);
+
+-- BLOQUE QUE GENERA CONFLICTO (mismo día y hora que el día 2)
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin)
+VALUES (
+  (SELECT id_actividad FROM Actividad WHERE nombre='Partido Liga Tenis'),
+  '2025-09-21 18:00', '2025-09-21 19:00'
+);
+
+-- =========================================================
+-- RESERVA DE SOCIO (para ser eliminada)
+-- =========================================================
+
+INSERT INTO Reserva_Instalacion (
+  id_instalacion, id_socio, datetime_ini, datetime_fin
+) VALUES (
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis 1'),
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  '2025-09-22 18:00', '2025-09-22 19:00'
+);
+
+-- PAGO asociado a esa reserva
+INSERT INTO Pago (
+  id_socio, id_actividad, id_reservains, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  NULL,
+  (SELECT id_reservains FROM Reserva_Instalacion 
+     WHERE datetime_ini='2025-09-22 18:00'),
+  10.0,
+  'RESERVA',
+  '2025-09-10 10:00',
+  'PAGADO'
+);
+
+
+-- =========================
+-- Ejemplos para reserva instalaciones
+-- =========================
+-- =========================================================
+-- INSCRIPCIONES A ACTIVIDADES (NUEVO)
+-- =========================================================
+
+-- Juan se inscribe en la conferencia
+INSERT INTO Inscripcion_Actividad (
+  id_socio, id_actividad, fecha_sesion, fecha_inscripcion, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Conferencia Nutrición Deportiva'),
+  '2025-09-20',
+  '2025-09-02',
+  'ACTIVA'
+);
+
+-- María se inscribe en clases de pádel (día 15)
+INSERT INTO Inscripcion_Actividad (
+  id_socio, id_actividad, fecha_sesion, fecha_inscripcion, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Clases Pádel Iniciación'),
+  '2025-09-15',
+  '2025-09-03',
+  'ACTIVA'
+);
+
+-- Pedro se inscribe en entrenamiento de tenis (día 20)
+INSERT INTO Inscripcion_Actividad (
+  id_socio, id_actividad, fecha_sesion, fecha_inscripcion, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='33333333C'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Entrenamiento Tenis Avanzado'),
+  '2025-09-20',
+  '2025-09-05',
+  'ACTIVA'
+);
+
+-- =========================================================
+-- PAGOS ASOCIADOS A INSCRIPCIONES
+-- =========================================================
+
+-- Pago de Juan (gratis)
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Conferencia Nutrición Deportiva'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad 
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='11111111A')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Conferencia Nutrición Deportiva')),
+  0.0,
+  'INSCRIPCION',
+  '2025-09-02',
+  'PENDIENTE'
+);
+
+-- Pago de María
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Clases Pádel Iniciación'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad 
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='22222222B')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Clases Pádel Iniciación')),
+  10.0,
+  'INSCRIPCION',
+  '2025-09-03',
+  'PENDIENTE'
+);
+
+-- Pago de Pedro
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='33333333C'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Entrenamiento Tenis Avanzado'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad 
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='33333333C')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Entrenamiento Tenis Avanzado')),
+  15.0,
+  'INSCRIPCION',
+  '2025-09-05',
+  'PENDIENTE'
+);
+
+
+-- =========================================================
+-- EJEMPLO H.U. INSCRIPCION EN ACTIVIDAD
+-- Actividad con varias sesiones dentro de las próximas dos semanas
+-- =========================================================
+
+INSERT OR IGNORE INTO PeriodoInscripcion (nombre, descripcion, fecha_inicio_socio, fecha_fin_socio, fecha_fin_nosocio) VALUES
+  ('Inscripción Primavera 2026', 'Periodo abierto para pruebas de inscripción', '2026-03-15', '2026-04-05', '2026-04-10');
+  
+INSERT OR IGNORE INTO Actividad (
+  id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
+  nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
+  cuota_socio, cuota_nosocio
+) VALUES (
+  (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='ENERO'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Primavera 2026'),
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Sala Multiusos'),
+  'Yoga Mañanas Marzo', 'CLASE', 12, 5, 60, '2026-03-23', '2026-04-03',
+  'Actividad de prueba para inscripciones en varias fechas', 12, 20
+);
+
+-- Bloqueos de la actividad (Lunes y Miércoles, varias sesiones)
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
+   '2026-03-23 10:00', '2026-03-23 11:00');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
+   '2026-03-25 10:00', '2026-03-25 11:00');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
+   '2026-03-30 10:00', '2026-03-30 11:00');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
+   '2026-04-01 10:00', '2026-04-01 11:00');
+
+-- =========================================================
+-- INSCRIPCION DE EJEMPLO
+-- Juan ya está inscrito en una de las sesiones
+-- =========================================================
+
+INSERT INTO Inscripcion_Actividad (
+  id_socio, id_actividad, fecha_sesion, fecha_inscripcion, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
+  '2026-03-23',
+  '2026-03-19',
+  'ACTIVA'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='11111111A')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo')
+       AND fecha_sesion = '2026-03-23'),
+  12.0,
+  'INSCRIPCION',
+  '2026-03-19',
+  'PENDIENTE'
 );
