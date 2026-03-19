@@ -136,10 +136,7 @@ public class InscripcionActividadController {
 
 		view.getBtnInscribirse().setEnabled(inscripcionPermitida);
 
-		if (!datos.isPeriodoActivo()) {
-			JOptionPane.showMessageDialog(view,
-					"El periodo de inscripción para esta actividad no está activo.");
-		} else if (datos.getPlazasDisponibles() <= 0) {
+		if (datos.getPlazasDisponibles() <= 0) {
 			JOptionPane.showMessageDialog(view,
 					"No quedan plazas disponibles para la sesión seleccionada.");
 		}
@@ -185,7 +182,7 @@ public class InscripcionActividadController {
 		if (ok) {
 			JOptionPane.showMessageDialog(view,
 					"Inscripción realizada correctamente.\nEl pago se añadirá al recibo mensual del socio.");
-			view.close();
+			cargarActividades();
 		} else {
 			JOptionPane.showMessageDialog(view,
 					"No se pudo realizar la inscripción.");
