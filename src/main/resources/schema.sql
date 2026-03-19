@@ -2,6 +2,7 @@ PRAGMA foreign_keys = ON;
 
 DROP TABLE IF EXISTS Bloqueo_por_Actividad;
 DROP TABLE IF EXISTS Reserva_Instalacion;
+DROP TABLE IF EXISTS Inscripcion_Actividad;
 DROP TABLE IF EXISTS Actividad;
 DROP TABLE IF EXISTS Usuario;
 DROP TABLE IF EXISTS Admin;
@@ -128,10 +129,28 @@ CREATE TABLE IF NOT EXISTS Bloqueo_por_Actividad (
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS Inscripcion_Actividad (
+  id_inscripcion INTEGER PRIMARY KEY AUTOINCREMENT,
+  id_socio INTEGER NOT NULL,
+  id_actividad INTEGER NOT NULL,
+  fecha_sesion TEXT NOT NULL,
+  fecha_inscripcion TEXT NOT NULL,
+  estado TEXT NOT NULL DEFAULT 'ACTIVA'
+    CHECK (estado IN ('ACTIVA','CANCELADA')),
+  UNIQUE (id_socio, id_actividad, fecha_sesion),
+  FOREIGN KEY (id_socio)
+    REFERENCES Socio(id_socio)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (id_actividad)
+    REFERENCES Actividad(id_actividad)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS Pago (
   id_pago INTEGER PRIMARY KEY AUTOINCREMENT,
   id_socio INTEGER NOT NULL,
   id_actividad INTEGER,
+  id_inscripcion INTEGER,
   id_reservains INTEGER,
   importe REAL NOT NULL CHECK (importe >= 0),
   concepto TEXT NOT NULL CHECK (concepto IN ('INSCRIPCION','RESERVA','DEVOLUCION')),
@@ -144,10 +163,19 @@ CREATE TABLE IF NOT EXISTS Pago (
   FOREIGN KEY (id_actividad)
     REFERENCES Actividad(id_actividad)
     ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (id_inscripcion)
+    REFERENCES Inscripcion_Actividad(id_inscripcion)
+    ON UPDATE CASCADE ON DELETE SET NULL,
   FOREIGN KEY (id_reservains)
     REFERENCES Reserva_Instalacion(id_reservains)
     ON UPDATE CASCADE ON DELETE SET NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_inscripcion_socio
+  ON Inscripcion_Actividad(id_socio);
+
+CREATE INDEX IF NOT EXISTS idx_inscripcion_actividad_fecha
+  ON Inscripcion_Actividad(id_actividad, fecha_sesion);
 
 CREATE INDEX IF NOT EXISTS idx_pago_socio
   ON Pago(id_socio);
