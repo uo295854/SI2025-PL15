@@ -117,5 +117,14 @@ public class MainController {
         // Si quieres solo SOCIO:
         // view.getBtnReservas().setEnabled(s.isSocio());
         
+        //Consultar Reservas hechas por Socios
+        view.getBtnConsultarReservasSocioView().setEnabled(s.isSocio());
+        /*
+        if(isAdmin) { //para depuración y testeo, se borrará mas adelante
+        	view.getBtnConsultarReservasSocioView().setEnabled(true);
+        	System.out.println("MainController | Se habilita botón de Consultar Reservas de Socio siendo el usuario Admin");
+        }
+        */
+        
     }
 }

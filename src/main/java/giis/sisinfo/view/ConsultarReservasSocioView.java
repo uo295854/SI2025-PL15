@@ -36,10 +36,12 @@ public class ConsultarReservasSocioView extends JFrame {
 	JCheckBox checkBoxEstaSemana;
 	JCheckBox checkBoxEsteMes;
 	JCheckBox checkBoxPeriodoPersonalizado; 
-	JDateChooser dateChooser;
+	JDateChooser dateChooserFechaInicial;
 	JButton buscarButton;
 	JTextPane socioNombre;
 	JButton closeButton; 
+	JDateChooser dateChooserFechaFinal;
+	private JTextPane txtpnFechaActual;
 
 	/**
 	 * Launch the application.
@@ -61,78 +63,62 @@ public class ConsultarReservasSocioView extends JFrame {
 	 * Create the frame.
 	 */
 	public ConsultarReservasSocioView() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 583, 390);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 604, 390);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		socioNombre = new JTextPane();
-		socioNombre.setBounds(11, 11, 92, 19);
+		socioNombre.setEditable(false);
+		socioNombre.setBounds(11, 11, 103, 19);
 		socioNombre.setText("Socio: placeholder");
 		contentPane.add(socioNombre);
 		
-		dateChooser = new JDateChooser();
-		dateChooser.setBounds(202, 30, 92, 19);
-		contentPane.add(dateChooser);
+		dateChooserFechaInicial = new JDateChooser();
+		dateChooserFechaInicial.setBounds(275, 52, 92, 19);
+		dateChooserFechaInicial.setEnabled(false);
+		contentPane.add(dateChooserFechaInicial);
 		
-		JTextPane txtpnFecha = new JTextPane();
-		txtpnFecha.setText("Fecha:");
-		txtpnFecha.setBounds(154, 30, 38, 18);
-		contentPane.add(txtpnFecha);
-		
-		JTextPane txtpnHoraInicial = new JTextPane();
-		txtpnHoraInicial.setText("Hora Inicial:");
-		txtpnHoraInicial.setBounds(130, 58, 62, 18);
-		contentPane.add(txtpnHoraInicial);
-		
-		JTextPane txtpnHoraFinal = new JTextPane();
-		txtpnHoraFinal.setText("Hora Final:");
-		txtpnHoraFinal.setBounds(130, 82, 62, 18);
-		contentPane.add(txtpnHoraFinal);
-		
-		SpinnerDateModel timeModelInicial; 
-		selectorHoraInicial = new JSpinner(new SpinnerDateModel(new Date(1772459731163L), null, null, Calendar.MINUTE));
-		JSpinner.DateEditor de_selectorHoraInicial = new JSpinner.DateEditor(selectorHoraInicial, "HH:mm");
-		selectorHoraInicial.setEditor(de_selectorHoraInicial);
-		selectorHoraInicial.setBounds(202, 59, 92, 18);
-		contentPane.add(selectorHoraInicial);
-		
-		// Selector hora final
-		SpinnerDateModel timeModelFinal;
-		selectorHoraFinal = new JSpinner(new SpinnerDateModel(new Date(1772459757224L), null, null, Calendar.MINUTE));
-		JSpinner.DateEditor de_selectorHoraFinal = new JSpinner.DateEditor(selectorHoraFinal, "HH:mm");
-		selectorHoraFinal.setEditor(de_selectorHoraFinal);
-		selectorHoraFinal.setBounds(202, 82, 92, 18);
-		contentPane.add(selectorHoraFinal);
+		JTextPane txtpnFechaInicial = new JTextPane();
+		txtpnFechaInicial.setEditable(false);
+		txtpnFechaInicial.setBounds(183, 52, 82, 18);
+		txtpnFechaInicial.setText("Fecha Inicial:");
+		contentPane.add(txtpnFechaInicial);
 		
 		checkBoxEstaSemana = new JCheckBox("Esta Semana");
-		checkBoxEstaSemana.setBounds(11, 36, 92, 20);
+		checkBoxEstaSemana.setSelected(true);
+		checkBoxEstaSemana.setBounds(11, 36, 132, 20);
 		contentPane.add(checkBoxEstaSemana);
 		
 		checkBoxEsteMes = new JCheckBox("Este Mes");
-		checkBoxEsteMes.setBounds(11, 58, 92, 20);
+		checkBoxEsteMes.setBounds(11, 58, 132, 20);
 		contentPane.add(checkBoxEsteMes);
 		
 		checkBoxPeriodoPersonalizado = new JCheckBox("Periodo Personalizado");
-		checkBoxPeriodoPersonalizado.setBounds(11, 80, 92, 20);
+		checkBoxPeriodoPersonalizado.setBounds(11, 80, 173, 20);
 		contentPane.add(checkBoxPeriodoPersonalizado);
 		
 		buscarButton = new JButton("Buscar");
+		buscarButton.setBounds(416, 30, 132, 27);
 		buscarButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		buscarButton.setBounds(345, 30, 132, 27);
 		contentPane.add(buscarButton);
 		
 		closeButton = new JButton("Cerrar");
-		closeButton.setBounds(345, 66, 132, 27);
+		closeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+			}
+		});
+		closeButton.setBounds(416, 66, 132, 27);
 		contentPane.add(closeButton);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(11, 124, 537, 217);
+		scrollPane.setBounds(11, 124, 569, 217);
 		contentPane.add(scrollPane);
 		
 		reservasTable = new JTable();
@@ -140,34 +126,38 @@ public class ConsultarReservasSocioView extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Instalacion Reservada", "Fecha", "Hora Inicial", "Fecha Final"
+				"Instalacion Reservada", "Fecha", "Hora Inicial", "Hora Final"
 			}
 		) {
 			Class[] columnTypes = new Class[] {
-				String.class, Object.class, Object.class, String.class
+				String.class, Object.class, Object.class, Object.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
-			boolean[] columnEditables = new boolean[] {
-				false, true, true, true
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
 		});
 		reservasTable.getColumnModel().getColumn(0).setResizable(false);
 		scrollPane.setViewportView(reservasTable);
+		
+		dateChooserFechaFinal = new JDateChooser();
+		dateChooserFechaFinal.setEnabled(false);
+		dateChooserFechaFinal.setBounds(275, 81, 92, 19);
+		contentPane.add(dateChooserFechaFinal);
+		
+		JTextPane txtpnFechaFinal = new JTextPane();
+		txtpnFechaFinal.setText("Fecha Inicial:");
+		txtpnFechaFinal.setEditable(false);
+		txtpnFechaFinal.setBounds(183, 82, 82, 18);
+		contentPane.add(txtpnFechaFinal);
+		
+		txtpnFechaActual = new JTextPane();
+		txtpnFechaActual.setText("Fecha Actual:");
+		txtpnFechaActual.setEditable(false);
+		txtpnFechaActual.setBounds(194, 11, 173, 18);
+		contentPane.add(txtpnFechaActual);
 
 	}
 
-	public JPanel getContentPane() {
-		return contentPane;
-	}
-
-	public void setContentPane(JPanel contentPane) {
-		this.contentPane = contentPane;
-	}
 
 	public JSpinner getSelectorHoraInicial() {
 		return selectorHoraInicial;
@@ -217,12 +207,20 @@ public class ConsultarReservasSocioView extends JFrame {
 		this.checkBoxPeriodoPersonalizado = checkBoxPeriodoPersonalizado;
 	}
 
-	public JDateChooser getDateChooser() {
-		return dateChooser;
+	public JDateChooser getDateChooserFechaInicial() {
+		return dateChooserFechaInicial;
 	}
 
-	public void setDateChooser(JDateChooser dateChooser) {
-		this.dateChooser = dateChooser;
+	public void setDateChooserFechaInicial(JDateChooser dateChooser) {
+		this.dateChooserFechaInicial = dateChooser;
+	}
+
+	public JDateChooser getDateChooserFechaFinal() {
+		return dateChooserFechaFinal;
+	}
+
+	public void setDateChooserFechaFinal(JDateChooser dateChooserFechaFinal) {
+		this.dateChooserFechaFinal = dateChooserFechaFinal;
 	}
 
 	public JButton getBuscarButton() {
@@ -248,6 +246,13 @@ public class ConsultarReservasSocioView extends JFrame {
 	public void setCloseButton(JButton closeButton) {
 		this.closeButton = closeButton;
 	}
-	
+
+	public JTextPane getTxtpnFechaActual() {
+		return txtpnFechaActual;
+	}
+
+	public void setTxtpnFechaActual(JTextPane txtpnFechaActual) {
+		this.txtpnFechaActual = txtpnFechaActual;
+	}
 	
 }
