@@ -411,7 +411,7 @@ public class ReservaInstalacionAdminSocioModel {
 		String sql = "INSERT INTO Pago (id_socio, id_reservains, importe, concepto, fecha, estado) "
 				+ "VALUES (?,?,?,?,?,?)";
 		
-		db.executeQueryArray(sql, idSocio, idReservaIns, importe, "RESERVADA", LocalDate.now().toString(), estadoPago);
+		db.executeUpdate(sql, idSocio, idReservaIns, importe, "RESERVA", LocalDate.now().toString(), estadoPago);
 	}
 	
 }

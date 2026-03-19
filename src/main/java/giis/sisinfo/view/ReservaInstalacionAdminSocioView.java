@@ -357,5 +357,9 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 		        return "PAGADO";
 		    return "PENDIENTE";
 		}
+		
+		public boolean hayFormaPagoSeleccionada() {
+		    return rbPagoUso.isSelected() || rbPagoMensual.isSelected();
+		}
 	
 }
