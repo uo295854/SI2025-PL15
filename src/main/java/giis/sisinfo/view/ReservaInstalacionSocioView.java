@@ -100,8 +100,7 @@ public class ReservaInstalacionSocioView extends JFrame {
 		panel.setBorder(new TitledBorder("Seleccionar fecha (lista de días)"));
 
 		tablaDias = new JTable(new DefaultTableModel(
-				new Object[] { "Día", "Fecha", "Estado" }, 0
-		));
+				new Object[] { "Día", "Fecha", "Estado" }, 0));
 		tablaDias.setRowHeight(22);
 
 		panel.add(new JScrollPane(tablaDias), BorderLayout.CENTER);
@@ -129,7 +128,8 @@ public class ReservaInstalacionSocioView extends JFrame {
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(4, 8, 4, 8);
-		c.anchor = GridBagConstraints.WEST;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.fill = GridBagConstraints.NONE;
 
 		textfieldDeporte = new JTextField(10);
 		textfieldDeporte.setEditable(false);
@@ -205,12 +205,14 @@ public class ReservaInstalacionSocioView extends JFrame {
 		cancelar = new JButton("Cancelar");
 		reservar = new JButton("Reservar");
 
-		c.gridx = 4;
+		c.gridx = 9;
 		c.gridy = 4;
+        c.weightx = 24;
 		c.anchor = GridBagConstraints.EAST;
 		panel.add(cancelar, c);
 
-		c.gridx = 5;
+		c.gridx = 10;
+        c.weightx = 1;
 		panel.add(reservar, c);
 
 		return panel;
