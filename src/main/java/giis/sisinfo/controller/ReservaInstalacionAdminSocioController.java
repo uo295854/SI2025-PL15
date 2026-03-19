@@ -17,6 +17,7 @@ import giis.sisinfo.dto.HoraReservaSocioDTO;
 import giis.sisinfo.dto.SocioDTO;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
+import java.util.ArrayList;
 
 public class ReservaInstalacionAdminSocioController {
 
@@ -32,7 +33,7 @@ public class ReservaInstalacionAdminSocioController {
 	private Integer idInstalacionSeleccionada;
 
 	private LocalDate diaSeleccionado;
-	private LocalTime horaInicioSeleccionada;
+	private List<LocalTime> horasSeleccionadas;
 	
 	
 	private double costeSeleccionado;
@@ -53,7 +54,7 @@ public class ReservaInstalacionAdminSocioController {
 	private void configurarTablas() {
 		view.gettablaSocios().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		view.gettablaDias().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		view.gettablaHoras().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		view.gettablaHoras().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	}
 	
 	private void cargarDeportes() {
@@ -137,6 +138,7 @@ public class ReservaInstalacionAdminSocioController {
 		
 	 //se resetea el socio seleccionado
 		socioSeleccionado = null;
+		view.setResumenSocio("", "", "", "");
 	}
 	
 	private void onSeleccionSocio(ListSelectionEvent e) {
@@ -169,7 +171,7 @@ public class ReservaInstalacionAdminSocioController {
 		instalacionSeleccionada = null;
 		idInstalacionSeleccionada = null;
 		diaSeleccionado = null;
-		horaInicioSeleccionada = null;
+		horasSeleccionadas = null;
 		
 		
 		limpiarTodo(view.gettablaDias());
@@ -199,7 +201,7 @@ public class ReservaInstalacionAdminSocioController {
 		instalacionSeleccionada = seleccionada.toString();
 		
 		diaSeleccionado = null;
-		horaInicioSeleccionada = null;
+		horasSeleccionadas = null;
 		
 		limpiarTodo(view.gettablaDias());
 		limpiarTodo(view.gettablaHoras());
@@ -250,7 +252,7 @@ public class ReservaInstalacionAdminSocioController {
 		if ("NO_RESERVABLE".equalsIgnoreCase(estado) || "COMPLETO".equalsIgnoreCase(estado)) {
 			limpiarTodo(view.gettablaHoras());
 			diaSeleccionado = null;
-			horaInicioSeleccionada = null;
+			horasSeleccionadas = null;
 			return;
 		}
 
@@ -278,29 +280,59 @@ public class ReservaInstalacionAdminSocioController {
 	private void onSeleccionHora(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting()) return;
 
-		int fila = view.gettablaHoras().getSelectedRow();
-		if (fila < 0) return;
-
-		DefaultTableModel t = (DefaultTableModel) view.gettablaHoras().getModel();
-		String horaInicio = String.valueOf(t.getValueAt(fila, 0));
-		String horaFin = String.valueOf(t.getValueAt(fila, 1));
-		String estado     = String.valueOf(t.getValueAt(fila, 2));
-
-		//Si no está libre no se puede seleccionar
-		if (!"LIBRE".equalsIgnoreCase(estado)) {
-			horaInicioSeleccionada = null;
+		int[] filas = view.gettablaHoras().getSelectedRows();
+		if (filas == null || filas.length==0) {
+			horasSeleccionadas=null;
+			view.setResumenReserva(
+				    deporteSeleccionado == null ? "" : deporteSeleccionado,
+				    instalacionSeleccionada == null ? "" : instalacionSeleccionada,
+				    diaSeleccionado == null ? "" : diaSeleccionado.toString(),
+				    "",
+				    ""
+				);
 			return;
 		}
 
+		DefaultTableModel t = (DefaultTableModel) view.gettablaHoras().getModel();
+		List<LocalTime> horas = new ArrayList<>();
+		StringBuilder sb = new StringBuilder();
 		
-		horaInicioSeleccionada = LocalTime.parse(horaInicio);
-		String horaTxt = horaInicio + " - " + horaFin;
+		for(int i=0;i<filas.length;i++) {
+			int fila = filas[i];
+			String estado= String.valueOf(t.getValueAt(fila, 2));
+			
+			//Si no está libre no se puede seleccionar
+			if (!"LIBRE".equalsIgnoreCase(estado)) {
+				view.gettablaHoras().clearSelection();
+				horasSeleccionadas = null;
+				JOptionPane.showMessageDialog(view, "Solo se pueden seleccionar horas libres");
+				return;
+			}
+			
+			String horaInicio = String.valueOf(t.getValueAt(fila, 0));
+			String horaFin = String.valueOf(t.getValueAt(fila, 1));
+			
+			horas.add(LocalTime.parse(horaInicio));
+			if (i > 0) 
+				sb.append(", ");
+			
+			sb.append(horaInicio).append("-").append(horaFin);
+		}
+		
+
+	
+
+		horas.sort(null);
+		horasSeleccionadas = horas;
+		
+		double costeTotal = costeSeleccionado *horasSeleccionadas.size();
+
 		view.setResumenReserva(
 		    deporteSeleccionado == null ? "" : deporteSeleccionado,
 		    instalacionSeleccionada == null ? "" : instalacionSeleccionada,
 		    diaSeleccionado == null ? "" : diaSeleccionado.toString(),
-		    horaTxt,
-		    costeSeleccionado + " €"
+		    sb.toString(),
+		    costeTotal + " €"
 		);
 		
 		
@@ -323,13 +355,13 @@ public class ReservaInstalacionAdminSocioController {
 			return;
 		}
 		
-		if(horaInicioSeleccionada == null) {
-			JOptionPane.showMessageDialog(view, "Tienes que seleccionar una hora libre");
+		if(horasSeleccionadas == null || horasSeleccionadas.isEmpty()) {
+			JOptionPane.showMessageDialog(view, "Tienes que seleccionar una o varias horas libres");
 			return;
 		}
 		
 		try {
-			model.crearReserva(idInstalacionSeleccionada, socioSeleccionado.getIdSocio(), diaSeleccionado, horaInicioSeleccionada);
+			model.crearReserva(idInstalacionSeleccionada, socioSeleccionado.getIdSocio(), diaSeleccionado, horasSeleccionadas);
 			JOptionPane.showMessageDialog(view, "Reserva realizada.");
 			view.dispose();
 		}catch(Exception e) {

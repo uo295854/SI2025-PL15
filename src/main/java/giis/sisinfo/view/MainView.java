@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import giis.sisinfo.controller.ActividadesOfertadasController;
 import giis.sisinfo.model.ActividadesOfertadasModel;
 
+
 public class MainView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -29,7 +30,8 @@ public class MainView extends JFrame {
 	private JButton btnReservaInstalacionAdminSocio;
 	private JButton btnVisualizarReservasInstalacionesAdmin;
 	private JButton btnConsultarReservasSocioView;
-	
+	private JButton btnReservaInstalacionesAuto;
+
 
 
 
@@ -70,7 +72,7 @@ public class MainView extends JFrame {
 		btnActividadesOfertadas.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnActividadesOfertadas);
 
-		// (Ideal moverlo a MainController, pero lo dejo como lo tenías)
+		// (Ideal moverlo a MainController)
 		btnActividadesOfertadas.addActionListener(e -> {
 			try {
 				ActividadesOfertadasController controller =
@@ -93,7 +95,6 @@ public class MainView extends JFrame {
 		btnReservaInstalacionAdminSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionAdminSocio);
 		
-		// Botón Visualizar Reservas Instalaciones (Admin)
 		btnVisualizarReservasInstalacionesAdmin = new JButton("Visualizar Reservas de Instalaciones");
 		btnVisualizarReservasInstalacionesAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnVisualizarReservasInstalacionesAdmin);
@@ -103,6 +104,9 @@ public class MainView extends JFrame {
 		btnConsultarReservasSocioView.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnConsultarReservasSocioView);
 
+		btnReservaInstalacionesAuto = new JButton("Reserva automática de instalaciones para actividades");
+		btnReservaInstalacionesAuto.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnReservaInstalacionesAuto);
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 
@@ -122,6 +126,9 @@ public class MainView extends JFrame {
 	}
 	public JButton getBtnVisualizarReservasInstalaciones() {
 		return btnVisualizarReservasInstalacionesAdmin;
+	}
+	public JButton getBtnReservaInstalacionesAuto() {
+		return btnReservaInstalacionesAuto;
 	}
 
 	public JButton getBtnConsultarReservasSocioView() {
