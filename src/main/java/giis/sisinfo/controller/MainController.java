@@ -19,6 +19,8 @@ import giis.sisinfo.view.PeriodoInscripcionView;
 import giis.sisinfo.session.Session;
 import giis.sisinfo.view.ReservaInstalacionesView;
 import giis.sisinfo.model.ReservaInstalacionesModel;
+import giis.sisinfo.view.InscripcionActividadView;
+import giis.sisinfo.model.InscripcionActividadModel;
 
 public class MainController {
 
@@ -37,9 +39,11 @@ public class MainController {
         view.getBtnPeriodoInscripcion().addActionListener(e -> abrirPeriodoInscripcion());
         view.getBtnReservaInstalacionAdminSocio().addActionListener(e -> abrirReservaInstalacionAdminSocio());
         view.getBtnVisualizarReservasInstalaciones().addActionListener(e -> abrirVisualizarReservasInstalacionesAdmin());
-        view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
         view.getBtnConsultarReservasSocioView().addActionListener(e->abrirConsultasReservasSocio());
+        view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
         view.getBtnReservaInstalacionesAuto().addActionListener(e -> abrirReservaInstalacionesAuto());
+        view.getBtnInscripcionActividad().addActionListener(e -> abrirInscripcionActividad());
+
     }
 
     private void abrirGestionActividades() {
@@ -103,6 +107,15 @@ public class MainController {
         v.setVisible(true);
     }
     
+	 private void abrirInscripcionActividad() {
+		InscripcionActividadView v = new InscripcionActividadView();
+		InscripcionActividadModel model = new InscripcionActividadModel();
+		// El idSocio lo obtienes de la sesión (o lo pasas al abrir la pantalla tras el login)
+		int idSocio = Session.get().getIdSocio();
+		new InscripcionActividadController(v, model, idSocio);
+		v.setVisible(true);
+	}
+    
     
     // Método para habilitar/deshabilitar botones según el rol del usuario
     private void aplicarPermisosPorRol() {
@@ -126,7 +139,9 @@ public class MainController {
         view.getBtnActividadesOfertadas().setEnabled(isAdmin);
         
         // Reservar una instalacion para una actividad en un periodo determinado
-        view.getBtnReservaInstalacionAdmin().setEnabled(isAdmin);
+        view.getBtnReservaInstalacionesAuto().setEnabled(isAdmin);
+        
+        view.getBtnInscripcionActividad().setEnabled(s.isSocio()); // accesible para todos los socios (o incluso público)
         
         // Reservas / Inscripciones: normalmente accesible para todos (o al menos socios)
         // Si quieres solo SOCIO:

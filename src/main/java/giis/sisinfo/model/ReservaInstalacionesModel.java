@@ -1,9 +1,9 @@
 package giis.sisinfo.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import giis.sisinfo.util.Database;
 
@@ -11,11 +11,6 @@ public class ReservaInstalacionesModel {
 
 	private Database db = new Database();
 
-	/**
-	 * Devuelve las actividades que tienen algo pendiente de resolver:
-	 * - conflicto con otra actividad
-	 * - o reservas de socios que se solapan con sus bloqueos
-	 */
 	public List<String> getActividadesPendientesDeReserva() {
 		String sql =
 			"SELECT DISTINCT a.nombre " +
@@ -49,53 +44,83 @@ public class ReservaInstalacionesModel {
 		for (Object[] row : rows) {
 			actividades.add((String) row[0]);
 		}
-
 		return actividades;
 	}
 
-	/**
-	 * Procesa la reserva automática para una actividad concreta.
-	 *
-	 * 1. Comprueba si hay conflicto con otra actividad.
-	 * 2. Si lo hay, no modifica reservas de socios.
-	 * 3. Si no lo hay, elimina las reservas de socios que se solapen.
-	 * 4. Devuelve las incidencias para mostrar en la tabla.
-	 */
 	public ResultadoReserva reservarInstalacionParaActividad(String nombreActividad) {
 		validarTexto(nombreActividad, "El nombre de la actividad no puede estar vacío.");
 
 		ActividadInfo actividad = getActividadPorNombre(nombreActividad);
+		List<BloqueActividad> bloques = getBloquesActividad(actividad.idActividad);
 		List<Object[]> incidencias = new ArrayList<>();
 
-		List<Object[]> conflictos = getConflictosConActividades(actividad.idActividad);
-		if (!conflictos.isEmpty()) {
-			for (Object[] conflicto : conflictos) {
+		boolean hayAlgunConflicto = false;
+
+		for (BloqueActividad bloque : bloques) {
+			List<ConflictoActividad> conflictos = getConflictosDeBloque(actividad.idActividad, bloque.idBloqueo);
+
+			if (!conflictos.isEmpty()) {
+				hayAlgunConflicto = true;
+
+				for (ConflictoActividad conflicto : conflictos) {
+					incidencias.add(new Object[] {
+						"-",
+						actividad.nombre,
+						actividad.nombreInstalacion,
+						bloque.fecha,
+						bloque.horas,
+						"Conflicto con actividad: " + conflicto.nombreActividad
+					});
+				}
+				continue;
+			}
+
+			List<ReservaSolapada> reservasSolapadas = getReservasSolapadasDeBloque(
+				actividad.idActividad,
+				bloque.idBloqueo
+			);
+
+			if (reservasSolapadas.isEmpty()) {
 				incidencias.add(new Object[] {
 					"-",
 					actividad.nombre,
-					conflicto[1],
-					conflicto[2],
-					conflicto[3],
-					"Conflicto con actividad: " + conflicto[0]
+					actividad.nombreInstalacion,
+					bloque.fecha,
+					bloque.horas,
+					"Reservada correctamente"
+				});
+				continue;
+			}
+
+			for (ReservaSolapada reserva : reservasSolapadas) {
+
+				String estadoPago = gestionarPagoPorReservaCancelada(
+					reserva.idReserva,
+					reserva.idSocio,
+					actividad.idActividad
+				);
+
+				
+				generarAvisoCancelacionTXT(
+					reserva.idSocio,
+					reserva.socio,
+					reserva.instalacion,
+					reserva.fecha,
+					reserva.horas,
+					estadoPago
+				);
+
+				eliminarReservaSocio(reserva.idReserva);
+
+				incidencias.add(new Object[] {
+					reserva.socio,
+					actividad.nombre,
+					reserva.instalacion,
+					reserva.fecha,
+					reserva.horas,
+					"Reserva socio eliminada + aviso generado"
 				});
 			}
-			return new ResultadoReserva(true, incidencias);
-		}
-
-		List<ReservaSolapada> reservasSolapadas = getReservasSolapadas(actividad.idActividad);
-
-		for (ReservaSolapada reserva : reservasSolapadas) {
-			gestionarPagoPorReservaCancelada(reserva.idReserva, reserva.idSocio, actividad.idActividad);
-			eliminarReservaSocio(reserva.idReserva);
-
-			incidencias.add(new Object[] {
-				reserva.socio,
-				actividad.nombre,
-				reserva.instalacion,
-				reserva.fecha,
-				reserva.horas,
-				"Reserva eliminada"
-			});
 		}
 
 		if (incidencias.isEmpty()) {
@@ -109,7 +134,7 @@ public class ReservaInstalacionesModel {
 			});
 		}
 
-		return new ResultadoReserva(false, incidencias);
+		return new ResultadoReserva(hayAlgunConflicto, incidencias);
 	}
 
 	private ActividadInfo getActividadPorNombre(String nombreActividad) {
@@ -134,41 +159,58 @@ public class ReservaInstalacionesModel {
 		);
 	}
 
-	/**
-	 * Devuelve conflictos con otras actividades de la misma instalación.
-	 *
-	 * Cada fila contiene:
-	 * [0] nombre actividad conflictiva
-	 * [1] nombre instalación
-	 * [2] fecha
-	 * [3] horas
-	 */
-	private List<Object[]> getConflictosConActividades(int idActividad) {
+	private List<BloqueActividad> getBloquesActividad(int idActividad) {
+		String sql =
+			"SELECT " +
+			"  id_bloqueo, " +
+			"  datetime_ini, " +
+			"  datetime_fin, " +
+			"  substr(datetime_ini, 1, 10) AS fecha, " +
+			"  substr(datetime_ini, 12, 5) || '-' || substr(datetime_fin, 12, 5) AS horas " +
+			"FROM Bloqueo_por_Actividad " +
+			"WHERE id_actividad = ? " +
+			"ORDER BY datetime_ini";
+
+		List<Object[]> rows = db.executeQueryArray(sql, idActividad);
+		List<BloqueActividad> bloques = new ArrayList<>();
+
+		for (Object[] row : rows) {
+			bloques.add(new BloqueActividad(
+				toInt(row[0]),
+				(String) row[1],
+				(String) row[2],
+				(String) row[3],
+				(String) row[4]
+			));
+		}
+		return bloques;
+	}
+
+	private List<ConflictoActividad> getConflictosDeBloque(int idActividad, int idBloqueo) {
 		String sql =
 			"SELECT DISTINCT " +
-			"  a2.nombre AS actividad_conflictiva, " +
-			"  i.nombre_instalacion, " +
-			"  substr(b1.datetime_ini, 1, 10) AS fecha, " +
-			"  substr(b1.datetime_ini, 12, 5) || '-' || substr(b1.datetime_fin, 12, 5) AS horas " +
+			"  a2.nombre " +
 			"FROM Bloqueo_por_Actividad b1 " +
 			"JOIN Actividad a1 ON a1.id_actividad = b1.id_actividad " +
-			"JOIN Instalacion i ON i.id_instalacion = a1.id_instalacion " +
 			"JOIN Actividad a2 " +
 			"  ON a2.id_instalacion = a1.id_instalacion " +
 			" AND a2.id_actividad <> a1.id_actividad " +
 			"JOIN Bloqueo_por_Actividad b2 ON b2.id_actividad = a2.id_actividad " +
 			"WHERE a1.id_actividad = ? " +
+			"  AND b1.id_bloqueo = ? " +
 			"  AND b2.datetime_ini < b1.datetime_fin " +
-			"  AND b2.datetime_fin > b1.datetime_ini " +
-			"ORDER BY fecha, horas";
+			"  AND b2.datetime_fin > b1.datetime_ini";
 
-		return db.executeQueryArray(sql, idActividad);
+		List<Object[]> rows = db.executeQueryArray(sql, idActividad, idBloqueo);
+		List<ConflictoActividad> conflictos = new ArrayList<>();
+
+		for (Object[] row : rows) {
+			conflictos.add(new ConflictoActividad((String) row[0]));
+		}
+		return conflictos;
 	}
 
-	/**
-	 * Busca reservas de socios que solapan con alguno de los bloqueos de la actividad.
-	 */
-	private List<ReservaSolapada> getReservasSolapadas(int idActividad) {
+	private List<ReservaSolapada> getReservasSolapadasDeBloque(int idActividad, int idBloqueo) {
 		String sql =
 			"SELECT DISTINCT " +
 			"  r.id_reservains, " +
@@ -181,13 +223,14 @@ public class ReservaInstalacionesModel {
 			"JOIN Socio s ON s.id_socio = r.id_socio " +
 			"JOIN Actividad a ON a.id_actividad = ? " +
 			"JOIN Instalacion i ON i.id_instalacion = a.id_instalacion " +
-			"JOIN Bloqueo_por_Actividad b ON b.id_actividad = a.id_actividad " +
-			"WHERE r.id_instalacion = a.id_instalacion " +
+			"JOIN Bloqueo_por_Actividad b ON b.id_bloqueo = ? " +
+			"WHERE b.id_actividad = a.id_actividad " +
+			"  AND r.id_instalacion = a.id_instalacion " +
 			"  AND r.datetime_ini < b.datetime_fin " +
 			"  AND r.datetime_fin > b.datetime_ini " +
 			"ORDER BY r.datetime_ini";
 
-		List<Object[]> rows = db.executeQueryArray(sql, idActividad);
+		List<Object[]> rows = db.executeQueryArray(sql, idActividad, idBloqueo);
 		List<ReservaSolapada> reservas = new ArrayList<>();
 
 		for (Object[] row : rows) {
@@ -200,86 +243,14 @@ public class ReservaInstalacionesModel {
 				(String) row[5]
 			));
 		}
-
 		return reservas;
 	}
 
-	private void eliminarReservaSocio(int idReserva) {
-		String sql = "DELETE FROM Reserva_Instalacion WHERE id_reservains = ?";
-		db.executeUpdate(sql, idReserva);
-	}
-
-	private void validarTexto(String texto, String mensaje) {
-		if (texto == null || texto.trim().isEmpty()) {
-			throw new RuntimeException(mensaje);
-		}
-	}
-
-	private int toInt(Object value) {
-		if (value instanceof Integer) {
-			return (Integer) value;
-		}
-		if (value instanceof Long) {
-			return ((Long) value).intValue();
-		}
-		return Integer.parseInt(value.toString());
-	}
-
-	public static class ResultadoReserva {
-		private final boolean conflictoConActividad;
-		private final List<Object[]> incidencias;
-
-		public ResultadoReserva(boolean conflictoConActividad, List<Object[]> incidencias) {
-			this.conflictoConActividad = conflictoConActividad;
-			this.incidencias = incidencias;
-		}
-
-		public boolean isConflictoConActividad() {
-			return conflictoConActividad;
-		}
-
-		public List<Object[]> getIncidencias() {
-			return incidencias;
-		}
-	}
-
-	private static class ActividadInfo {
-		private final int idActividad;
-		private final String nombre;
-		private final int idInstalacion;
-		private final String nombreInstalacion;
-
-		public ActividadInfo(int idActividad, String nombre, int idInstalacion, String nombreInstalacion) {
-			this.idActividad = idActividad;
-			this.nombre = nombre;
-			this.idInstalacion = idInstalacion;
-			this.nombreInstalacion = nombreInstalacion;
-		}
-	}
-
-	private static class ReservaSolapada {
-		private final int idReserva;
-		private final int idSocio;
-		private final String socio;
-		private final String instalacion;
-		private final String fecha;
-		private final String horas;
-
-		public ReservaSolapada(int idReserva, int idSocio, String socio, String instalacion, String fecha, String horas) {
-			this.idReserva = idReserva;
-			this.idSocio = idSocio;
-			this.socio = socio;
-			this.instalacion = instalacion;
-			this.fecha = fecha;
-			this.horas = horas;
-		}
-	}
-	
-	private void gestionarPagoPorReservaCancelada(int idReserva, int idSocio, int idActividad) {
+	private String gestionarPagoPorReservaCancelada(int idReserva, int idSocio, int idActividad) {
 		Object[] pago = getPagoReserva(idReserva);
 
 		if (pago == null) {
-			return;
+			return "- No existía pago asociado a la reserva.";
 		}
 
 		int idPago = toInt(pago[0]);
@@ -288,9 +259,14 @@ public class ReservaInstalacionesModel {
 
 		if ("PENDIENTE".equalsIgnoreCase(estado)) {
 			cancelarPagoPendiente(idPago);
-		} else if ("PAGADO".equalsIgnoreCase(estado)) {
+			return "- Su pago pendiente ha sido cancelado.";
+		} 
+		else if ("PAGADO".equalsIgnoreCase(estado)) {
 			crearPagoDevolucion(idSocio, idActividad, importe);
+			return "- Su pago ha sido devuelto (pendiente de procesamiento).";
 		}
+
+		return "- Estado de pago no reconocido.";
 	}
 
 	private Object[] getPagoReserva(int idReserva) {
@@ -326,9 +302,30 @@ public class ReservaInstalacionesModel {
 		db.executeUpdate(sql, idSocio, idActividad, importe, nowAsText());
 	}
 
+	private void eliminarReservaSocio(int idReserva) {
+		String sql = "DELETE FROM Reserva_Instalacion WHERE id_reservains = ?";
+		db.executeUpdate(sql, idReserva);
+	}
+
 	private String nowAsText() {
 		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		return LocalDateTime.now().format(fmt);
+	}
+
+	private void validarTexto(String texto, String mensaje) {
+		if (texto == null || texto.trim().isEmpty()) {
+			throw new RuntimeException(mensaje);
+		}
+	}
+
+	private int toInt(Object value) {
+		if (value instanceof Integer) {
+			return (Integer) value;
+		}
+		if (value instanceof Long) {
+			return ((Long) value).intValue();
+		}
+		return Integer.parseInt(value.toString());
 	}
 
 	private double toDouble(Object value) {
@@ -342,5 +339,111 @@ public class ReservaInstalacionesModel {
 			return ((Long) value).doubleValue();
 		}
 		return Double.parseDouble(value.toString());
+	}
+
+	public static class ResultadoReserva {
+		private final boolean conflictoConActividad;
+		private final List<Object[]> incidencias;
+
+		public ResultadoReserva(boolean conflictoConActividad, List<Object[]> incidencias) {
+			this.conflictoConActividad = conflictoConActividad;
+			this.incidencias = incidencias;
+		}
+
+		public boolean isConflictoConActividad() {
+			return conflictoConActividad;
+		}
+
+		public List<Object[]> getIncidencias() {
+			return incidencias;
+		}
+	}
+
+	private static class ActividadInfo {
+		private final int idActividad;
+		private final String nombre;
+		private final int idInstalacion;
+		private final String nombreInstalacion;
+
+		public ActividadInfo(int idActividad, String nombre, int idInstalacion, String nombreInstalacion) {
+			this.idActividad = idActividad;
+			this.nombre = nombre;
+			this.idInstalacion = idInstalacion;
+			this.nombreInstalacion = nombreInstalacion;
+		}
+	}
+
+	private static class BloqueActividad {
+		private final int idBloqueo;
+		private final String datetimeIni;
+		private final String datetimeFin;
+		private final String fecha;
+		private final String horas;
+
+		public BloqueActividad(int idBloqueo, String datetimeIni, String datetimeFin, String fecha, String horas) {
+			this.idBloqueo = idBloqueo;
+			this.datetimeIni = datetimeIni;
+			this.datetimeFin = datetimeFin;
+			this.fecha = fecha;
+			this.horas = horas;
+		}
+	}
+
+	private static class ConflictoActividad {
+		private final String nombreActividad;
+
+		public ConflictoActividad(String nombreActividad) {
+			this.nombreActividad = nombreActividad;
+		}
+	}
+
+	private static class ReservaSolapada {
+		private final int idReserva;
+		private final int idSocio;
+		private final String socio;
+		private final String instalacion;
+		private final String fecha;
+		private final String horas;
+
+		public ReservaSolapada(int idReserva, int idSocio, String socio, String instalacion, String fecha, String horas) {
+			this.idReserva = idReserva;
+			this.idSocio = idSocio;
+			this.socio = socio;
+			this.instalacion = instalacion;
+			this.fecha = fecha;
+			this.horas = horas;
+		}
+	}
+	
+	private void generarAvisoCancelacionTXT(
+			int idSocio,
+			String nombreSocio,
+			String instalacion,
+			String fecha,
+			String horas,
+			String estadoPago) {
+
+		try {
+			String nombreArchivo = "aviso_socio_" + idSocio + "_" + System.currentTimeMillis() + ".txt";
+
+			String contenido =
+				"Estimado/a " + nombreSocio + ",\n\n" +
+				"Le informamos de que su reserva de la instalación '" + instalacion + "'\n" +
+				"el día " + fecha + " en horario " + horas + " ha sido cancelada.\n\n" +
+				"Motivo:\n" +
+				"La instalación ha sido asignada a una actividad prioritaria del centro.\n\n" +
+				"Estado del pago:\n" +
+				estadoPago + "\n\n" +
+				"Disculpe las molestias.\n\n" +
+				"Centro Deportivo";
+
+			java.nio.file.Files.write(
+				java.nio.file.Paths.get(nombreArchivo),
+				contenido.getBytes()
+			);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
