@@ -6,11 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowFilter;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import giis.sisinfo.dto.DiaReservaSocioDTO;
 import giis.sisinfo.dto.HoraReservaSocioDTO;
@@ -50,7 +54,7 @@ public class ReservaInstalacionSocioController {
 	}
 	
 	private void configurarTablas() {
-		view.getTablaHoras().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		view.getTablaDias().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		view.getTablaHoras().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	}
 	
@@ -97,12 +101,25 @@ public class ReservaInstalacionSocioController {
 		//Cancelar
 		view.getCancelar().addActionListener(e->view.dispose());
 		
+		//Filtro en la cabecera de la tabla
+		view.getTablaDias().getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mousePressed(java.awt.event.MouseEvent e) {
+				int columna = view.getTablaDias().columnAtPoint(e.getPoint());
+
+				if (columna == 0) {
+					mostrarDesplegableFiltroDia(e);
+				} else if (columna == 1) {
+					mostrarDesplegableFiltroFechas(e);
+				}
+			}
+		});
+		
 	}
 	
 	
 	private void onDeporteSeleccionado() {
 		Object elementoseleccionado = view.getCbDeporte().getSelectedItem();
-		
 		deporteSeleccionado = elementoseleccionado.toString();
 		
 		
@@ -179,8 +196,10 @@ public class ReservaInstalacionSocioController {
 		//evitar que ocurra el evento 2 veces
 		if (e.getValueIsAdjusting()) return;
 
-		int fila = view.getTablaDias().getSelectedRow();
-		if (fila < 0) return;
+	    int filaVista = view.getTablaDias().getSelectedRow();
+	    if (filaVista < 0) return;
+
+	    int fila = view.getTablaDias().convertRowIndexToModel(filaVista);
 
 		DefaultTableModel t = (DefaultTableModel) view.getTablaDias().getModel();
 		String fecha = String.valueOf(t.getValueAt(fila, 1));
@@ -327,5 +346,130 @@ private void onReservar() {
 		}catch(Exception e) {
 			JOptionPane.showMessageDialog(view, e.getMessage(), "No se pudo reservar", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+
+
+private String filtroDiaSemana = "Todos";
+
+private void mostrarDesplegableFiltroDia(java.awt.event.MouseEvent e) {
+    JPopupMenu menu = new JPopupMenu();
+
+    String[] opciones = {"Todos","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"};
+
+    for (String op : opciones) {
+        JMenuItem item = new JMenuItem(op);
+        item.addActionListener(a -> {
+            filtroDiaSemana = op;
+            aplicarFiltrosTablaDias();
+        });
+        menu.add(item);
+    }
+
+    menu.show(e.getComponent(), e.getX(), e.getY());
+}
+
+private String filtroRango = "Próximos 30 días";
+
+private void mostrarDesplegableFiltroFechas(java.awt.event.MouseEvent e) {
+    JPopupMenu menu = new JPopupMenu();
+
+    String[] opciones = {"Hoy","Próximos 7 días","Próximos 15 días","Próximos 30 días"};
+
+    for (String op : opciones) {
+        JMenuItem item = new JMenuItem(op);
+        item.addActionListener(a -> {
+            filtroRango = op;
+            aplicarFiltrosTablaDias();
+        });
+        menu.add(item);
+    }
+
+    menu.show(e.getComponent(), e.getX(), e.getY());
+}
+
+private void aplicarFiltrosTablaDias() {
+
+	    TableRowSorter<DefaultTableModel> sorter = view.getDesplegableDias();
+
+	    RowFilter<DefaultTableModel, Integer> filtro = new RowFilter<>() {
+	        @Override
+	        public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
+
+	            String fechaTexto = entry.getStringValue(1);
+	            LocalDate fecha = LocalDate.parse(fechaTexto);
+
+	            LocalDate hoy = LocalDate.now();
+
+	            int maxDias;
+
+	            switch (filtroRango) {
+
+	                case "Hoy":
+	                    maxDias = 0;
+	                    break;
+
+	                case "Próximos 7 días":
+	                    maxDias = 6;
+	                    break;
+
+	                case "Próximos 15 días":
+	                    maxDias = 14;
+	                    break;
+
+	                default:
+	                    maxDias = 29;
+	            }
+
+	            if (fecha.isBefore(hoy) || fecha.isAfter(hoy.plusDays(maxDias))) {
+	                return false;
+	            }
+
+	            if (!filtroDiaSemana.equalsIgnoreCase("Todos")) {
+
+	                String diaES = diaSemana(fecha);
+
+	                if (!diaES.equalsIgnoreCase(filtroDiaSemana)) {
+	                    return false;
+	                }
+	            }
+
+	            return true;
+	        }
+	    };
+
+	    sorter.setRowFilter(filtro);
+
+	    view.getTablaDias().clearSelection();
+	    view.getTablaHoras().clearSelection();;
+	}
+private String diaSemana(LocalDate fecha) {
+
+	    switch (fecha.getDayOfWeek()) {
+
+	        case MONDAY:
+	            return "Lunes";
+
+	        case TUESDAY:
+	            return "Martes";
+
+	        case WEDNESDAY:
+	            return "Miércoles";
+
+	        case THURSDAY:
+	            return "Jueves";
+
+	        case FRIDAY:
+	            return "Viernes";
+
+	        case SATURDAY:
+	            return "Sábado";
+
+	        case SUNDAY:
+	            return "Domingo";
+
+	        default:
+	            return "";
+	    }
 	}
 }

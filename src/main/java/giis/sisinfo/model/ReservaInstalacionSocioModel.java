@@ -83,7 +83,7 @@ public class ReservaInstalacionSocioModel {
 			else
 				estado = diaCompleto(idInstalacion, fecha) ? "COMPLETO" : "DISPONIBLE";
 
-			resultado.add(new DiaReservaSocioDTO(fecha.getDayOfWeek().toString(), fecha.toString(), estado));
+			resultado.add(new DiaReservaSocioDTO(diaSemana(fecha), fecha.toString(), estado));
 		}
 		return resultado;
 	}
@@ -369,5 +369,19 @@ public class ReservaInstalacionSocioModel {
 				+ "VALUES (?,?,?,?,?,?)";
 		
 		db.executeUpdate(sql, idSocio, idReservaIns, importe, "RESERVA", LocalDate.now().toString(), estadoPago);
+	}
+	
+	
+	private String diaSemana(LocalDate fecha) {
+	    switch (fecha.getDayOfWeek()) {
+	        case MONDAY: return "Lunes";
+	        case TUESDAY: return "Martes";
+	        case WEDNESDAY: return "Miércoles";
+	        case THURSDAY: return "Jueves";
+	        case FRIDAY: return "Viernes";
+	        case SATURDAY: return "Sábado";
+	        case SUNDAY: return "Domingo";
+	        default: return "";
+	    }
 	}
 }
