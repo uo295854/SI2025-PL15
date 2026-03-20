@@ -3,6 +3,8 @@ package giis.sisinfo.view;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
 import java.awt.*;
 
 public class ReservaInstalacionSocioView extends JFrame {
@@ -43,6 +45,12 @@ public class ReservaInstalacionSocioView extends JFrame {
 
 	public JRadioButton getRbPagoUso() { return rbPagoUso; }
 	public JRadioButton getRbPagoMensual() { return rbPagoMensual; }
+	
+	
+	private TableRowSorter<DefaultTableModel> desplegableDias;
+
+	public TableRowSorter<DefaultTableModel> getDesplegableDias() { return desplegableDias; }
+	
 
 	public ReservaInstalacionSocioView() {
 		setTitle("Reserva de una instalación");
@@ -99,9 +107,12 @@ public class ReservaInstalacionSocioView extends JFrame {
 		JPanel panel = new JPanel(new BorderLayout(5, 5));
 		panel.setBorder(new TitledBorder("Seleccionar fecha (lista de días)"));
 
-		tablaDias = new JTable(new DefaultTableModel(
-				new Object[] { "Día", "Fecha", "Estado" }, 0));
+		DefaultTableModel modeloDias = new DefaultTableModel(new Object[]{"Día ▼", "Fecha ▼", "Estado"}, 0);
+		tablaDias = new JTable(modeloDias);
 		tablaDias.setRowHeight(22);
+
+		desplegableDias = new TableRowSorter<>(modeloDias);
+		tablaDias.setRowSorter(desplegableDias);
 
 		panel.add(new JScrollPane(tablaDias), BorderLayout.CENTER);
 		panel.setPreferredSize(new Dimension(400, 220));
