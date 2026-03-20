@@ -9,9 +9,11 @@ import giis.sisinfo.view.ConsultarReservasSocioView;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
+import giis.sisinfo.model.ReservaInstalacionSocioModel;
 import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 import giis.sisinfo.view.ReservaInstalacionAdminView;
+import giis.sisinfo.view.ReservaInstalacionSocioView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 import giis.sisinfo.model.ConsultarReservasSocioModel;
 import giis.sisinfo.model.PeriodoInscripcionModel;
@@ -43,6 +45,7 @@ public class MainController {
         view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
         view.getBtnReservaInstalacionesAuto().addActionListener(e -> abrirReservaInstalacionesAuto());
         view.getBtnInscripcionActividad().addActionListener(e -> abrirInscripcionActividad());
+        view.getBtnReservaInstalacionSocio().addActionListener(e-> abrirReservaInstalacionSocio());
 
     }
 
@@ -115,6 +118,14 @@ public class MainController {
 		new InscripcionActividadController(v, model, idSocio);
 		v.setVisible(true);
 	}
+	 
+	 private void abrirReservaInstalacionSocio() {
+		 ReservaInstalacionSocioView v = new ReservaInstalacionSocioView();
+	        ReservaInstalacionSocioModel m = new ReservaInstalacionSocioModel();
+	        
+	        int idSocio = Session.get().getIdSocio();
+	        new ReservaInstalacionSocioController(m, v,idSocio);
+	 }
     
     
     // Método para habilitar/deshabilitar botones según el rol del usuario
@@ -155,6 +166,9 @@ public class MainController {
         	System.out.println("MainController | Se habilita botón de Consultar Reservas de Socio siendo el usuario Admin");
         }
         */
+        
+        // Reservar una instalacion para una fecha determinada por parte de un Socio
+        view.getBtnReservaInstalacionSocio().setEnabled(s.isSocio());
         
     }
 }

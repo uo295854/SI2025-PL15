@@ -16,7 +16,7 @@ import giis.sisinfo.dto.DiaReservaSocioDTO;
 import giis.sisinfo.dto.HoraReservaSocioDTO;
 import giis.sisinfo.dto.ResguardoReservaSocioDTO;
 import giis.sisinfo.model.ReservaInstalacionSocioModel;
-import giis.sisinfo.util.ResguardoReservaAdminSocioPdf;
+import giis.sisinfo.util.ResguardoReservaSocioPdf;
 import giis.sisinfo.view.ReservaInstalacionSocioView;
 
 public class ReservaInstalacionSocioController {
