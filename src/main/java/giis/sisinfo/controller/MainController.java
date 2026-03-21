@@ -20,7 +20,9 @@ import giis.sisinfo.session.Session;
 import giis.sisinfo.view.ReservaInstalacionesView;
 import giis.sisinfo.model.ReservaInstalacionesModel;
 import giis.sisinfo.view.InscripcionActividadView;
+import giis.sisinfo.view.ListadoCargosMensualesView;
 import giis.sisinfo.model.InscripcionActividadModel;
+import giis.sisinfo.model.ListadoCargosMensualesModel;
 
 public class MainController {
 
@@ -43,6 +45,7 @@ public class MainController {
         view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
         view.getBtnReservaInstalacionesAuto().addActionListener(e -> abrirReservaInstalacionesAuto());
         view.getBtnInscripcionActividad().addActionListener(e -> abrirInscripcionActividad());
+        view.getBtnListadoCargosMensuales().addActionListener(e -> abrirCargosMensuales());
 
     }
 
@@ -115,6 +118,13 @@ public class MainController {
 		new InscripcionActividadController(v, model, idSocio);
 		v.setVisible(true);
 	}
+	 
+	 private void abrirCargosMensuales() {
+		 ListadoCargosMensualesView v = new ListadoCargosMensualesView();
+		 ListadoCargosMensualesModel m = new ListadoCargosMensualesModel();
+		 new ListadoCargosMensualesController(m,v);
+		 
+	 }
     
     
     // Método para habilitar/deshabilitar botones según el rol del usuario
@@ -156,5 +166,7 @@ public class MainController {
         }
         */
         
+        //Consultar cargos mensuales de los socios
+        view.getBtnListadoCargosMensuales().setEnabled(isAdmin);
     }
 }
