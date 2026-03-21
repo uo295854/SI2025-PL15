@@ -60,9 +60,9 @@ public class VisualizarDisponibilidadInstalacionesSocioModel {
 
 			String estado;
 			if (i > 15)
-				estado = "NO_RESERVABLE";
+				estado = "No Reservable";
 			else
-				estado = diaCompleto(idInstalacion, fecha) ? "COMPLETO" : "DISPONIBLE";
+				estado = diaCompleto(idInstalacion, fecha) ? "Completo" : "Disponible";
 
 			resultado.add(new DiaReservaSocioDTO(diaSemana(fecha), fecha.toString(), estado));
 		}
@@ -164,19 +164,19 @@ public class VisualizarDisponibilidadInstalacionesSocioModel {
 	            String motivo;
 
 	            if (nombreActividad != null) {
-	                estado = "RESERVADA POR ACTIVIDAD";
+	                estado = "Reservada por Actividad: " +nombreActividad;
 	                motivo = nombreActividad;
 	            } else if (idSocioReserva != null) {
 	            	if(idSocioReserva == idSocioActual) {
-	            		estado = "RESERVADA POR " + socioReserva;
+	            		estado = "Reservada por: " + socioReserva;
 	            		motivo = socioReserva;
 	            	}else {
-	            		estado = "RESERVADA POR SOCIO";
+	            		estado = "Reservada por Socio";
 	            		motivo = "";
 	            		
 	            	}
 	            } else {
-	                estado = "LIBRE";
+	                estado = "Libre";
 	                motivo = "";
 	            }
 

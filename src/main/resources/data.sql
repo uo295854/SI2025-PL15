@@ -53,6 +53,12 @@ INSERT OR IGNORE INTO Usuario (email, username, password, rol, id_admin, id_soci
    NULL,
    NULL,
    (SELECT id_nosocio FROM NoSocio WHERE dni='44444444D'));
+   
+INSERT OR IGNORE INTO Usuario (email, username, password, rol, id_admin, id_socio, id_nosocio) VALUES
+  ('maria@example.com', 'socio2', 'socio2', 'SOCIO',
+   NULL,
+   (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+   NULL);
 
 -- ACTIVIDAD SIN INCIDENCIAS
 INSERT OR IGNORE INTO Actividad (

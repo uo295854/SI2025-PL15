@@ -20,7 +20,9 @@ import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
 import giis.sisinfo.session.Session;
 import giis.sisinfo.view.ReservaInstalacionesView;
+import giis.sisinfo.view.VisualizarDisponibilidadInstalacionesSocioView;
 import giis.sisinfo.model.ReservaInstalacionesModel;
+import giis.sisinfo.model.VisualizarDisponibilidadInstalacionesSocioModel;
 import giis.sisinfo.view.InscripcionActividadView;
 import giis.sisinfo.view.ListadoCargosMensualesView;
 import giis.sisinfo.model.InscripcionActividadModel;
@@ -49,6 +51,7 @@ public class MainController {
         view.getBtnInscripcionActividad().addActionListener(e -> abrirInscripcionActividad());
         view.getBtnListadoCargosMensuales().addActionListener(e -> abrirCargosMensuales());
         view.getBtnReservaInstalacionSocio().addActionListener(e-> abrirReservaInstalacionSocio());
+        view.getBtnVisualizarDisponibilidadInstalaciones().addActionListener(e-> abrirVisualizarDisponibilidadInstalacionesSocio());
 
     }
 
@@ -136,6 +139,14 @@ public class MainController {
 	        int idSocio = Session.get().getIdSocio();
 	        new ReservaInstalacionSocioController(m, v,idSocio);
 	 }
+	 
+	 private void abrirVisualizarDisponibilidadInstalacionesSocio() {
+		 VisualizarDisponibilidadInstalacionesSocioView v = new VisualizarDisponibilidadInstalacionesSocioView();
+		 VisualizarDisponibilidadInstalacionesSocioModel m = new VisualizarDisponibilidadInstalacionesSocioModel();
+		 
+		 int idSocio = Session.get().getIdSocio();
+		 new VisualizarDisponibilidadInstalacionesSocioController(m, v, idSocio);
+	 }
     
     
     // Método para habilitar/deshabilitar botones según el rol del usuario
@@ -183,6 +194,9 @@ public class MainController {
 
         // Reservar una instalacion para una fecha determinada por parte de un Socio
         view.getBtnReservaInstalacionSocio().setEnabled(s.isSocio());
+        
+        // Visualizar la disponibilidad de las instalaciones por parte de un Socio
+        view.getBtnVisualizarDisponibilidadInstalaciones().setEnabled(s.isSocio());
         
     }
 }
