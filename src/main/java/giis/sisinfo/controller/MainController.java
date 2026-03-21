@@ -22,7 +22,9 @@ import giis.sisinfo.session.Session;
 import giis.sisinfo.view.ReservaInstalacionesView;
 import giis.sisinfo.model.ReservaInstalacionesModel;
 import giis.sisinfo.view.InscripcionActividadView;
+import giis.sisinfo.view.ListadoCargosMensualesView;
 import giis.sisinfo.model.InscripcionActividadModel;
+import giis.sisinfo.model.ListadoCargosMensualesModel;
 
 public class MainController {
 
@@ -45,6 +47,7 @@ public class MainController {
         view.getBtnReservaInstalacionAdmin().addActionListener(e->abrirReservaInstalacionesAdmin());
         view.getBtnReservaInstalacionesAuto().addActionListener(e -> abrirReservaInstalacionesAuto());
         view.getBtnInscripcionActividad().addActionListener(e -> abrirInscripcionActividad());
+        view.getBtnListadoCargosMensuales().addActionListener(e -> abrirCargosMensuales());
         view.getBtnReservaInstalacionSocio().addActionListener(e-> abrirReservaInstalacionSocio());
 
     }
@@ -119,6 +122,13 @@ public class MainController {
 		v.setVisible(true);
 	}
 	 
+	 private void abrirCargosMensuales() {
+		 ListadoCargosMensualesView v = new ListadoCargosMensualesView();
+		 ListadoCargosMensualesModel m = new ListadoCargosMensualesModel();
+		 new ListadoCargosMensualesController(m,v);
+	 }
+		 
+
 	 private void abrirReservaInstalacionSocio() {
 		 ReservaInstalacionSocioView v = new ReservaInstalacionSocioView();
 	        ReservaInstalacionSocioModel m = new ReservaInstalacionSocioModel();
@@ -167,6 +177,10 @@ public class MainController {
         }
         */
         
+
+        //Consultar cargos mensuales de los socios
+        view.getBtnListadoCargosMensuales().setEnabled(isAdmin);
+
         // Reservar una instalacion para una fecha determinada por parte de un Socio
         view.getBtnReservaInstalacionSocio().setEnabled(s.isSocio());
         
