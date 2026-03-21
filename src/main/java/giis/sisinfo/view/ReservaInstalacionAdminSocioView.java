@@ -50,6 +50,15 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 	public JButton getBuscar() { return Buscar; }
 	
 	
+	//Botones para que se seleccione si se paga al momento del uso o se queda pendiente el pago
+	private JRadioButton rbPagoUso;
+	private JRadioButton rbPagoMensual;
+	
+	public JRadioButton getRbPagoUso() { return rbPagoUso; }
+	public JRadioButton getRbPagoMensual() { return rbPagoMensual; }
+
+	
+	
 	public ReservaInstalacionAdminSocioView() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(980,620);
@@ -294,6 +303,24 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
         c.anchor = GridBagConstraints.EAST;
         panel.add(reservar, c);
 
+        
+        rbPagoUso = new JRadioButton("Pagar en el momento del uso");
+        rbPagoMensual = new JRadioButton("Añadir a la cuota mensual");
+        
+        ButtonGroup grupopago = new ButtonGroup();
+        grupopago.add(rbPagoUso);
+        grupopago.add(rbPagoMensual);
+        
+        c.gridx = 5;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.WEST;
+        panel.add(new JLabel("Forma de pago:"), c);
+
+        c.gridy = 1;
+        panel.add(rbPagoUso, c);
+
+        c.gridy = 2;
+        panel.add(rbPagoMensual, c);
        
         return panel;
 	}
@@ -323,6 +350,16 @@ public class ReservaInstalacionAdminSocioView extends JFrame {
 		    ((DefaultTableModel) tablaHoras.getModel()).setRowCount(0);
 		    tablaHoras.clearSelection();
 		    setResumenReserva("", "", "", "", "");
+		}
+		
+		public String getEstadoPagoSeleccionado() {
+		    if (rbPagoUso.isSelected())
+		        return "PAGADO";
+		    return "PENDIENTE";
+		}
+		
+		public boolean hayFormaPagoSeleccionada() {
+		    return rbPagoUso.isSelected() || rbPagoMensual.isSelected();
 		}
 	
 }

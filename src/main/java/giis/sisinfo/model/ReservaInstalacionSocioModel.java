@@ -1,6 +1,5 @@
 package giis.sisinfo.model;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,10 +9,9 @@ import java.util.List;
 
 import giis.sisinfo.dto.DiaReservaSocioDTO;
 import giis.sisinfo.dto.HoraReservaSocioDTO;
-import giis.sisinfo.dto.SocioDTO;
 import giis.sisinfo.util.Database;
 
-public class ReservaInstalacionAdminSocioModel {
+public class ReservaInstalacionSocioModel {
 
 	private Database db = new Database();
 
@@ -22,50 +20,9 @@ public class ReservaInstalacionAdminSocioModel {
 	private static final int duracion = 60;
 
 	private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-	public List<SocioDTO> buscadorSocios(String apellidos, String nombre, String numSocio) {
-
-		String sql = "SELECT id_socio, num_socio, nombre,apellidos, email, telefono " + "FROM Socio "
-				+ "WHERE estado='ACTIVO' AND al_corriente_pago=1 "
-				+ "  AND (? IS NULL OR CAST(num_socio AS TEXT) LIKE ?) " + "  AND (? IS NULL OR LOWER(nombre) LIKE ?) "
-				+ "  AND (? IS NULL OR LOWER(apellidos) LIKE ?) " + "ORDER BY apellidos,nombre";
-
-		String nsocio = comprobador(numSocio);
-		String nom = comprobador(nombre);
-		String apell = comprobador(apellidos);
-
-		List<Object[]> filas = db.executeQueryArray(sql, nsocio, nsocio, nom, nom, apell, apell);
-
-		List<SocioDTO> resultado = new ArrayList<>();
-
-		for (Object[] f : filas) {
-			// posicion 0 para id_socio
-			// posicion 1 para num_socio
-			// posicion 2 para nombre
-			// posicion 3 para apellidos
-			// posicion 4 para email
-			// posicion 5 para telefono
-
-			int idSocio = ((Number) f[0]).intValue();
-			String nu = String.valueOf(f[1]);
-			String nombreSocio = String.valueOf(f[2]);
-			String apellidosSocio = String.valueOf(f[3]);
-			String email = (f[4] == null) ? "" : f[4].toString();
-			String tel = (f[5] == null) ? "" : f[5].toString();
-
-			resultado.add(new SocioDTO(idSocio, apellidosSocio, nombreSocio, nu, email, tel));
-		}
-
-		return resultado;
-	}
-
-	private String comprobador(String s) {
-		if (s == null || s.trim().isEmpty())
-			return null;
-
-		return "%" + s.trim().toLowerCase() + "%";
-	}
-
+	
+	
+	
 	public boolean puedeSocioReservar(int id_socio) {
 		String sql = "SELECT estado, al_corriente_pago FROM Socio WHERE id_socio=?";
 		List<Object[]> filas = db.executeQueryArray(sql, id_socio);
@@ -414,6 +371,7 @@ public class ReservaInstalacionAdminSocioModel {
 		db.executeUpdate(sql, idSocio, idReservaIns, importe, "RESERVA", LocalDate.now().toString(), estadoPago);
 	}
 	
+	
 	private String diaSemana(LocalDate fecha) {
 	    switch (fecha.getDayOfWeek()) {
 	        case MONDAY: return "Lunes";
@@ -426,5 +384,4 @@ public class ReservaInstalacionAdminSocioModel {
 	        default: return "";
 	    }
 	}
-	
 }

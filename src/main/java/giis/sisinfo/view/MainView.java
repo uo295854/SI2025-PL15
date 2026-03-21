@@ -33,8 +33,7 @@ public class MainView extends JFrame {
 	private JButton btnReservaInstalacionesAuto;
 	private JButton btnInscripcionActividad;
 	private JButton btnListadoCargosMensuales;
-	
-
+	private JButton btnReservaInstalacionSocio;
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
@@ -112,10 +111,15 @@ public class MainView extends JFrame {
 		btnInscripcionActividad = new JButton("Inscripción a Actividades");
 		btnInscripcionActividad.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnInscripcionActividad);
-		
+
 		btnListadoCargosMensuales = new JButton("Listado de cargos mensuales de a clientes");
 		btnListadoCargosMensuales.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnListadoCargosMensuales);
+
+		btnReservaInstalacionSocio = new JButton("Reserva Instalaciones por los Socios");
+		btnReservaInstalacionSocio.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnReservaInstalacionSocio);
+
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 
@@ -145,6 +149,10 @@ public class MainView extends JFrame {
 
 	public JButton getBtnConsultarReservasSocioView() {
 		return btnConsultarReservasSocioView;
+	}
+	
+	public JButton getBtnReservaInstalacionSocio() {
+	    return btnReservaInstalacionSocio;
 	}
 
 	public JButton getBtnListadoCargosMensuales() {
