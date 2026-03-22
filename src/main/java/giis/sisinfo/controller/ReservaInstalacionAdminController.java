@@ -13,6 +13,8 @@ import java.util.Locale;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import giis.sisinfo.dto.ActividadDTO;
 import giis.sisinfo.dto.InstalacionDTO;
@@ -26,190 +28,215 @@ public class ReservaInstalacionAdminController {
 	private ReservaInstalacionAdminView view;
 	private ReservaInstalacionAdminModel model;
 	
-	private List<String> listaInstalaciones;
+	private List<InstalacionDTO> listaInstalaciones;
 	private List<ActividadDTO> listaActividades;
+	private List<String> diasActividad;
+	private List<ReservaAdminDTO> listaConflictos;
 	JComboBox miSelectorInstalaciones;
 	JComboBox miSelectorActividades;
+	ActividadDTO actividadSeleccionada;
 	
 	public ReservaInstalacionAdminController(ReservaInstalacionAdminView nview, ReservaInstalacionAdminModel nmodel) {
 		this.view = nview;
 		this.model = nmodel;
-		listaInstalaciones = this.getNombreInstalaciones();
-		initSelectorInstalaciones();
-		actualizarActividadesDisponibles();
-		actualizarDetallesActividad();
+
 		initView();
 		initController();
 	}
 	
 	public void initView() {
 		view.setVisible(true);
+		actualizarSelectorInstalaciones();
+		actualizarSelectorActividades();
+		actualizarSelectorFechas();
+		actualizarDetalles();
+		actualizarConflictos();	
 	}
 	
 	public void initController() {
-		//lanza comprobarConflictos() cuando se modifica el panel de seleccionar fecha
-		view.getSelectorFechaInicial().getDateEditor().addPropertyChangeListener("date", evt -> {
-		    Date fechaSeleccionada = (Date) evt.getNewValue();
 
-		    if (fechaSeleccionada != null) {
-		        System.out.println("ReservaInstalacionAdminController | Fecha Inicial Seleccionada: " + fechaSeleccionada);
+		//cuando se selecciona una instalación en el selector de instalaciones
+		view.getSelectorInstalaciones().addItemListener(e -> {
+		    if (e.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+		        if (view.getSelectorInstalaciones().isPopupVisible()) {
+		            actualizarSelectorActividades();
+		            actualizarSelectorFechas();
+		            actualizarDetalles();
+		            actualizarConflictos();
+		        }
 		    }
-		    comprobarConflictos();
 		});
 		
-		view.getSelectorFechaFinal().getDateEditor().addPropertyChangeListener("date", evt -> {
-		    Date fechaSeleccionada = (Date) evt.getNewValue();
-
-		    if (fechaSeleccionada != null) {
-		        System.out.println("ReservaInstalacionAdminController | Fecha Final Seleccionada: " + fechaSeleccionada);
+		//cuando se selecciona una actividad
+		view.getSelectorActividad().addItemListener(e -> {
+		    if (e.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+		        if (view.getSelectorActividad().isPopupVisible()) {
+		            actualizarSelectorFechas();
+		            actualizarDetalles();
+		            actualizarConflictos();
+		        }
 		    }
-		    comprobarConflictos();
 		});
 		
-		view.getSelectorInstalaciones().addActionListener(new ActionListener() {	
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("ReservaInstalacionAdminController | Instalación seleccionada: " + view.getSelectorInstalaciones().getSelectedItem().toString());
-				comprobarConflictos();
-				actualizarActividadesDisponibles();	
-			}
+		//cuando se selecciona una fecha
+		view.getSelectorFechas().addItemListener(e -> {
+		    if (e.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+		        if (view.getSelectorFechas().isPopupVisible()) {
+		        	actualizarConflictos();
+		        }
+		    }
 		});
 		
-		view.getCampoActividad().addActionListener(new ActionListener() {	
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//System.out.println("ReservaInstalacionAdminController | Actividad seleccionada: " + view.getCampoActividad().getSelectedItem().toString());
-				actualizarDetallesActividad();
-				
-			}
-		});
 		
 		//botón de reservar
 		view.getBotonReservar().addActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (comprobarReservaValida()) {
-					try {
-						reservarInstalacion();
-					} catch (Exception e1){
-						JOptionPane.showMessageDialog(null, "Error: No existe una actividad con ese nombre");
-						throw new RuntimeException("ReservaInstalacionAdminController | Error comprobando actividad, no existe una actividad con ese nombre", e1);		
-					}
-					
+				String horaInicial, horaFinal, fecha, fechaHoraInicial, fechaHoraFinal, nombreActividad;
+				horaInicial = DateConverter.convertirHora(view.getSelectorHoraInicial().getValue().toString());
+				horaFinal = DateConverter.convertirHora(view.getSelectorHoraFinal().getValue().toString());
+				fecha = view.getSelectorFechas().getSelectedItem().toString();
+				
+				if (horaInicial.compareTo(horaFinal)>0) {
+					JOptionPane.showMessageDialog(view, "ERROR: La hora final es anterior a la hora inicial.");
+					System.out.println("ERROR: La hora final es anterior a la hora inicial.");
+					return;
 				}
+			
+				fechaHoraInicial = fecha +" "+horaInicial;
+				fechaHoraFinal = fecha +" "+horaFinal;
+				nombreActividad=view.getSelectorActividad().getSelectedItem().toString();
+				
+				if(listaConflictos.size()>0) {
+					model.eliminarReservasConflictivas(fechaHoraInicial, fechaHoraFinal);
+					System.out.println("Se han eliminado "+listaConflictos.size()+" reservas conflictivas");
+				}
+				
+				
+				model.hacerReserva(fechaHoraInicial, fechaHoraFinal, nombreActividad);
+				
+				System.out.println("Reserva hecha con los siguientes valores:\n"
+						 + "	fechaHoraInicial: "+fechaHoraInicial +"\n"
+						 + "	fechaHoraFinal:   "+fechaHoraFinal+"\n"
+						 + "	nombreActividad:  "+nombreActividad+"\n");
+				
+				JOptionPane.showMessageDialog(view, "Reserva realizada con éxito");
+				System.out.println("ReservaInstalacionAdminController | Reserva realizada con éxito en la tabla Bloqueo_por_Actividad");
+				actualizarConflictos();		
 			}
 		});
 		
+		
+		view.getSelectorHoraInicial().addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				actualizarConflictos();	
+			}
+        });
+		
+		view.getSelectorHoraFinal().addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				actualizarConflictos();	
+			}
+        });
+		
 	}
 	
-	public void initSelectorInstalaciones() {
+	
+	public void actualizarSelectorInstalaciones() {
+		actualizarListaInstalaciones();
+		view.getSelectorInstalaciones().removeAllItems();
+		for(int i = 0; i<listaInstalaciones.size(); i++) {
+			view.getSelectorInstalaciones().addItem(listaInstalaciones.get(i).getNombreInstalacion());
+		}
+		
+	}
+	
+	public void actualizarListaInstalaciones() {
+		listaInstalaciones=model.getInstalaciones();
 		System.out.println("Cantidad de Instalaciones: " + listaInstalaciones.size());
-		miSelectorInstalaciones = view.getSelectorInstalaciones();
-		miSelectorInstalaciones.removeAllItems();
-		for (int i = 0; i<listaInstalaciones.size(); i++) {
-			miSelectorInstalaciones.addItem(listaInstalaciones.get(i));
-			System.out.println("Instalación " +i +": " + listaInstalaciones.get(i));
+	}
+	
+	public void actualizarSelectorActividades() {
+		actualizarListaActividades();
+		view.getSelectorActividad().removeAllItems();
+		for (int i =0; i<listaActividades.size(); i++) {
+			System.out.println(i+" "+listaActividades.get(i).getNombre());
+			view.getSelectorActividad().addItem(listaActividades.get(i).getNombre());
+		}
+		
+	}
+	
+	public void actualizarListaActividades() {
+		listaActividades=model.getActividadesEnInstalacion(view.getSelectorInstalaciones().getSelectedItem().toString());
+		System.out.println("Cantidad de Actividades: " + listaActividades.size());
+	}
+	
+	public void actualizarSelectorFechas() {
+		actualizarListaFechas();
+		view.getSelectorFechas().removeAllItems();
+		for (int i = 0; i<diasActividad.size(); i++) {
+			view.getSelectorFechas().addItem(diasActividad.get(i));
 		}
 	}
 	
-	public List<String> getNombreInstalaciones() {
-		List<InstalacionDTO> listaInstalaciones = model.getInstalaciones();
-		List<String> aux = new ArrayList<String>();
-		if (listaInstalaciones.size()<=0) {
-			return null;
+	public void actualizarListaFechas() {
+		ActividadDTO actividadSeleccionada;
+		actividadSeleccionada = listaActividades.get(view.getSelectorActividad().getSelectedIndex());
+		
+		
+		String fechaInicial = actividadSeleccionada.getFechaInicio();
+		String fechaFinal = actividadSeleccionada.getFechaFin();
+		
+		diasActividad = new ArrayList<String>();
+		
+		for(String fechaActual=fechaInicial; !fechaActual.equals(fechaFinal);) {
+			diasActividad.add(fechaActual);
+			fechaActual = LocalDate.parse(fechaActual).plusDays(1).toString();
 		}
-		for (int i = 0; i<listaInstalaciones.size(); i++) {
-			aux.add(listaInstalaciones.get(i).getNombreInstalacion());
-		}
-		return aux;	
+		diasActividad.add(fechaFinal);
 	}
 	
-	public List<ActividadDTO> getActividadesDisponibles(){
-		String instalacionSeleccionada = view.getSelectorInstalaciones().getSelectedItem().toString();
-		return model.getActividadesEnInstalacion(instalacionSeleccionada);
-	} 
-	
-	public void actualizarActividadesDisponibles() {
-		miSelectorActividades = view.getCampoActividad();
-		miSelectorActividades.removeAllItems();
-		listaActividades = getActividadesDisponibles();
-		if (listaActividades.size()<=0) {
-			System.out.println("ReservaInstalacionAdminController | No hay actividades disponibles para esta instalación");
-			return;
-		}
-		for (int i = 0; i<getActividadesDisponibles().size(); i++) {
-			miSelectorActividades.addItem(listaActividades.get(i).getNombre());
-			System.out.println("Actividad " +i +": " + listaActividades.get(i).getNombre());
-		}
-	}
-	
-	public void actualizarDetallesActividad() {
+	public void actualizarDetalles() {
 		if (listaActividades.size()<=0) {
 			System.out.println("ReservaInstalacionAdminController | No hay detalles para imprimir porque no hay actividades ofertadas");
 			return;
 		}
-		if (view.getCampoActividad().getSelectedIndex()<0) {
+		if (view.getSelectorActividad().getSelectedIndex()<0) {
 			System.out.println("ReservaInstalacionAdminController | No hay detalles para imprimir porque no hay actividades ofertadas");
 			return;
 		}
-		view.getDetallesActividad().setText(listaActividades.get(view.getCampoActividad().getSelectedIndex()).getDescripcion());
+		view.getDetallesActividad().setText(listaActividades.get(view.getSelectorActividad().getSelectedIndex()).getDescripcion());
 		System.out.println("ReservaInstalacionAdminController | Detalles de actividades mostrados por pantalla");
 	}
 	
-	
-	public void comprobarConflictos() {
-		System.out.println("ReservaInstalacionAdminController | Comprobando conflictos");
+	public void actualizarConflictos() {
 		
-		String fechaInicial;
-		String horaInicial;
-		String fechaFinal;
-		String horaFinal;
-		String instalacion;
+		String fecha, horaInicio, horaFin, nombreInstalacion;
 		
-		
-		//fecha inicial
-		if (view.getSelectorFechaInicial().getDate() == null) {return;}
-		fechaInicial = DateConverter.convertirFecha(view.getSelectorFechaInicial().getDate().toString());
-		
-		
-		//fecha final
-		if (view.getSelectorFechaFinal().getDate() == null) {return;}
-		fechaFinal = DateConverter.convertirFecha(view.getSelectorFechaFinal().getDate().toString());
-		
-		//hora inicial
-		if (view.getSelectorHoraInicial().getValue() == null) {return;}
-		horaInicial = DateConverter.convertirHora(view.getSelectorHoraInicial().getValue().toString());
-		
-		
-		//hora final
-		if (view.getSelectorHoraFinal().getValue() == null) {return;}
-		horaFinal = DateConverter.convertirHora(view.getSelectorHoraFinal().getValue().toString());
-		
-		
-		//instalación
-		if (view.getSelectorInstalaciones().getSelectedItem() == null) {return;}
-		instalacion = view.getSelectorInstalaciones().getSelectedItem().toString();
+		fecha=view.getSelectorFechas().getSelectedItem().toString();
+		horaInicio=DateConverter.convertirHora(view.getSelectorHoraInicial().getValue().toString());
+		horaFin=DateConverter.convertirHora(view.getSelectorHoraFinal().getValue().toString());
+		nombreInstalacion = view.getSelectorInstalaciones().getSelectedItem().toString();
 
+		System.out.printf("ReservaInstalacionAdminController | Valor de fecha: '%s'\n",fecha);
+		System.out.printf("ReservaInstalacionAdminController | Valor de horaInicial: '%s'\n",horaInicio);
+		System.out.printf("ReservaInstalacionAdminController | Valor de horaFinal: '%s'\n",horaFin);
+		System.out.printf("ReservaInstalacionAdminController | Valor de instalacion: '%s'\n",nombreInstalacion);
 		
-		if (fechaFinal.isBlank() || fechaInicial.isBlank() || horaInicial.isBlank() || horaFinal.isBlank() || instalacion.isBlank()) {
-			System.out.println("ReservaInstalacionAdminController | No estan rellenados todos los campos, no se comprueban conflictos");
-			return;
-		}
+		String fechaHoraInicial = fecha + " " + horaInicio;
+		String fechaHoraFinal = fecha + " " + horaFin;
+		System.out.println("fechaHoraInicial: "+fechaHoraInicial+" fechaHoraFinal: "+fechaHoraFinal);
 		
-		System.out.printf("ReservaInstalacionAdminController | Valor de fechaInicial: '%s'\n",fechaInicial);
-		System.out.printf("ReservaInstalacionAdminController | Valor de fechaFinal: '%s'\n",fechaFinal);
-		System.out.printf("ReservaInstalacionAdminController | Valor de horaInicial: '%s'\n",horaInicial);
-		System.out.printf("ReservaInstalacionAdminController | Valor de horaFinal: '%s'\n",horaFinal);
-		System.out.printf("ReservaInstalacionAdminController | Valor de instalacion: '%s'\n",instalacion);
-		
-		String fechaHoraInicial = fechaInicial + " " + horaInicial;
-		String fechaHoraFinal = fechaFinal + " " + horaFinal;
-		
-		List<ReservaAdminDTO> listaConflictos = model.getReservas(fechaHoraInicial, fechaHoraFinal, instalacion);
+		listaConflictos = new ArrayList<ReservaAdminDTO>();
+		listaConflictos = model.getReservas(fechaHoraInicial, fechaHoraFinal, nombreInstalacion);
 		
 		System.out.println(listaConflictos.size());
 		if (listaConflictos.size()<=0) {
 			System.out.printf("ReservaInstalacionAdminController | No se han detectado conflictos\n");
 			view.getPanelConflictos().setText("");
+			view.getTxtrAvisoConflictos().setVisible(false);
 			return;
 		}
 		
@@ -217,78 +244,17 @@ public class ReservaInstalacionAdminController {
 		String conflictos = "";
 		for (int i = 0; i<listaConflictos.size(); i++) {
 			ReservaAdminDTO reserva = listaConflictos.get(i);
-			conflictos += String.format("Conflicto %d: %s\n"
-										 + "	%s - %s\n\n", i+1, 
-										 reserva.getNombreActividad(), 
+			conflictos += String.format("Conflicto Nº%d con reserva ID: %s\n"
+									  + "	%s - %s\n\n", i+1, 
+										 reserva.getIdReserva(),
 										 reserva.getFechaHoraInicial(), 
 										 reserva.getFechaHoraFinal());
 		}
 		
 		view.getPanelConflictos().setText(conflictos);
+		view.getTxtrAvisoConflictos().setVisible(true);
+		
 	}
 	
-	public boolean comprobarReservaValida() {
-		//comprobación 1: que las fechas sean válidas
-		if (view.getSelectorFechaInicial().getDate() == null) {
-			System.out.println("ReservaInstalacionAdminController | La fecha inicial es nula");
-			JOptionPane.showMessageDialog(null, "Error: La fecha inicial está vacía");
-			return false;
-		}
-		if (view.getSelectorFechaFinal().getDate() == null) {
-			System.out.println("ReservaInstalacionAdminController | La fecha final es nula");
-			JOptionPane.showMessageDialog(null, "Error: La fecha final está vacía");
-			return false;
-		}
-		
-		//comprobación 2: que la fecha inicial no sea mayor a la final
-		Date fechaInicial = view.getSelectorFechaInicial().getDate();
-		Date fechaFinal = view.getSelectorFechaFinal().getDate();
-		if (fechaFinal.compareTo(fechaInicial)<0) {
-			System.out.println("ReservaInstalacionAdminController | La fecha inicial es mayor a la fecha final");
-			JOptionPane.showMessageDialog(null, "Error: La fecha final es anterior a la fecha inicial");
-			return false;
-		}
-		
-		//comprobación 3: si las fechas son iguales, que hora inicial no sea mayor a la final
-		Date horaInicial = (Date) view.getSelectorHoraInicial().getValue();
-		Date horaFinal = (Date) view.getSelectorHoraFinal().getValue();
-		
-		if (fechaFinal.compareTo(fechaInicial)==0) {
-			if(horaFinal.compareTo(horaInicial)<0) {
-				System.out.println("ReservaInstalacionAdminController | La hora inicial es mayor a la hora final");
-				JOptionPane.showMessageDialog(null, "Error: La hora final es anterior a la hora inicial");
-				return false;
-			}
-		}
-		
-		//comprobación 4: el nombre de la actividad no está vacío
-		if (view.getCampoActividad().getSelectedItem().toString().isEmpty()) {
-			System.out.println("ReservaInstalacionAdminController | El campo de la actividad está vacío");
-			JOptionPane.showMessageDialog(null, "Error: El campo de nombre de la actividad está vacío");
-			return false;
-		}
-		
-		//pasa todas las comprobaciones
-		return true;		
-	}
 	
-	public void reservarInstalacion() {
-		String fechaInicial = DateConverter.convertirFecha(view.getSelectorFechaInicial().getDate().toString());
-		String fechaFinal = DateConverter.convertirFecha(view.getSelectorFechaFinal().getDate().toString());
-		String horaInicial = DateConverter.convertirHora(view.getSelectorHoraInicial().getValue().toString());
-		String horaFinal = DateConverter.convertirHora(view.getSelectorHoraFinal().getValue().toString());
-		
-		String fechaHoraInicial = fechaInicial + " " + horaInicial;
-		String fechaHoraFinal = fechaFinal + " " + horaFinal;
-		
-		String instalacion = view.getSelectorInstalaciones().getSelectedItem().toString();
-		
-		String nombreActividad = view.getCampoActividad().getSelectedItem().toString();
-		
-		model.hacerReserva(fechaHoraInicial, fechaHoraFinal, instalacion, nombreActividad);
-		System.out.println("ReservaInstalacionAdminController | Reserva realizada con éxito");
-		JOptionPane.showMessageDialog(null, "Reserva realizada con éxito");
-	}
-	
-
 }

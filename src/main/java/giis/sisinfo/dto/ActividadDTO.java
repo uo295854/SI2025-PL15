@@ -69,6 +69,9 @@ public class ActividadDTO {
 
 	public void setNombreActividad(String nombreActividad) {this.nombre = nombreActividad;}
 	public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
+	public void setFechaInicio(String fechaInicio) {this.fechaInicio = fechaInicio;}
+	public void setFechaFin(String fechaFin) {this.fechaFin = fechaFin;}
+	
 	
 	
 }
