@@ -21,6 +21,9 @@ import java.util.Date;
 import java.util.Calendar;
 import java.awt.TextArea;
 import java.awt.Choice;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextArea;
+import java.awt.Font;
 
 public class ReservaInstalacionAdminView extends JFrame {
 
@@ -29,12 +32,12 @@ public class ReservaInstalacionAdminView extends JFrame {
 	JComboBox selectorInstalaciones;
 	JSpinner selectorHoraFinal;
 	JSpinner selectorHoraInicial;
-	JDateChooser selectorFechaFinal;
-	JDateChooser selectorFechaInicial;
 	TextArea panelConflictos;
 	Button botonReservar;
-	JComboBox campoActividad;
+	JComboBox selectorActividad;
 	TextField detallesActividad;
+	JComboBox selectorFechas;
+	JTextArea txtrAvisoConflictos;
 
 
 	/**
@@ -58,7 +61,7 @@ public class ReservaInstalacionAdminView extends JFrame {
 	 */
 	public ReservaInstalacionAdminView() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 580, 412);
+		setBounds(100, 100, 590, 458);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -68,11 +71,11 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnInstalacinAReservar.setEditable(false);
 		txtpnInstalacinAReservar.setText("Instalación a reservar:");
 		txtpnInstalacinAReservar.setBackground(new Color(240, 240, 240));
-		txtpnInstalacinAReservar.setBounds(10, 10, 124, 18);
+		txtpnInstalacinAReservar.setBounds(10, 10, 138, 18);
 		contentPane.add(txtpnInstalacinAReservar);
 		
 		selectorInstalaciones = new JComboBox();
-		selectorInstalaciones.setBounds(133, 10, 198, 20);
+		selectorInstalaciones.setBounds(144, 10, 198, 20);
 		contentPane.add(selectorInstalaciones);
 		
 		JTextPane txtpnMotivoDeReserva = new JTextPane();
@@ -82,38 +85,30 @@ public class ReservaInstalacionAdminView extends JFrame {
 		txtpnMotivoDeReserva.setBounds(58, 43, 65, 18);
 		contentPane.add(txtpnMotivoDeReserva);
 		
-		campoActividad = new JComboBox();
-		campoActividad.setBounds(133, 41, 198, 20);
-		contentPane.add(campoActividad);
+		selectorActividad = new JComboBox();
+		selectorActividad.setBounds(144, 41, 198, 20);
+		contentPane.add(selectorActividad);
 		
-		JTextPane txtpnFechaYHora = new JTextPane();
-		txtpnFechaYHora.setEditable(false);
-		txtpnFechaYHora.setText("Fecha y hora inicial:");
-		txtpnFechaYHora.setBackground(UIManager.getColor("Button.background"));
-		txtpnFechaYHora.setBounds(10, 71, 113, 18);
-		contentPane.add(txtpnFechaYHora);
+		JTextPane txtpnHoraInicial = new JTextPane();
+		txtpnHoraInicial.setEditable(false);
+		txtpnHoraInicial.setText("Hora inicial:");
+		txtpnHoraInicial.setBackground(UIManager.getColor("Button.background"));
+		txtpnHoraInicial.setBounds(44, 100, 79, 18);
+		contentPane.add(txtpnHoraInicial);
 		
-		selectorFechaInicial = new JDateChooser();
-		selectorFechaInicial.setBounds(133, 71, 124, 18);
-		contentPane.add(selectorFechaInicial);
-		
-		JTextPane txtpnFechaYHora_2 = new JTextPane();
-		txtpnFechaYHora_2.setEditable(false);
-		txtpnFechaYHora_2.setText("Fecha y hora final:");
-		txtpnFechaYHora_2.setBackground(UIManager.getColor("Button.background"));
-		txtpnFechaYHora_2.setBounds(10, 99, 113, 18);
-		contentPane.add(txtpnFechaYHora_2);
-		
-		selectorFechaFinal = new JDateChooser();
-		selectorFechaFinal.setBounds(133, 99, 124, 18);
-		contentPane.add(selectorFechaFinal);
+		JTextPane txtpnHoraFinal = new JTextPane();
+		txtpnHoraFinal.setEditable(false);
+		txtpnHoraFinal.setText("Hora final:");
+		txtpnHoraFinal.setBackground(UIManager.getColor("Button.background"));
+		txtpnHoraFinal.setBounds(44, 126, 79, 18);
+		contentPane.add(txtpnHoraFinal);
 		
 		// Selector hora final
 		SpinnerDateModel timeModelFinal;
 		selectorHoraFinal = new JSpinner(new SpinnerDateModel(new Date(1772459757224L), null, null, Calendar.MINUTE));
 		JSpinner.DateEditor de_selectorHoraFinal = new JSpinner.DateEditor(selectorHoraFinal, "HH:mm");
 		selectorHoraFinal.setEditor(de_selectorHoraFinal);
-		selectorHoraFinal.setBounds(259, 99, 72, 18);
+		selectorHoraFinal.setBounds(144, 126, 72, 18);
 		contentPane.add(selectorHoraFinal);
 		
 		// Selector hora inicial
@@ -121,30 +116,30 @@ public class ReservaInstalacionAdminView extends JFrame {
 		selectorHoraInicial = new JSpinner(new SpinnerDateModel(new Date(1772459731163L), null, null, Calendar.MINUTE));
 		JSpinner.DateEditor de_selectorHoraInicial = new JSpinner.DateEditor(selectorHoraInicial, "HH:mm");
 		selectorHoraInicial.setEditor(de_selectorHoraInicial);
-		selectorHoraInicial.setBounds(259, 71, 72, 18);
+		selectorHoraInicial.setBounds(144, 100, 72, 18);
 		contentPane.add(selectorHoraInicial);
 		
 		JTextPane txtpnDetalles = new JTextPane();
 		txtpnDetalles.setText("Detalles:");
 		txtpnDetalles.setEditable(false);
 		txtpnDetalles.setBackground(UIManager.getColor("Button.background"));
-		txtpnDetalles.setBounds(10, 127, 86, 18);
+		txtpnDetalles.setBounds(10, 155, 86, 18);
 		contentPane.add(txtpnDetalles);
 		
 		detallesActividad = new TextField();
-		detallesActividad.setBounds(10, 151, 546, 94);
+		detallesActividad.setBounds(10, 179, 546, 94);
 		contentPane.add(detallesActividad);
 		
 		panelConflictos = new TextArea();
 		panelConflictos.setEditable(false);
-		panelConflictos.setBounds(10, 275, 546, 94);
+		panelConflictos.setBounds(10, 303, 546, 94);
 		contentPane.add(panelConflictos);
 		
 		JTextPane txtpnConflictos = new JTextPane();
 		txtpnConflictos.setText("Conflictos:");
 		txtpnConflictos.setEditable(false);
 		txtpnConflictos.setBackground(UIManager.getColor("Button.background"));
-		txtpnConflictos.setBounds(10, 251, 86, 18);
+		txtpnConflictos.setBounds(10, 279, 86, 18);
 		contentPane.add(txtpnConflictos);
 		
 		botonReservar = new Button("Reservar");
@@ -154,6 +149,27 @@ public class ReservaInstalacionAdminView extends JFrame {
 		});
 		botonReservar.setBounds(401, 43, 86, 35);
 		contentPane.add(botonReservar);
+		
+		JTextPane txtpnFecha = new JTextPane();
+		txtpnFecha.setText("Fecha:");
+		txtpnFecha.setEditable(false);
+		txtpnFecha.setBackground(UIManager.getColor("Button.background"));
+		txtpnFecha.setBounds(51, 72, 72, 18);
+		contentPane.add(txtpnFecha);
+		
+		selectorFechas = new JComboBox();
+		selectorFechas.setModel(new DefaultComboBoxModel(new String[] {"2000-01-01"}));
+		selectorFechas.setSelectedIndex(0);
+		selectorFechas.setBounds(144, 72, 154, 22);
+		contentPane.add(selectorFechas);
+		
+		txtrAvisoConflictos = new JTextArea();
+		txtrAvisoConflictos.setFont(new Font("Arial", Font.PLAIN, 9));
+		txtrAvisoConflictos.setText("¡Si presionas el botón \"Reservar\"\r\ncuando hay conflictos, se borrarán \r\nlas reservas conflictivas!");
+		txtrAvisoConflictos.setEditable(false);
+		txtrAvisoConflictos.setBounds(376, 100, 162, 44);
+		contentPane.add(txtrAvisoConflictos);
+		txtrAvisoConflictos.setVisible(false);
 
 	}
 	
@@ -182,22 +198,6 @@ public class ReservaInstalacionAdminView extends JFrame {
 		this.selectorHoraInicial = selectorHoraInicial;
 	}
 
-	public JDateChooser getSelectorFechaFinal() {
-		return selectorFechaFinal;
-	}
-
-	public void setSelectorFechaFinal(JDateChooser selectorFechaFinal) {
-		this.selectorFechaFinal = selectorFechaFinal;
-	}
-
-	public JDateChooser getSelectorFechaInicial() {
-		return selectorFechaInicial;
-	}
-
-	public void setSelectorFechaInicial(JDateChooser selectorFechaInicial) {
-		this.selectorFechaInicial = selectorFechaInicial;
-	}
-
 	public TextArea getPanelConflictos() {
 		return panelConflictos;
 	}
@@ -214,12 +214,12 @@ public class ReservaInstalacionAdminView extends JFrame {
 		this.botonReservar = botonReservar;
 	}
 
-	public JComboBox getCampoActividad() {
-		return campoActividad;
+	public JComboBox getSelectorActividad() {
+		return selectorActividad;
 	}
 
-	public void setCampoActividad(JComboBox campoActividad) {
-		this.campoActividad = campoActividad;
+	public void setSelectorActividad(JComboBox campoActividad) {
+		this.selectorActividad = campoActividad;
 	}
 
 	public TextField getDetallesActividad() {
@@ -229,8 +229,21 @@ public class ReservaInstalacionAdminView extends JFrame {
 	public void setDetallesActividad(TextField detallesActividad) {
 		this.detallesActividad = detallesActividad;
 	}
-	
-	
-	
-	
+
+	public JComboBox getSelectorFechas() {
+		return selectorFechas;
+	}
+
+	public void setSelectorFechas(JComboBox selectorFechas) {
+		this.selectorFechas = selectorFechas;
+	}
+
+	public JTextArea getTxtrAvisoConflictos() {
+		return txtrAvisoConflictos;
+	}
+
+	public void setTxtrAvisoConflictos(JTextArea txtrAvisoConflictos) {
+		this.txtrAvisoConflictos = txtrAvisoConflictos;
+	}
+
 }
