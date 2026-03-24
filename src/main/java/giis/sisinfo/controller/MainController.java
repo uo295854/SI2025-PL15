@@ -25,8 +25,10 @@ import giis.sisinfo.model.ReservaInstalacionesModel;
 import giis.sisinfo.model.VisualizarDisponibilidadInstalacionesSocioModel;
 import giis.sisinfo.view.InscripcionActividadView;
 import giis.sisinfo.view.ListadoCargosMensualesView;
+import giis.sisinfo.view.LoginView;
 import giis.sisinfo.model.InscripcionActividadModel;
 import giis.sisinfo.model.ListadoCargosMensualesModel;
+import giis.sisinfo.model.LoginModel;
 
 public class MainController {
 
@@ -52,6 +54,8 @@ public class MainController {
         view.getBtnListadoCargosMensuales().addActionListener(e -> abrirCargosMensuales());
         view.getBtnReservaInstalacionSocio().addActionListener(e-> abrirReservaInstalacionSocio());
         view.getBtnVisualizarDisponibilidadInstalaciones().addActionListener(e-> abrirVisualizarDisponibilidadInstalacionesSocio());
+        
+        view.getBtnCerrarSesion().addActionListener(e -> cerrarSesion());
 
     }
 
@@ -198,5 +202,17 @@ public class MainController {
         // Visualizar la disponibilidad de las instalaciones por parte de un Socio
         view.getBtnVisualizarDisponibilidadInstalaciones().setEnabled(s.isSocio());
         
+    }
+    
+    private void cerrarSesion() {
+    		Database db = Session.get().getDb();
+    		Session.get().clear();
+    	    
+    	    view.dispose();
+    	    
+    	    LoginView loginView = new LoginView();
+    	    LoginModel loginModel = new LoginModel(db);
+    	    new LoginController(loginView, loginModel, db);
+    	    
     }
 }

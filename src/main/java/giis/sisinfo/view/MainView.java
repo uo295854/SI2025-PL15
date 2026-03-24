@@ -35,6 +35,8 @@ public class MainView extends JFrame {
 	private JButton btnListadoCargosMensuales;
 	private JButton btnReservaInstalacionSocio;
 	private JButton btnVisualizarDisponibilidadInstalacionesSocio;
+	
+	private JButton btnCerrarSesion;
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
@@ -46,7 +48,26 @@ public class MainView extends JFrame {
 		JLabel lblTitle = new JLabel("Menú principal", SwingConstants.CENTER);
 		lblTitle.setFont(lblTitle.getFont().deriveFont(Font.BOLD, 18f));
 		lblTitle.setBorder(new EmptyBorder(15, 10, 5, 10));
-		getContentPane().add(lblTitle, BorderLayout.NORTH);
+		
+		
+		JPanel topPanel = new JPanel(new BorderLayout());
+		topPanel.setBorder(new EmptyBorder(10, 10, 5, 10));
+
+		JPanel leftPanel = new JPanel();
+		leftPanel.setPreferredSize(new Dimension(120, 30));
+		
+		JPanel rightPanel = new JPanel();
+
+		btnCerrarSesion = new JButton("Cerrar sesión");
+		btnCerrarSesion.setPreferredSize(new Dimension(120, 30));
+		rightPanel.add(btnCerrarSesion);
+
+		topPanel.add(leftPanel, BorderLayout.WEST);
+		topPanel.add(lblTitle, BorderLayout.CENTER);
+		topPanel.add(rightPanel, BorderLayout.EAST);
+
+		getContentPane().add(topPanel, BorderLayout.NORTH);
+		
 
 		JPanel panelMain = new JPanel(new BorderLayout(10, 10));
 		panelMain.setBorder(new EmptyBorder(10, 14, 10, 14));
@@ -124,6 +145,8 @@ public class MainView extends JFrame {
 		btnVisualizarDisponibilidadInstalacionesSocio = new JButton("Visualizar Disponibilidad de Instalaciones");
 		btnVisualizarDisponibilidadInstalacionesSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnVisualizarDisponibilidadInstalacionesSocio);
+		
+		
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 
@@ -165,6 +188,9 @@ public class MainView extends JFrame {
 	
 	public JButton getBtnVisualizarDisponibilidadInstalaciones() {
 		return btnVisualizarDisponibilidadInstalacionesSocio;
+	}
+	public JButton getBtnCerrarSesion() {
+	    return btnCerrarSesion;
 	}
 
 	// opcionales

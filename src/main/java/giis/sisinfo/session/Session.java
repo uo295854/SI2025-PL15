@@ -1,5 +1,7 @@
 package giis.sisinfo.session;
 
+import giis.sisinfo.util.Database;
+
 public class Session {
 
 	private static Session instance;
@@ -10,7 +12,7 @@ public class Session {
 	private Integer idSocio;
 	private Integer idNoSocio;
 	private Integer idAdmin;
-
+	private Database db;
 	private Session() {}
 
 	public static Session get() {
@@ -50,4 +52,11 @@ public class Session {
 
 	public Integer getIdAdmin() { return idAdmin; }
 	public void setIdAdmin(Integer idAdmin) { this.idAdmin = idAdmin; }
+	
+	public Database getDb() {
+	    return db;
+	}
+	public void setDb(Database db) {
+	    this.db = db;
+	}
 }

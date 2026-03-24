@@ -13,13 +13,14 @@ public class LoginController {
 
 	private final LoginView view;
 	private final LoginModel model;
-	private final Database db;
+	private Database db;
 
 	public LoginController(LoginView view, LoginModel model, Database db) {
 		this.view = view;
 		this.model = model;
 		this.db = db;
 
+		Session.get().setDb(db);
 		initController();
 		view.setVisible(true);
 	}
@@ -99,5 +100,13 @@ public class LoginController {
 		mainView.setVisible(true);
 
 		view.close();
+	}
+	
+	public Database getDb() {
+	    return db;
+	}
+
+	public void setDb(Database db) {
+	    this.db = db;
 	}
 }
