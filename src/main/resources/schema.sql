@@ -133,16 +133,13 @@ CREATE TABLE IF NOT EXISTS Inscripcion_Actividad (
   id_inscripcion INTEGER PRIMARY KEY AUTOINCREMENT,
   id_socio INTEGER NOT NULL,
   id_actividad INTEGER NOT NULL,
-  fecha_sesion TEXT NOT NULL,
   fecha_inscripcion TEXT NOT NULL,
   estado TEXT NOT NULL DEFAULT 'ACTIVA'
     CHECK (estado IN ('ACTIVA','CANCELADA')),
-  UNIQUE (id_socio, id_actividad, fecha_sesion),
-  FOREIGN KEY (id_socio)
-    REFERENCES Socio(id_socio)
+  UNIQUE (id_socio, id_actividad),
+  FOREIGN KEY (id_socio) REFERENCES Socio(id_socio)
     ON UPDATE CASCADE ON DELETE RESTRICT,
-  FOREIGN KEY (id_actividad)
-    REFERENCES Actividad(id_actividad)
+  FOREIGN KEY (id_actividad) REFERENCES Actividad(id_actividad)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -173,9 +170,6 @@ CREATE TABLE IF NOT EXISTS Pago (
 
 CREATE INDEX IF NOT EXISTS idx_inscripcion_socio
   ON Inscripcion_Actividad(id_socio);
-
-CREATE INDEX IF NOT EXISTS idx_inscripcion_actividad_fecha
-  ON Inscripcion_Actividad(id_actividad, fecha_sesion);
 
 CREATE INDEX IF NOT EXISTS idx_pago_socio
   ON Pago(id_socio);
