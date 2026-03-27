@@ -26,17 +26,8 @@ public class InscripcionActividadModel {
 		List<Object[]> rows = db.executeQueryArray(sql);
 		for (Object[] row : rows) {
 			String nombreActividad = (String) row[0];
-			List<String> fechas = getFechasDisponiblesDeActividad(nombreActividad);
 
-			boolean tieneAlgunaFechaLibre = false;
-			for (String fecha : fechas) {
-				if (!estaYaInscrito(idSocio, nombreActividad, fecha)) {
-					tieneAlgunaFechaLibre = true;
-					break;
-				}
-			}
-
-			if (tieneAlgunaFechaLibre) {
+			if (!estaYaInscritoEnActividad(idSocio, nombreActividad)) {
 				actividades.add(nombreActividad);
 			}
 		}
@@ -82,18 +73,17 @@ public class InscripcionActividadModel {
 
 	private int convertirDayOfWeekABit(int dayOfWeek) {
 		switch (dayOfWeek) {
-		case 1: return 1;
-		case 2: return 2;
-		case 3: return 4;
-		case 4: return 8;
-		case 5: return 16;
-		case 6: return 32;
-		case 7: return 64;
+		case 1: return 1;   // lunes
+		case 2: return 2;   // martes
+		case 3: return 4;   // miércoles
+		case 4: return 8;   // jueves
+		case 5: return 16;  // viernes
+		case 6: return 32;  // sábado
+		case 7: return 64;  // domingo
 		default: return 0;
 		}
 	}
 
-		
 	public DatosSesionInscripcion getDatosSesion(String nombreActividad, String fechaSeleccionada, int idSocio) {
 		String sql = """
 			SELECT i.nombre_instalacion,
@@ -120,16 +110,16 @@ public class InscripcionActividadModel {
 		LocalDate fechaInicioPeriodo = LocalDate.parse((String) row[2]);
 		LocalDate fechaFinPeriodo = LocalDate.parse((String) row[3]);
 
+		// Como la inscripción es a toda la actividad, los inscritos ya no dependen de la fecha
 		String sqlInscritos = """
 			SELECT COUNT(*)
 			FROM Inscripcion_Actividad ia
 			JOIN Actividad a ON ia.id_actividad = a.id_actividad
 			WHERE a.nombre = ?
-			  AND ia.fecha_sesion = ?
 			  AND ia.estado = 'ACTIVA'
 		""";
 
-		List<Object[]> rowsInscritos = db.executeQueryArray(sqlInscritos, nombreActividad, fechaSeleccionada);
+		List<Object[]> rowsInscritos = db.executeQueryArray(sqlInscritos, nombreActividad);
 		int inscritos = 0;
 		if (!rowsInscritos.isEmpty()) {
 			inscritos = ((Number) rowsInscritos.get(0)[0]).intValue();
@@ -142,11 +132,12 @@ public class InscripcionActividadModel {
 
 		LocalDate hoy = LocalDate.now();
 		boolean periodoActivo = !hoy.isBefore(fechaInicioPeriodo) && !hoy.isAfter(fechaFinPeriodo);
-		boolean yaInscrito = estaYaInscrito(idSocio, nombreActividad, fechaSeleccionada);
+
+		boolean yaInscrito = estaYaInscritoEnActividad(idSocio, nombreActividad);
 
 		String estadoPeriodo;
 		if (yaInscrito) {
-			estadoPeriodo = "YA INSCRITO";
+			estadoPeriodo = "INSCRIPCIÓN YA REALIZADA";
 		} else if (periodoActivo) {
 			estadoPeriodo = "ACTIVO";
 		} else {
@@ -165,17 +156,20 @@ public class InscripcionActividadModel {
 	}
 
 	public boolean estaYaInscrito(int idSocio, String nombreActividad, String fechaSeleccionada) {
+		return estaYaInscritoEnActividad(idSocio, nombreActividad);
+	}
+
+	private boolean estaYaInscritoEnActividad(int idSocio, String nombreActividad) {
 		String sql = """
 			SELECT COUNT(*)
 			FROM Inscripcion_Actividad ia
 			JOIN Actividad a ON ia.id_actividad = a.id_actividad
 			WHERE ia.id_socio = ?
 			  AND a.nombre = ?
-			  AND ia.fecha_sesion = ?
 			  AND ia.estado = 'ACTIVA'
 		""";
 
-		List<Object[]> rows = db.executeQueryArray(sql, idSocio, nombreActividad, fechaSeleccionada);
+		List<Object[]> rows = db.executeQueryArray(sql, idSocio, nombreActividad);
 		if (rows.isEmpty()) {
 			return false;
 		}
@@ -186,6 +180,10 @@ public class InscripcionActividadModel {
 
 	public boolean inscribirSocioEnActividad(int idSocio, String nombreActividad, String fechaSeleccionada) {
 		try {
+			if (estaYaInscritoEnActividad(idSocio, nombreActividad)) {
+				return false;
+			}
+
 			String sqlActividad = """
 				SELECT id_actividad, cuota_socio
 				FROM Actividad
@@ -203,11 +201,11 @@ public class InscripcionActividadModel {
 
 			String insertInscripcion = """
 				INSERT INTO Inscripcion_Actividad
-					(id_socio, id_actividad, fecha_sesion, fecha_inscripcion, estado)
-				VALUES (?, ?, ?, date('now'), 'ACTIVA')
+					(id_socio, id_actividad, fecha_inscripcion, estado)
+				VALUES (?, ?, date('now'), 'ACTIVA')
 			""";
 
-			db.executeUpdate(insertInscripcion, idSocio, idActividad, fechaSeleccionada);
+			db.executeUpdate(insertInscripcion, idSocio, idActividad);
 
 			String sqlUltimaInscripcion = "SELECT last_insert_rowid()";
 			List<Object[]> idRows = db.executeQueryArray(sqlUltimaInscripcion);
@@ -220,6 +218,7 @@ public class InscripcionActividadModel {
 			""";
 
 			db.executeUpdate(insertPago, idSocio, idActividad, idInscripcion, importe);
+
 			return true;
 
 		} catch (Exception e) {
