@@ -31,7 +31,8 @@ public class ReservaInstalacionAdminController {
 	private List<InstalacionDTO> listaInstalaciones;
 	private List<ActividadDTO> listaActividades;
 	private List<String> diasActividad;
-	private List<ReservaAdminDTO> listaConflictos;
+	private List<ReservaAdminDTO> listaConflictos_BloqueoPorActividad;
+	private List<ReservaAdminDTO> listaConflictos_ReservaInstalacion;
 	JComboBox miSelectorInstalaciones;
 	JComboBox miSelectorActividades;
 	ActividadDTO actividadSeleccionada;
@@ -107,9 +108,9 @@ public class ReservaInstalacionAdminController {
 				fechaHoraFinal = fecha +" "+horaFinal;
 				nombreActividad=view.getSelectorActividad().getSelectedItem().toString();
 				
-				if(listaConflictos.size()>0) {
-					model.eliminarReservasConflictivas(fechaHoraInicial, fechaHoraFinal);
-					System.out.println("Se han eliminado "+listaConflictos.size()+" reservas conflictivas");
+				if(listaConflictos_BloqueoPorActividad.size()>0) {
+					model.eliminarReservasConflictivas_BloqueoPorActividad(fechaHoraInicial, fechaHoraFinal);
+					System.out.println("Se han eliminado "+listaConflictos_BloqueoPorActividad.size()+" reservas conflictivas");
 				}
 				
 				
@@ -229,21 +230,21 @@ public class ReservaInstalacionAdminController {
 		String fechaHoraFinal = fecha + " " + horaFin;
 		System.out.println("fechaHoraInicial: "+fechaHoraInicial+" fechaHoraFinal: "+fechaHoraFinal);
 		
-		listaConflictos = new ArrayList<ReservaAdminDTO>();
-		listaConflictos = model.getReservas(fechaHoraInicial, fechaHoraFinal, nombreInstalacion);
+		listaConflictos_BloqueoPorActividad = new ArrayList<ReservaAdminDTO>();
+		listaConflictos_BloqueoPorActividad = model.getReservas_BloqueoPorActividad(fechaHoraInicial, fechaHoraFinal, nombreInstalacion);
 		
-		System.out.println(listaConflictos.size());
-		if (listaConflictos.size()<=0) {
+		System.out.println(listaConflictos_BloqueoPorActividad.size());
+		if (listaConflictos_BloqueoPorActividad.size()<=0) {
 			System.out.printf("ReservaInstalacionAdminController | No se han detectado conflictos\n");
 			view.getPanelConflictos().setText("");
 			view.getTxtrAvisoConflictos().setVisible(false);
 			return;
 		}
 		
-		System.out.printf("ReservaInstalacionAdminController | Se han detectado %d conflictos\n",listaConflictos.size());
+		System.out.printf("ReservaInstalacionAdminController | Se han detectado %d conflictos\n",listaConflictos_BloqueoPorActividad.size());
 		String conflictos = "";
-		for (int i = 0; i<listaConflictos.size(); i++) {
-			ReservaAdminDTO reserva = listaConflictos.get(i);
+		for (int i = 0; i<listaConflictos_BloqueoPorActividad.size(); i++) {
+			ReservaAdminDTO reserva = listaConflictos_BloqueoPorActividad.get(i);
 			conflictos += String.format("Conflicto Nº%d con reserva ID: %s\n"
 									  + "	%s - %s\n\n", i+1, 
 										 reserva.getIdReserva(),
