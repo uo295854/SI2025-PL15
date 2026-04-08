@@ -316,9 +316,13 @@ INSERT INTO Pago (
 -- EJEMPLO H.U. INSCRIPCION EN ACTIVIDAD
 -- Actividad con varias sesiones dentro de las próximas dos semanas
 -- =========================================================
+-- =========================================================
+-- EJEMPLO H.U. INSCRIPCION EN ACTIVIDAD
+-- Actividad que sucede el mes que viene y cuyo periodo de inscripción es este mes
+-- =========================================================
 
 INSERT OR IGNORE INTO PeriodoInscripcion (nombre, descripcion, fecha_inicio_socio, fecha_fin_socio, fecha_fin_nosocio) VALUES
-  ('Inscripción Primavera 2026', 'Periodo abierto para pruebas de inscripción', '2026-03-15', '2026-04-05', '2026-04-10');
+  ('Inscripción Abril 2026', 'Periodo abierto durante abril para actividad de mayo', '2026-04-01', '2026-04-30', '2026-05-05');
 
 INSERT OR IGNORE INTO Actividad (
   id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
@@ -326,48 +330,41 @@ INSERT OR IGNORE INTO Actividad (
   cuota_socio, cuota_nosocio
 ) VALUES (
   (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='ENERO'),
-  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Primavera 2026'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Abril 2026'),
   (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Sala Multiusos'),
-  'Yoga Mañanas Marzo', 'CLASE', 12, 5, 60, '2026-03-23', '2026-04-03',
-  'Actividad de prueba para inscripciones en varias fechas', 12, 20
+  'Yoga Mayo Tardes', 'CLASE', 12, 5, 60, '2026-05-04', '2026-05-27',
+  'Actividad de prueba para inscripciones en abril y sesiones en mayo', 12, 20
 );
 
+-- Bloqueos de la actividad (lunes y miércoles de mayo)
 INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
-  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
-   '2026-03-23 10:00', '2026-03-23 11:00');
-
-INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
-  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
-   '2026-03-25 10:00', '2026-03-25 11:00');
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-04 18:00', '2026-05-04 19:00');
 
 INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
-  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
-   '2026-03-30 10:00', '2026-03-30 11:00');
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-06 18:00', '2026-05-06 19:00');
 
 INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
-  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
-   '2026-04-01 10:00', '2026-04-01 11:00');
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-11 18:00', '2026-05-11 19:00');
 
--- Juan ya está inscrito en toda la actividad
-INSERT INTO Inscripcion_Actividad (
-  id_socio, id_actividad, fecha_inscripcion, estado
-) VALUES (
-  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
-  (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
-  '2026-03-19',
-  'ACTIVA'
-);
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-13 18:00', '2026-05-13 19:00');
 
-INSERT INTO Pago (
-  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
-) VALUES (
-  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
-  (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo'),
-  (SELECT id_inscripcion FROM Inscripcion_Actividad
-     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='11111111A')
-       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mañanas Marzo')),
-  12.0,
-  'INSCRIPCION',
-  '2026-03-19',
-  'PENDIENTE'
-);
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-18 18:00', '2026-05-18 19:00');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-20 18:00', '2026-05-20 19:00');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-25 18:00', '2026-05-25 19:00');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+   '2026-05-27 18:00', '2026-05-27 19:00');
