@@ -7,6 +7,7 @@ import java.util.List;
 import giis.sisinfo.dto.ActividadDTO;
 import giis.sisinfo.dto.InstalacionDTO;
 import giis.sisinfo.dto.ReservaAdminDTO;
+import giis.sisinfo.dto.ReservaClienteDTO;
 import giis.sisinfo.util.Database;
 
 public class ReservaInstalacionAdminModel {
@@ -53,7 +54,23 @@ public class ReservaInstalacionAdminModel {
 		db.executeUpdate(SQL, fechaFinal, fechaInicio);
 	}
 	
-	public void getReservas_ReservaInstalacion(String fechaHoraInicial, String fechaHoraFinal, String instalacion) {
+	public List<ReservaClienteDTO> getReservas_ReservaInstalacion(String fechaHoraInicial, String fechaHoraFinal, String instalacion) {
+		String SQL = "SELECT r.id_reservains AS idReserva, a.nombre AS NombreActividad, r.datetime_ini AS fechaInicial, r.datetime_fin AS fechaFinal, r.id_socio AS idSocio \r\n"
+				+ "	               FROM Reserva_Instalacion r \r\n"
+				+ "				   JOIN Actividad a ON i.id_instalacion = a.id_instalacion \r\n"
+				+ "	               JOIN Instalacion i ON r.id_instalacion = i.id_instalacion \r\n"
+				+ "	               WHERE i.nombre_instalacion = ?\r\n"
+				+ "	                 AND r.datetime_ini < ? \r\n"
+				+ "	                 AND r.datetime_fin > ?;";
+		
+		return db.executeQueryPojo(ReservaClienteDTO.class, SQL, instalacion, fechaHoraFinal, fechaHoraInicial);
+	}
+	
+	public void eliminarReservasConflictivas_ReservaInstalacion(String fechaInicio, String fechaFinal) {
+		String SQL = "DELETE FROM Reserva_Instalacion "
+	               + "WHERE datetime_ini < ? AND datetime_fin > ?";
+		
+		db.executeUpdate(SQL, fechaFinal, fechaInicio);
 		
 	}
 	

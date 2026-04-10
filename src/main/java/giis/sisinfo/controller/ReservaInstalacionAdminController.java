@@ -19,6 +19,7 @@ import javax.swing.event.ChangeListener;
 import giis.sisinfo.dto.ActividadDTO;
 import giis.sisinfo.dto.InstalacionDTO;
 import giis.sisinfo.dto.ReservaAdminDTO;
+import giis.sisinfo.dto.ReservaClienteDTO;
 import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.view.ReservaInstalacionAdminView;
 import giis.sisinfo.util.DateConverter;
@@ -32,7 +33,7 @@ public class ReservaInstalacionAdminController {
 	private List<ActividadDTO> listaActividades;
 	private List<String> diasActividad;
 	private List<ReservaAdminDTO> listaConflictos_BloqueoPorActividad;
-	private List<ReservaAdminDTO> listaConflictos_ReservaInstalacion;
+	private List<ReservaClienteDTO> listaConflictos_ReservaInstalacion;
 	JComboBox miSelectorInstalaciones;
 	JComboBox miSelectorActividades;
 	ActividadDTO actividadSeleccionada;
@@ -110,7 +111,13 @@ public class ReservaInstalacionAdminController {
 				
 				if(listaConflictos_BloqueoPorActividad.size()>0) {
 					model.eliminarReservasConflictivas_BloqueoPorActividad(fechaHoraInicial, fechaHoraFinal);
-					System.out.println("Se han eliminado "+listaConflictos_BloqueoPorActividad.size()+" reservas conflictivas");
+					System.out.println("Se han eliminado "+listaConflictos_BloqueoPorActividad.size()+" reservas de administrador conflictivas");
+				}
+				
+				if(listaConflictos_ReservaInstalacion.size()>0) {
+					model.eliminarReservasConflictivas_ReservaInstalacion(fechaHoraInicial, fechaHoraFinal);
+					System.out.println("Se han eliminado "+listaConflictos_ReservaInstalacion.size()+" reservas de clientes conflictivas");
+					//aqui se avisaría al socio de que se le ha cancelado su reserva
 				}
 				
 				
@@ -233,23 +240,38 @@ public class ReservaInstalacionAdminController {
 		listaConflictos_BloqueoPorActividad = new ArrayList<ReservaAdminDTO>();
 		listaConflictos_BloqueoPorActividad = model.getReservas_BloqueoPorActividad(fechaHoraInicial, fechaHoraFinal, nombreInstalacion);
 		
-		System.out.println(listaConflictos_BloqueoPorActividad.size());
-		if (listaConflictos_BloqueoPorActividad.size()<=0) {
+		listaConflictos_ReservaInstalacion = new ArrayList<ReservaClienteDTO>();
+		listaConflictos_ReservaInstalacion = model.getReservas_ReservaInstalacion(fechaHoraInicial, fechaHoraFinal, nombreInstalacion);
+		
+		int cantidadConflictos = listaConflictos_BloqueoPorActividad.size() + listaConflictos_ReservaInstalacion.size();
+		
+		System.out.println(cantidadConflictos);
+		if (cantidadConflictos<=0) {
 			System.out.printf("ReservaInstalacionAdminController | No se han detectado conflictos\n");
 			view.getPanelConflictos().setText("");
 			view.getTxtrAvisoConflictos().setVisible(false);
 			return;
 		}
 		
+		int indexConflicto = 1;
 		System.out.printf("ReservaInstalacionAdminController | Se han detectado %d conflictos\n",listaConflictos_BloqueoPorActividad.size());
 		String conflictos = "";
-		for (int i = 0; i<listaConflictos_BloqueoPorActividad.size(); i++) {
+		for (int i = 0; i<listaConflictos_BloqueoPorActividad.size(); i++, indexConflicto++) {
 			ReservaAdminDTO reserva = listaConflictos_BloqueoPorActividad.get(i);
-			conflictos += String.format("Conflicto Nº%d con reserva ID: %s\n"
-									  + "	%s - %s\n\n", i+1, 
+			conflictos += String.format("Conflicto Nº%d con reserva de Admin ID: %s\n"
+									  + "	%s - %s\n\n", indexConflicto, 
 										 reserva.getIdReserva(),
 										 reserva.getFechaHoraInicial(), 
 										 reserva.getFechaHoraFinal());
+		}
+		for (int i = 0; i<listaConflictos_ReservaInstalacion.size(); i++, indexConflicto++) {
+			ReservaClienteDTO reserva = listaConflictos_ReservaInstalacion.get(i);
+			conflictos += String.format("Conflicto Nº%d con reserva ID del socio %d: %s\n"
+									  + "	%s - %s\n\n", indexConflicto, 
+									  	 reserva.getIdSocio(),
+										 reserva.getIdReserva(),
+										 reserva.getFechaInicial(), 
+										 reserva.getFechaFinal());
 		}
 		
 		view.getPanelConflictos().setText(conflictos);
