@@ -160,9 +160,12 @@ public class ReservaInstalacionAdminSocioModel {
 
 
 
-		String sqlBloqueos = "SELECT b.datetime_ini, b.datetime_fin " + "FROM Bloqueo_por_Actividad b "
-				+ "JOIN Actividad a ON a.id_actividad = b.id_actividad " + "WHERE a.id_instalacion=? "
-				+ "AND date(b.datetime_ini)=?";
+		String sqlBloqueos = "SELECT b.datetime_ini, b.datetime_fin "
+				+ "FROM Bloqueo_por_Actividad b "
+				+ "JOIN Actividad a ON a.id_actividad = b.id_actividad "
+				+ "WHERE a.id_instalacion=? "
+				+ "AND date(b.datetime_ini)=? "
+				+ "AND a.estado='ACTIVA'";
 
 		List<Object[]> filasBloqueos = db.executeQueryArray(sqlBloqueos, idInstalacion, fecha.toString());
 
@@ -374,9 +377,13 @@ public class ReservaInstalacionAdminSocioModel {
 		if (c1 > 0)
 			return false;
 
-		String sql2 = "SELECT COUNT(*) " + "FROM Bloqueo_por_Actividad b "
-				+ "JOIN Actividad a ON a.id_actividad=b.id_actividad " + "WHERE a.id_instalacion=? "
-				+ "AND b.datetime_ini < ? " + "AND b.datetime_fin > ?";
+		String sql2 = "SELECT COUNT(*) "
+				+ "FROM Bloqueo_por_Actividad b "
+				+ "JOIN Actividad a ON a.id_actividad=b.id_actividad "
+				+ "WHERE a.id_instalacion=? "
+				+ "AND b.datetime_ini < ? "
+				+ "AND b.datetime_fin > ? "
+				+ "AND a.estado='ACTIVA'";
 
 		long c2 = ((Number) db.executeQueryArray(sql2, idInstalacion, fin.format(FMT), inicio.format(FMT)).get(0)[0])
 				.longValue();

@@ -97,6 +97,8 @@ CREATE TABLE IF NOT EXISTS Actividad (
   descripcion TEXT,
   cuota_socio REAL NOT NULL DEFAULT 0 CHECK (cuota_socio >= 0),
   cuota_nosocio REAL NOT NULL DEFAULT 0 CHECK (cuota_nosocio >= 0),
+  estado TEXT NOT NULL DEFAULT 'ACTIVA'
+  CHECK (estado IN ('ACTIVA','CANCELADA')),
   CHECK (fecha_inicio <= fecha_fin),
   FOREIGN KEY (id_periodo_oficial) REFERENCES PeriodoOficial(id_periodo_oficial)
     ON UPDATE CASCADE ON DELETE RESTRICT,
