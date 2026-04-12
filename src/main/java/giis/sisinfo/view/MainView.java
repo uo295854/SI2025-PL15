@@ -94,20 +94,7 @@ public class MainView extends JFrame {
 		btnActividadesOfertadas = new JButton("Lista Actividades Ofertadas");
 		btnActividadesOfertadas.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnActividadesOfertadas);
-
-		// (Ideal moverlo a MainController)
-		btnActividadesOfertadas.addActionListener(e -> {
-			try {
-				ActividadesOfertadasController controller =
-						new ActividadesOfertadasController(new ActividadesOfertadasView(), new ActividadesOfertadasModel());
-				controller.initController();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(this,
-						"Error abriendo Actividades Ofertadas:\n" + ex.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
+		
 
 		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones para una Actividad");
 		btnReservaInstalacionAdmin.setPreferredSize(appBtnSize);

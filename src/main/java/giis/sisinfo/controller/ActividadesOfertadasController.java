@@ -30,6 +30,7 @@ public class ActividadesOfertadasController {
 		listaActividades=model.getListaActividadesOfertadas(periodo, año);
 		setListaActividades();
 		
+		initController();
 		initView();
 		
 	}
