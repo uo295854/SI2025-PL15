@@ -35,6 +35,7 @@ public class MainView extends JFrame {
 	private JButton btnListadoCargosMensuales;
 	private JButton btnReservaInstalacionSocio;
 	private JButton btnVisualizarDisponibilidadInstalacionesSocio;
+	private JButton btnListadoCargosMensualesSocio;
 	
 	private JButton btnCerrarSesion;
 
@@ -121,7 +122,7 @@ public class MainView extends JFrame {
 		btnInscripcionActividad.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnInscripcionActividad);
 
-		btnListadoCargosMensuales = new JButton("Listado de cargos mensuales de a clientes");
+		btnListadoCargosMensuales = new JButton("Listado de cargos mensuales de clientes");
 		btnListadoCargosMensuales.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnListadoCargosMensuales);
 
@@ -132,6 +133,10 @@ public class MainView extends JFrame {
 		btnVisualizarDisponibilidadInstalacionesSocio = new JButton("Visualizar Disponibilidad de Instalaciones");
 		btnVisualizarDisponibilidadInstalacionesSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnVisualizarDisponibilidadInstalacionesSocio);
+		
+		btnListadoCargosMensualesSocio = new JButton("Listado de mis cargos mensuales (Socio)");
+		btnListadoCargosMensualesSocio.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnListadoCargosMensualesSocio);
 		
 		
 
@@ -178,6 +183,10 @@ public class MainView extends JFrame {
 	}
 	public JButton getBtnCerrarSesion() {
 	    return btnCerrarSesion;
+	}
+	
+	public JButton getBtnListadoCargosMensualesSocio() {
+		return btnListadoCargosMensualesSocio;
 	}
 
 	// opcionales
