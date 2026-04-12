@@ -24,10 +24,12 @@ import giis.sisinfo.view.VisualizarDisponibilidadInstalacionesSocioView;
 import giis.sisinfo.model.ReservaInstalacionesModel;
 import giis.sisinfo.model.VisualizarDisponibilidadInstalacionesSocioModel;
 import giis.sisinfo.view.InscripcionActividadView;
+import giis.sisinfo.view.ListadoCargosMensualesSocioView;
 import giis.sisinfo.view.ListadoCargosMensualesView;
 import giis.sisinfo.view.LoginView;
 import giis.sisinfo.model.InscripcionActividadModel;
 import giis.sisinfo.model.ListadoCargosMensualesModel;
+import giis.sisinfo.model.ListadoCargosMensualesSocioModel;
 import giis.sisinfo.model.LoginModel;
 
 public class MainController {
@@ -54,6 +56,8 @@ public class MainController {
         view.getBtnListadoCargosMensuales().addActionListener(e -> abrirCargosMensuales());
         view.getBtnReservaInstalacionSocio().addActionListener(e-> abrirReservaInstalacionSocio());
         view.getBtnVisualizarDisponibilidadInstalaciones().addActionListener(e-> abrirVisualizarDisponibilidadInstalacionesSocio());
+        view.getBtnListadoCargosMensualesSocio().addActionListener(e -> abrirCargosMensualesSocio());
+        
         
         view.getBtnCerrarSesion().addActionListener(e -> cerrarSesion());
 
@@ -134,6 +138,12 @@ public class MainController {
 		 ListadoCargosMensualesModel m = new ListadoCargosMensualesModel();
 		 new ListadoCargosMensualesController(m,v);
 	 }
+	 
+	 private void abrirCargosMensualesSocio() {
+		 ListadoCargosMensualesSocioView v = new ListadoCargosMensualesSocioView();
+		 ListadoCargosMensualesSocioModel m = new ListadoCargosMensualesSocioModel();
+		 new ListadoCargosMensualesSocioController(m,v);
+	 }
 		 
 
 	 private void abrirReservaInstalacionSocio() {
@@ -201,6 +211,9 @@ public class MainController {
         
         // Visualizar la disponibilidad de las instalaciones por parte de un Socio
         view.getBtnVisualizarDisponibilidadInstalaciones().setEnabled(s.isSocio());
+        
+        //Consultar cargos mensuales de los socios
+        view.getBtnListadoCargosMensualesSocio().setEnabled(s.isSocio());
         
     }
     
