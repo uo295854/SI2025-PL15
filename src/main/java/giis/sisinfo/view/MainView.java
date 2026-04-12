@@ -35,6 +35,7 @@ public class MainView extends JFrame {
 	private JButton btnListadoCargosMensuales;
 	private JButton btnReservaInstalacionSocio;
 	private JButton btnVisualizarDisponibilidadInstalacionesSocio;
+	private JButton btnListadoCargosMensualesSocio;
 	
 	private JButton btnCerrarSesion;
 
@@ -93,20 +94,7 @@ public class MainView extends JFrame {
 		btnActividadesOfertadas = new JButton("Lista Actividades Ofertadas");
 		btnActividadesOfertadas.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnActividadesOfertadas);
-
-		// (Ideal moverlo a MainController)
-		btnActividadesOfertadas.addActionListener(e -> {
-			try {
-				ActividadesOfertadasController controller =
-						new ActividadesOfertadasController(new ActividadesOfertadasView(), new ActividadesOfertadasModel());
-				controller.initController();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(this,
-						"Error abriendo Actividades Ofertadas:\n" + ex.getMessage(),
-						"Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
+		
 
 		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones para una Actividad");
 		btnReservaInstalacionAdmin.setPreferredSize(appBtnSize);
@@ -134,7 +122,7 @@ public class MainView extends JFrame {
 		btnInscripcionActividad.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnInscripcionActividad);
 
-		btnListadoCargosMensuales = new JButton("Listado de cargos mensuales de a clientes");
+		btnListadoCargosMensuales = new JButton("Listado de cargos mensuales de clientes");
 		btnListadoCargosMensuales.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnListadoCargosMensuales);
 
@@ -145,6 +133,10 @@ public class MainView extends JFrame {
 		btnVisualizarDisponibilidadInstalacionesSocio = new JButton("Visualizar Disponibilidad de Instalaciones");
 		btnVisualizarDisponibilidadInstalacionesSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnVisualizarDisponibilidadInstalacionesSocio);
+		
+		btnListadoCargosMensualesSocio = new JButton("Listado de mis cargos mensuales (Socio)");
+		btnListadoCargosMensualesSocio.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnListadoCargosMensualesSocio);
 		
 		
 
@@ -191,6 +183,10 @@ public class MainView extends JFrame {
 	}
 	public JButton getBtnCerrarSesion() {
 	    return btnCerrarSesion;
+	}
+	
+	public JButton getBtnListadoCargosMensualesSocio() {
+		return btnListadoCargosMensualesSocio;
 	}
 
 	// opcionales

@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import giis.sisinfo.model.PlanificarActividadesModel;
 import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.util.Database;
+import giis.sisinfo.view.ActividadesOfertadasView;
 import giis.sisinfo.view.ConsultarReservasSocioView;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
@@ -15,6 +16,7 @@ import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 import giis.sisinfo.view.ReservaInstalacionAdminView;
 import giis.sisinfo.view.ReservaInstalacionSocioView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
+import giis.sisinfo.model.ActividadesOfertadasModel;
 import giis.sisinfo.model.ConsultarReservasSocioModel;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
@@ -24,10 +26,12 @@ import giis.sisinfo.view.VisualizarDisponibilidadInstalacionesSocioView;
 import giis.sisinfo.model.ReservaInstalacionesModel;
 import giis.sisinfo.model.VisualizarDisponibilidadInstalacionesSocioModel;
 import giis.sisinfo.view.InscripcionActividadView;
+import giis.sisinfo.view.ListadoCargosMensualesSocioView;
 import giis.sisinfo.view.ListadoCargosMensualesView;
 import giis.sisinfo.view.LoginView;
 import giis.sisinfo.model.InscripcionActividadModel;
 import giis.sisinfo.model.ListadoCargosMensualesModel;
+import giis.sisinfo.model.ListadoCargosMensualesSocioModel;
 import giis.sisinfo.model.LoginModel;
 
 public class MainController {
@@ -54,6 +58,9 @@ public class MainController {
         view.getBtnListadoCargosMensuales().addActionListener(e -> abrirCargosMensuales());
         view.getBtnReservaInstalacionSocio().addActionListener(e-> abrirReservaInstalacionSocio());
         view.getBtnVisualizarDisponibilidadInstalaciones().addActionListener(e-> abrirVisualizarDisponibilidadInstalacionesSocio());
+        view.getBtnListadoCargosMensualesSocio().addActionListener(e -> abrirCargosMensualesSocio());
+        view.getBtnActividadesOfertadas().addActionListener(e-> abrirActividadesOfertadas());
+
         
         view.getBtnCerrarSesion().addActionListener(e -> cerrarSesion());
 
@@ -134,6 +141,12 @@ public class MainController {
 		 ListadoCargosMensualesModel m = new ListadoCargosMensualesModel();
 		 new ListadoCargosMensualesController(m,v);
 	 }
+	 
+	 private void abrirCargosMensualesSocio() {
+		 ListadoCargosMensualesSocioView v = new ListadoCargosMensualesSocioView();
+		 ListadoCargosMensualesSocioModel m = new ListadoCargosMensualesSocioModel();
+		 new ListadoCargosMensualesSocioController(m,v);
+	 }
 		 
 
 	 private void abrirReservaInstalacionSocio() {
@@ -150,6 +163,13 @@ public class MainController {
 		 
 		 int idSocio = Session.get().getIdSocio();
 		 new VisualizarDisponibilidadInstalacionesSocioController(m, v, idSocio);
+	 }
+	 
+	 private void abrirActividadesOfertadas() {
+		 ActividadesOfertadasModel m = new ActividadesOfertadasModel();
+		 ActividadesOfertadasView v = new ActividadesOfertadasView();
+		 
+		 new ActividadesOfertadasController(v,m);
 	 }
     
     
@@ -201,6 +221,9 @@ public class MainController {
         
         // Visualizar la disponibilidad de las instalaciones por parte de un Socio
         view.getBtnVisualizarDisponibilidadInstalaciones().setEnabled(s.isSocio());
+        
+        //Consultar cargos mensuales de los socios
+        view.getBtnListadoCargosMensualesSocio().setEnabled(s.isSocio());
         
     }
     
