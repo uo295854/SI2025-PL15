@@ -6,6 +6,7 @@ import giis.sisinfo.model.PlanificarActividadesModel;
 import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.util.Database;
 import giis.sisinfo.view.ActividadesOfertadasView;
+import giis.sisinfo.view.CancelarActividadAdminView;
 import giis.sisinfo.view.ConsultarReservasSocioView;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
@@ -17,6 +18,7 @@ import giis.sisinfo.view.ReservaInstalacionAdminView;
 import giis.sisinfo.view.ReservaInstalacionSocioView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 import giis.sisinfo.model.ActividadesOfertadasModel;
+import giis.sisinfo.model.CancelarActividadAdminModel;
 import giis.sisinfo.model.ConsultarReservasSocioModel;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
@@ -60,6 +62,7 @@ public class MainController {
         view.getBtnVisualizarDisponibilidadInstalaciones().addActionListener(e-> abrirVisualizarDisponibilidadInstalacionesSocio());
         view.getBtnListadoCargosMensualesSocio().addActionListener(e -> abrirCargosMensualesSocio());
         view.getBtnActividadesOfertadas().addActionListener(e-> abrirActividadesOfertadas());
+        view.getbtnCancelarActividadAdmin().addActionListener(e -> abrirCancelarActividadAdmin());
 
         
         view.getBtnCerrarSesion().addActionListener(e -> cerrarSesion());
@@ -171,6 +174,13 @@ public class MainController {
 		 
 		 new ActividadesOfertadasController(v,m);
 	 }
+	 
+	 public void abrirCancelarActividadAdmin() {
+		 CancelarActividadAdminModel m = new CancelarActividadAdminModel();
+		 CancelarActividadAdminView v = new CancelarActividadAdminView();
+		 
+		 new CancelarActividadAdminController(v,m);
+	 }
     
     
     // Método para habilitar/deshabilitar botones según el rol del usuario
@@ -224,6 +234,9 @@ public class MainController {
         
         //Consultar cargos mensuales de los socios
         view.getBtnListadoCargosMensualesSocio().setEnabled(s.isSocio());
+        
+        //Cancelar Actividades como un administrador
+        view.getbtnCancelarActividadAdmin().setEnabled(isAdmin);
         
     }
     
