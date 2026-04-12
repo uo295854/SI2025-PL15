@@ -112,6 +112,8 @@ CREATE TABLE IF NOT EXISTS Reserva_Instalacion (
   id_socio INTEGER NOT NULL,
   datetime_ini TEXT NOT NULL,
   datetime_fin TEXT NOT NULL,
+  estado TEXT NOT NULL DEFAULT 'ACTIVA'
+  CHECK (estado IN ('ACTIVA','CANCELADA')),
   CHECK (datetime_ini < datetime_fin),
   FOREIGN KEY (id_instalacion) REFERENCES Instalacion(id_instalacion)
     ON UPDATE CASCADE ON DELETE RESTRICT,
