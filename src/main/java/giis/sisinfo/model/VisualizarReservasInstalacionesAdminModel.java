@@ -91,10 +91,12 @@ public class VisualizarReservasInstalacionesAdminModel {
 	            reservas.add(new Object[]{ toLdt(r[0]), toLdt(r[1]), r[2]+ " " + r[3] });
 	        }
 
-	        String sqlBloqueos = "SELECT b.datetime_ini, b.datetime_fin,a.nombre " +
-	                             "FROM Bloqueo_por_Actividad b " +
-	                             "JOIN Actividad a ON a.id_actividad = b.id_actividad " +
-	                             "WHERE a.id_instalacion=? AND date(b.datetime_ini)=?";
+	        String sqlBloqueos = "SELECT b.datetime_ini, b.datetime_fin, a.nombre "
+	                + "FROM Bloqueo_por_Actividad b "
+	                + "JOIN Actividad a ON a.id_actividad = b.id_actividad "
+	                + "WHERE a.id_instalacion=? "
+	                + "AND date(b.datetime_ini)=? "
+	                + "AND a.estado='ACTIVA'";
 
 	        List<Object[]> filasBloqueos = db.executeQueryArray(sqlBloqueos, idInstalacion, fecha.toString());
 	        List<Object[]> bloqueos = new ArrayList<>();
@@ -164,10 +166,13 @@ public class VisualizarReservasInstalacionesAdminModel {
 	        long c1 = ((Number) db.executeQueryArray(sql1, idInstalacion, fin.toString(), inicio.toString()).get(0)[0]).longValue();
 	        if (c1 > 0) return false;
 
-	        String sql2 = "SELECT COUNT(*) " +
-	                      "FROM Bloqueo_por_Actividad b " +
-	                      "JOIN Actividad a ON a.id_actividad=b.id_actividad " +
-	                      "WHERE a.id_instalacion=? AND b.datetime_ini < ? AND b.datetime_fin > ?";
+	        String sql2 = "SELECT COUNT(*) "
+	                + "FROM Bloqueo_por_Actividad b "
+	                + "JOIN Actividad a ON a.id_actividad=b.id_actividad "
+	                + "WHERE a.id_instalacion=? "
+	                + "AND b.datetime_ini < ? "
+	                + "AND b.datetime_fin > ? "
+	                + "AND a.estado='ACTIVA'";
 
 	        long c2 = ((Number) db.executeQueryArray(sql2, idInstalacion, fin.toString(), inicio.toString()).get(0)[0]).longValue();
 
