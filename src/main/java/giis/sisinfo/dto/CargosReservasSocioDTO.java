@@ -24,7 +24,7 @@ public class CargosReservasSocioDTO extends CargosSocioDTO{
 	public int getIdReserva() {return idReserva;}
 	public void setIdReserva(int idActividad) {this.idReserva = idActividad;}
 	public String getNombreInstalacion() {return NombreInstalacion;}
-	public void getNombreInstalacion(String nombreActividad) {NombreInstalacion = nombreActividad;}
+	public void setNombreInstalacion(String nombreActividad) {NombreInstalacion = nombreActividad;}
 	public String getConceptoPago() {return ConceptoPago;}
 	public void setConceptoPago(String conceptoPago) {ConceptoPago = conceptoPago;}
 	public String getFecha() {return Fecha;}

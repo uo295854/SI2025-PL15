@@ -80,17 +80,7 @@ public class ListadoCargosMensualesSocioView extends JFrame {
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-			},
-			new String[] {
-				"Col1", "Col2", "Col3", "Col4", "Col5"
-			}
-		));
+		table.setModel(new DefaultTableModel());
 		
 		selectorCargos = new JComboBox();
 		selectorCargos.setModel(new DefaultComboBoxModel(new String[] {"Actividades", "Reservas", "Ambos"}));
