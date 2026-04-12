@@ -78,7 +78,12 @@ public class VisualizarReservasInstalacionesAdminModel {
 	}
 	  public List<HoraReservaSocioDTO> getHorasDia(int idInstalacion, LocalDate fecha) {
 
-	        String sqlReservas = "SELECT r.datetime_ini, r.datetime_fin, s.nombre, s.apellidos FROM Reserva_Instalacion r JOIN Socio s ON s.id_socio = r.id_socio WHERE r.id_instalacion=? AND date(r.datetime_ini)=?";
+	        String sqlReservas = "SELECT r.datetime_ini, r.datetime_fin, s.nombre, s.apellidos "
+	                + "FROM Reserva_Instalacion r "
+	                + "JOIN Socio s ON s.id_socio = r.id_socio "
+	                + "WHERE r.id_instalacion=? "
+	                + "AND date(r.datetime_ini)=? "
+	                + "AND r.estado='ACTIVA'";
 
 	        List<Object[]> filasReservas = db.executeQueryArray(sqlReservas, idInstalacion, fecha.toString());
 	        List<Object[]> reservas = new ArrayList<>();
@@ -150,8 +155,11 @@ public class VisualizarReservasInstalacionesAdminModel {
 
 	    public boolean estaLibre(int idInstalacion, LocalDateTime inicio, LocalDateTime fin) {
 
-	        String sql1 = "SELECT COUNT(*) FROM Reserva_Instalacion " +
-	                      "WHERE id_instalacion=? AND datetime_ini < ? AND datetime_fin > ?";
+	        String sql1 = "SELECT COUNT(*) FROM Reserva_Instalacion "
+	                + "WHERE id_instalacion=? "
+	                + "AND datetime_ini < ? "
+	                + "AND datetime_fin > ? "
+	                + "AND estado='ACTIVA'";
 
 	        long c1 = ((Number) db.executeQueryArray(sql1, idInstalacion, fin.toString(), inicio.toString()).get(0)[0]).longValue();
 	        if (c1 > 0) return false;
