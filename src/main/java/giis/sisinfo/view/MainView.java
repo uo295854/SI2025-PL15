@@ -37,6 +37,7 @@ public class MainView extends JFrame {
 	private JButton btnVisualizarDisponibilidadInstalacionesSocio;
 	private JButton btnListadoCargosMensualesSocio;
 	private JButton btnCancelarActividadAdmin;
+	private JButton btnCancelarReservaInstalacionesAdmin;
 	
 	private JButton btnCerrarSesion;
 
@@ -144,6 +145,10 @@ public class MainView extends JFrame {
 		panelAppButtons.add(btnCancelarActividadAdmin);
 		
 		
+		btnCancelarReservaInstalacionesAdmin = new JButton("Cancelar Reserva de Instalaciones");
+		btnCancelarReservaInstalacionesAdmin.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnCancelarReservaInstalacionesAdmin);
+		
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 
@@ -197,9 +202,19 @@ public class MainView extends JFrame {
 	public JButton getbtnCancelarActividadAdmin() {
 		return btnCancelarActividadAdmin;
 	}
+	
+	public JButton getBtnCancelarReservaInstalacionesAdmin() {
+		return btnCancelarReservaInstalacionesAdmin;
+	}
+
+	public void setBtnCancelarReservaInstalacionesAdmin(JButton btnCancelarReservaInstalacionesAdmin) {
+		this.btnCancelarReservaInstalacionesAdmin = btnCancelarReservaInstalacionesAdmin;
+	}
 
 	// opcionales
 	public JButton getBtnActividadesOfertadas() { return btnActividadesOfertadas; }
 	public JButton getBtnReservaInstalacionAdmin() { return btnReservaInstalacionAdmin; }
+
+
 	
 }

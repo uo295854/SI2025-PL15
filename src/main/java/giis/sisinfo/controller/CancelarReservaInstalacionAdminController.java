@@ -126,9 +126,10 @@ public class CancelarReservaInstalacionAdminController {
             t.addRow(new Object[] {
                     r[1], // instalación
                     r[2], // fecha
-                    r[3], // hora entrada
-                    r[4], // hora salida
-                    r[5]  // estado pago
+                    r[3], // día
+                    r[4], // hora entrada
+                    r[5], // hora salida
+                    r[6]  // estado pago
             });
         }
     }
@@ -167,7 +168,7 @@ public class CancelarReservaInstalacionAdminController {
                        .append(" | ")
                        .append(reserva[2]) //fecha
                        .append(" | ")
-                       .append(reserva[3]) //hora de entrada
+                       .append(reserva[4]) //hora de entrada
                        .append(": ")
                        .append(e.getMessage())
                        .append("\n");
@@ -184,6 +185,8 @@ public class CancelarReservaInstalacionAdminController {
         } else {
             JOptionPane.showMessageDialog(view, "No se pudo cancelar ninguna reserva\n\n" + errores.toString(), "Cancelación no realizada", JOptionPane.ERROR_MESSAGE);
         }
+        
+        view.dispose();
 	
   }
     
