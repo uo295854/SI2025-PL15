@@ -1,5 +1,6 @@
 package giis.sisinfo.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +67,25 @@ public class CancelarReservaInstalacionAdminModel {
 	                + "LEFT JOIN Pago p ON p.id_reservains = r.id_reservains "
 	                + "WHERE r.id_socio = ? "
 	                + "  AND r.estado = 'ACTIVA' "
+	                + "  AND date(r.datetime_ini) = ? "
 	                + "ORDER BY r.datetime_ini";
 
-	        return db.executeQueryArray(sql, idSocio);
+	        List<Object[]> filas = db.executeQueryArray(sql, idSocio, LocalDate.now().toString());
+	        List<Object[]> resultado = new ArrayList<>();
+
+	        for (Object[] f : filas) {
+	            int idReserva = ((Number) f[0]).intValue();
+	            String instalacion = String.valueOf(f[1]);
+	            String fecha = String.valueOf(f[2]);
+	            String dia = diaSemana(LocalDate.parse(fecha));
+	            String horaEntrada = String.valueOf(f[3]);
+	            String horaSalida = String.valueOf(f[4]);
+	            String estadoPago = (f[5] == null) ? "" : String.valueOf(f[5]);
+
+	            resultado.add(new Object[] {idReserva, instalacion, fecha, dia, horaEntrada, horaSalida, estadoPago});
+	        }
+
+	        return resultado;
 	    }
    
    
@@ -157,5 +174,18 @@ public class CancelarReservaInstalacionAdminModel {
 		return LocalDateTime.parse(s.replace(' ', 'T'));
 	}
    
+	
+	private String diaSemana(LocalDate fecha) {
+	    switch (fecha.getDayOfWeek()) {
+	        case MONDAY: return "Lunes";
+	        case TUESDAY: return "Martes";
+	        case WEDNESDAY: return "Miércoles";
+	        case THURSDAY: return "Jueves";
+	        case FRIDAY: return "Viernes";
+	        case SATURDAY: return "Sábado";
+	        case SUNDAY: return "Domingo";
+	        default: return "";
+	    }
+	}
    
 }

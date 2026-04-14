@@ -7,22 +7,24 @@ import giis.sisinfo.model.ReservaInstalacionAdminModel;
 import giis.sisinfo.util.Database;
 import giis.sisinfo.view.ActividadesOfertadasView;
 import giis.sisinfo.view.CancelarActividadAdminView;
+import giis.sisinfo.view.CancelarReservaInstalacionAdminView;
 import giis.sisinfo.view.ConsultarReservasSocioView;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
 import giis.sisinfo.model.ReservaInstalacionAdminSocioModel;
 import giis.sisinfo.model.ReservaInstalacionSocioModel;
 import giis.sisinfo.model.VisualizarReservasInstalacionesAdminModel;
+import giis.sisinfo.session.Session;
 import giis.sisinfo.view.ReservaInstalacionAdminSocioView;
 import giis.sisinfo.view.ReservaInstalacionAdminView;
 import giis.sisinfo.view.ReservaInstalacionSocioView;
 import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 import giis.sisinfo.model.ActividadesOfertadasModel;
 import giis.sisinfo.model.CancelarActividadAdminModel;
+import giis.sisinfo.model.CancelarReservaInstalacionAdminModel;
 import giis.sisinfo.model.ConsultarReservasSocioModel;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
-import giis.sisinfo.session.Session;
 import giis.sisinfo.view.ReservaInstalacionesView;
 import giis.sisinfo.view.VisualizarDisponibilidadInstalacionesSocioView;
 import giis.sisinfo.model.ReservaInstalacionesModel;
@@ -63,6 +65,7 @@ public class MainController {
         view.getBtnListadoCargosMensualesSocio().addActionListener(e -> abrirCargosMensualesSocio());
         view.getBtnActividadesOfertadas().addActionListener(e-> abrirActividadesOfertadas());
         view.getbtnCancelarActividadAdmin().addActionListener(e -> abrirCancelarActividadAdmin());
+        view.getBtnCancelarReservaInstalacionesAdmin().addActionListener(e-> abrirCancelarReservasInstalacionesAdmin());
 
         
         view.getBtnCerrarSesion().addActionListener(e -> cerrarSesion());
@@ -181,6 +184,14 @@ public class MainController {
 		 
 		 new CancelarActividadAdminController(v,m);
 	 }
+	 
+	 
+	 private void abrirCancelarReservasInstalacionesAdmin() {
+		 CancelarReservaInstalacionAdminModel m = new CancelarReservaInstalacionAdminModel();
+		 CancelarReservaInstalacionAdminView v = new CancelarReservaInstalacionAdminView();
+		 
+		 new CancelarReservaInstalacionAdminController(m,v);
+	 }
     
     
     // Método para habilitar/deshabilitar botones según el rol del usuario
@@ -237,6 +248,9 @@ public class MainController {
         
         //Cancelar Actividades como un administrador
         view.getbtnCancelarActividadAdmin().setEnabled(isAdmin);
+        
+        //Cancelar Reservas de Instalaciones como administrador
+        view.getBtnCancelarReservaInstalacionesAdmin().setEnabled(isAdmin);
         
     }
     
