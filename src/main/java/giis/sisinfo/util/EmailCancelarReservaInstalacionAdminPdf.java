@@ -48,20 +48,20 @@ public class EmailCancelarReservaInstalacionAdminPdf {
                 cs.newLineAtOffset(0, -20);
                 cs.showText(a.getCentro() + ".");
 
-                cs.newLineAtOffset(0, -20);
-                cs.showText("Dirección " + a.getDireccion());
+                cs.newLineAtOffset(0, -50);
+                cs.showText("Dirección:     " + limpiarTextoPdf(a.getDireccion()));
 
                 cs.newLineAtOffset(0, -20);
-                cs.showText("Municipio " + a.getMunicipio());
+                cs.showText("Municipio:     " + limpiarTextoPdf(a.getMunicipio()));
 
                 cs.newLineAtOffset(0, -20);
-                cs.showText("Provincia " + a.getProvincia());
+                cs.showText("Provincia:     " + limpiarTextoPdf(a.getProvincia()));
 
                 cs.newLineAtOffset(0, -20);
-                cs.showText("email " + a.getEmailCentro());
+                cs.showText("Email:         " + limpiarTextoPdf(a.getEmailCentro()));
 
                 cs.newLineAtOffset(0, -20);
-                cs.showText("teléfono " + a.getTelefonoCentro());
+                cs.showText("Teléfono:      " + limpiarTextoPdf(a.getTelefonoCentro()));
 
                 cs.endText();
             }
@@ -90,5 +90,15 @@ public class EmailCancelarReservaInstalacionAdminPdf {
                 cs.showText(lineas[i]);
             }
         }
+    }
+    
+    private String limpiarTextoPdf(String texto) {
+        if (texto == null) {
+            return "";
+        }
+        return texto
+                .replace("\t", "    ")
+                .replace("\r", "")
+                .replace("\n", " ");
     }
 }

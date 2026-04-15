@@ -57,7 +57,7 @@ public class CancelarReservaInstalacionAdminModel {
 	}
 	
    public List<Object[]> getReservasActivasSocio(int idSocio) {
-	        String sql = "SELECT r.id_reservains, i.nombre_instalacion, "
+	        String sql = "SELECT r.id_reservains, i.tipo_deporte || ': ' || i.nombre_instalacion, "
 	                + "       date(r.datetime_ini) as fecha, "
 	                + "       time(r.datetime_ini) as hora_entrada, "
 	                + "       time(r.datetime_fin) as hora_salida, "
@@ -67,7 +67,7 @@ public class CancelarReservaInstalacionAdminModel {
 	                + "LEFT JOIN Pago p ON p.id_reservains = r.id_reservains "
 	                + "WHERE r.id_socio = ? "
 	                + "  AND r.estado = 'ACTIVA' "
-	                + "  AND date(r.datetime_ini) = ? "
+	                + "  AND date(r.datetime_ini) >= ? "
 	                + "ORDER BY r.datetime_ini";
 
 	        List<Object[]> filas = db.executeQueryArray(sql, idSocio, LocalDate.now().toString());
