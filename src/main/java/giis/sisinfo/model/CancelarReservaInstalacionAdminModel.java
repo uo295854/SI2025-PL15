@@ -96,7 +96,7 @@ public class CancelarReservaInstalacionAdminModel {
 	   LocalDateTime inicioReserva = toLdt(datosReserva[1]);
 	   
 	   if(!"ACTIVA".equalsIgnoreCase(estadoReserva)) {
-		   throw new IllegalStateException("La reserva no está activa.");
+		   throw new IllegalStateException("La reserva no está activa");
 	   }
 	   
 	    if (!LocalDateTime.now().isBefore(inicioReserva)) {
@@ -149,7 +149,7 @@ public class CancelarReservaInstalacionAdminModel {
 	    }else if("CANCELADO".equalsIgnoreCase(estadoPagoActual) || "DEVUELTO".equalsIgnoreCase(estadoPagoActual)) {
 	    	throw new IllegalStateException("El pago asociado ya fue cancelado o devuelto");
 	    }else {
-	    	 throw new IllegalStateException("Estado de pago no válido para cancelar la reserva.");
+	    	 throw new IllegalStateException("Estado de pago no válido para cancelar la reserva");
 	    }
 	    
 	    
@@ -186,6 +186,37 @@ public class CancelarReservaInstalacionAdminModel {
 	        case SUNDAY: return "Domingo";
 	        default: return "";
 	    }
+	}
+	
+	public Object[] getDatosAvisoCancelacion(int idReserva) {
+	    String sql = "SELECT s.nombre, s.apellidos, s.num_socio, s.email, s.telefono, "
+	            + "       i.nombre_instalacion, "
+	            + "       date(r.datetime_ini) as fecha, "
+	            + "       time(r.datetime_ini) as hora_entrada "
+	            + "FROM Reserva_Instalacion r "
+	            + "JOIN Socio s ON s.id_socio = r.id_socio "
+	            + "JOIN Instalacion i ON i.id_instalacion = r.id_instalacion "
+	            + "WHERE r.id_reservains = ?";
+
+	    List<Object[]> filas = db.executeQueryArray(sql, idReserva);
+
+	    if (filas.isEmpty()) {
+	        throw new IllegalStateException("No se encontraron datos para generar el aviso de cancelación");
+	    }
+
+	    Object[] f = filas.get(0);
+
+	    String nombre = String.valueOf(f[0]);
+	    String apellidos = String.valueOf(f[1]);
+	    String numSocio = String.valueOf(f[2]);
+	    String email = (f[3] == null) ? "" : String.valueOf(f[3]);
+	    String telefono = (f[4] == null) ? "" : String.valueOf(f[4]);
+	    String instalacion = String.valueOf(f[5]);
+	    String fecha = String.valueOf(f[6]);
+	    String dia = diaSemana(LocalDate.parse(fecha));
+	    String horaEntrada = String.valueOf(f[7]);
+
+	    return new Object[] {nombre, apellidos, numSocio, email, telefono, instalacion, fecha, dia, horaEntrada};
 	}
    
 }
