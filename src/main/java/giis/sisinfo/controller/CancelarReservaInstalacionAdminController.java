@@ -1,5 +1,6 @@
 package giis.sisinfo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -39,6 +40,7 @@ public class CancelarReservaInstalacionAdminController {
 	private void configurarTablas() {
 		view.getTablaSocios().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		view.getTablaReservas().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		view.getTablaReservas().getColumnModel().getColumn(0).setPreferredWidth(80);
 
 	}
 	
@@ -157,6 +159,7 @@ public class CancelarReservaInstalacionAdminController {
         
         int canceladas = 0;
         StringBuilder errores = new StringBuilder();
+        List<String> rutasPdf = new ArrayList<>();
 
         for (int fila : filas) {
             try {
@@ -178,6 +181,7 @@ public class CancelarReservaInstalacionAdminController {
                 String rutapdf = new EmailCancelarReservaInstalacionAdminPdf().generar(email);
                 
                 canceladas++;
+                rutasPdf.add(rutapdf);
                 
             } catch (Exception e) {
                 Object[] reserva = reservasMostradas.get(fila);
@@ -197,9 +201,12 @@ public class CancelarReservaInstalacionAdminController {
         view.limpiarMotivoCancelacion();
 
         if (canceladas > 0 && errores.length() == 0) {
-            JOptionPane.showMessageDialog(view, "Se ha cancelado correctamente " + canceladas + " reservas");
+            JOptionPane.showMessageDialog(view, "Se han cancelado correctamente " + canceladas + " reservas\n\n"
+            		+ "Se han generado "+rutasPdf.size() + " PDFs");
         } else if (canceladas > 0) {
-            JOptionPane.showMessageDialog(view, "Se cancelaron " + canceladas + " reservas\n\n" + "Pero no se pudieron cancelar estas:\n" + errores.toString(),"Cancelación parcial", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(view, "Se cancelaron " + canceladas + " reservas\n\n" 
+            		+ "Se han generado "+rutasPdf.size() + " PDFs\n\n"
+            		+ "Pero no se pudieron cancelar estas:\n" + errores.toString(),"Cancelación parcial", JOptionPane.WARNING_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(view, "No se pudo cancelar ninguna reserva\n\n" + errores.toString(), "Cancelación no realizada", JOptionPane.ERROR_MESSAGE);
         }
