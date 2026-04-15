@@ -8,8 +8,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 
+import giis.sisinfo.dto.EmailCancelarReservaInstalacionAdminDTO;
 import giis.sisinfo.dto.SocioDTO;
 import giis.sisinfo.model.CancelarReservaInstalacionAdminModel;
+import giis.sisinfo.util.EmailCancelarReservaInstalacionAdminPdf;
 import giis.sisinfo.view.CancelarReservaInstalacionAdminView;
 
 public class CancelarReservaInstalacionAdminController {
@@ -160,7 +162,23 @@ public class CancelarReservaInstalacionAdminController {
             try {
                 int idReserva = ((Number) reservasMostradas.get(fila)[0]).intValue();
                 model.cancelarReserva(idReserva);
+                
+                
+                Object[] datosEmail = model.getDatosAvisoCancelacion(idReserva);
+                
+                EmailCancelarReservaInstalacionAdminDTO email = new EmailCancelarReservaInstalacionAdminDTO(
+                		datosEmail[0] + " " + datosEmail[1], String.valueOf(datosEmail[2]), String.valueOf(datosEmail[3]), 
+                		String.valueOf(datosEmail[4]), 
+                		String.valueOf(datosEmail[5]), String.valueOf(datosEmail[6]), 
+                		String.valueOf(datosEmail[7]), String.valueOf(datosEmail[8]), 
+                		motivo, "Complejo Deportivo La Cruz", 
+                		"Calle Río Eo 12 4º I", "Gijón", 
+                		"Asturias", "lacruzasturias@gmail.com", "985345423");
+                
+                String rutapdf = new EmailCancelarReservaInstalacionAdminPdf().generar(email);
+                
                 canceladas++;
+                
             } catch (Exception e) {
                 Object[] reserva = reservasMostradas.get(fila);
                 errores.append("- ")
