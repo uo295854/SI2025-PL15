@@ -7,6 +7,8 @@ public class SocioDTO {
     private String numSocio;
     private String email;
     private String telefono;
+    
+    public SocioDTO() {}
 
     public SocioDTO(int idSocio,String apellidos, String nombre, String numSocio,
                     String email, String telefono) {
@@ -25,4 +27,11 @@ public class SocioDTO {
     public String getEmail() { return email; }
     public String getTelefono() { return telefono; }
 
+	public void setIdSocio(int idSocio) {this.idSocio = idSocio;}
+	public void setApellidos(String apellidos) {this.apellidos = apellidos;}
+	public void setNombre(String nombre) {this.nombre = nombre;}
+	public void setNumSocio(String numSocio) {this.numSocio = numSocio;}
+	public void setEmail(String email) {this.email = email;}
+	public void setTelefono(String telefono) {this.telefono = telefono;}
+    
 }
