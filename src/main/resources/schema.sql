@@ -128,6 +128,8 @@ CREATE TABLE IF NOT EXISTS Bloqueo_por_Actividad (
   id_actividad INTEGER NOT NULL,
   datetime_ini TEXT NOT NULL,
   datetime_fin TEXT NOT NULL,
+  estado_reserva TEXT NOT NULL DEFAULT 'PENDIENTE'
+    CHECK (estado_reserva IN ('PENDIENTE','RESERVADO','CONFLICTO')),
   CHECK (datetime_ini < datetime_fin),
   FOREIGN KEY (id_actividad) REFERENCES Actividad(id_actividad)
     ON UPDATE CASCADE ON DELETE CASCADE
