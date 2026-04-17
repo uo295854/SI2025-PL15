@@ -28,7 +28,8 @@ public class ReservaInstalacionAdminModel {
 				+ "    a.fecha_fin AS fechaFin\r\n"
 				+ "FROM Actividad a\r\n"
 				+ "JOIN Instalacion i ON a.id_instalacion = i.id_instalacion\r\n"
-				+ "WHERE i.nombre_instalacion = ?";
+				+ "WHERE i.nombre_instalacion = ?"
+				+ "AND a.estado = 'ACTIVA'";
 		
 		return db.executeQueryPojo(ActividadDTO.class, SQL, instalacion);
 	}
