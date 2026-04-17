@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -95,6 +96,12 @@ public class test4 extends JFrame {
 		table.getColumnModel().getColumn(2).setPreferredWidth(79);
 		table.setBounds(10, 56, 300, 177);
 		contentPane.add(table);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(325, 51, 101, 202);
+		textArea.setLineWrap(true);
+		contentPane.add(textArea);
+	
 
 	}
 
@@ -105,7 +112,4 @@ public class test4 extends JFrame {
 	public void setTable(JTable table) {
 		this.table = table;
 	}
-	
-	
-
 }

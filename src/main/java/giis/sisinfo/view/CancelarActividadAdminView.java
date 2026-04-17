@@ -15,6 +15,9 @@ import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class CancelarActividadAdminView extends JFrame {
 
@@ -22,10 +25,11 @@ public class CancelarActividadAdminView extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
 	private JTextPane DetallesActividad;
-	private JTextPane DetallesCancelacion;
+	private JTextArea DetallesCancelacion;
 	JComboBox selectorInstalaciones;
 	JComboBox selectorRazonCancelacion;
 	JButton botonConfirmar;
+	
 
 	/**
 	 * Launch the application.
@@ -101,11 +105,14 @@ public class CancelarActividadAdminView extends JFrame {
 		DetallesActividad.setBounds(20, 264, 398, 169);
 		contentPane.add(DetallesActividad);
 		
-		DetallesCancelacion = new JTextPane();
+		DetallesCancelacion = new JTextArea();
+		DetallesCancelacion.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		DetallesCancelacion.setBounds(440, 141, 184, 217);
+		DetallesCancelacion.setLineWrap(true);
 		contentPane.add(DetallesCancelacion);
 		
-		JButton botonConfirmar = new JButton("Confirmar \r\nCancelación");
+		
+		botonConfirmar = new JButton("Confirmar \r\nCancelación");
 		botonConfirmar.setBounds(440, 369, 184, 64);
 		contentPane.add(botonConfirmar);
 
@@ -115,8 +122,8 @@ public class CancelarActividadAdminView extends JFrame {
 	public void setTable(JTable table) {this.table = table;}
 	public JTextPane getDetallesActividad() {return DetallesActividad;}
 	public void setDetallesActividad(JTextPane detallesActividad) {DetallesActividad = detallesActividad;}
-	public JTextPane getDetallesCancelacion() {return DetallesCancelacion;}
-	public void setDetallesCancelacion(JTextPane detallesCancelacion) {DetallesCancelacion = detallesCancelacion;}
+	public JTextArea getDetallesCancelacion() {return DetallesCancelacion;}
+	public void setDetallesCancelacion(JTextArea detallesCancelacion) {DetallesCancelacion = detallesCancelacion;}
 	public JComboBox getSelectorInstalaciones() {return selectorInstalaciones;}
 	public void setSelectorInstalaciones(JComboBox selectorInstalaciones) {this.selectorInstalaciones = selectorInstalaciones;}
 	public JComboBox getSelectorRazonCancelacion() {return selectorRazonCancelacion;}
