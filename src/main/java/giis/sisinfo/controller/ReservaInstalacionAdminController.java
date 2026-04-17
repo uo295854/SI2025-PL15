@@ -170,8 +170,9 @@ public class ReservaInstalacionAdminController {
 		actualizarListaActividades();
 		view.getSelectorActividad().removeAllItems();
 		for (int i =0; i<listaActividades.size(); i++) {
-			System.out.println(i+" "+listaActividades.get(i).getNombre());
-			view.getSelectorActividad().addItem(listaActividades.get(i).getNombre());
+			ActividadDTO actividad = listaActividades.get(i);
+			System.out.println(i+" "+actividad.getNombre());
+			view.getSelectorActividad().addItem(actividad.getNombre());
 		}
 		
 	}
