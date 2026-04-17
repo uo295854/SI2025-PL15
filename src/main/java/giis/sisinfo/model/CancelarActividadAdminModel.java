@@ -33,14 +33,15 @@ public class CancelarActividadAdminModel {
 				+ "    a.descripcion AS descripcion,\r\n"
 				+ "    a.estado AS estado\r\n"
 				+ "FROM Actividad a\r\n"
+				+ "JOIN Instalacion i \r\n"
+				+ "    ON a.id_instalacion = i.id_instalacion\r\n"
 				+ "LEFT JOIN Inscripcion_Actividad ia \r\n"
 				+ "    ON a.id_actividad = ia.id_actividad\r\n"
 				+ "    AND ia.estado = 'ACTIVA'\r\n"
-				+ "JOIN Instalacion i \r\n"
-				+ "	ON a.id_instalacion = i.id_instalacion\r\n"
 				+ "WHERE i.nombre_instalacion = ?\r\n"
-				+ "AND i.estado != 'CANCELADA'"
-				+ "GROUP BY a.id_actividad;";
+				+ "  AND a.estado != 'CANCELADA'\r\n"
+				+ "GROUP BY \r\n"
+				+ "    a.id_actividad;";
 		
 		return db.executeQueryPojo(ActividadCanceladaDTO.class, SQL, instalacion);
 	}

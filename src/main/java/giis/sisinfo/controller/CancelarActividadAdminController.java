@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import giis.sisinfo.dto.ActividadCanceladaDTO;
@@ -84,6 +85,12 @@ public class CancelarActividadAdminController {
 				
 				System.out.println("Actividad Cancelada correctamente");
 				//TODO mostrar una ventana de aviso diciendo que la actividad se canceló con éxito
+				
+				JOptionPane.showMessageDialog(null, "Actividad cancelada correctamente");
+				actualizarInstalaciones();
+				actualizarSelectorInstalaciones();
+				actualizarListaActividades();
+				actualizarTablaActividades();
 			}
 		});
 	}
