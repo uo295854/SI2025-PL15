@@ -38,6 +38,7 @@ public class MainView extends JFrame {
 	private JButton btnListadoCargosMensualesSocio;
 	private JButton btnCancelarActividadAdmin;
 	private JButton btnCancelarReservaInstalacionesAdmin;
+	private JButton btnCancelarReservaInstalacionesSocio;
 	
 	private JButton btnCerrarSesion;
 
@@ -145,9 +146,13 @@ public class MainView extends JFrame {
 		panelAppButtons.add(btnCancelarActividadAdmin);
 		
 		
-		btnCancelarReservaInstalacionesAdmin = new JButton("Cancelar Reserva de Instalaciones");
+		btnCancelarReservaInstalacionesAdmin = new JButton("Cancelar Reserva de Instalaciones para Administradores");
 		btnCancelarReservaInstalacionesAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnCancelarReservaInstalacionesAdmin);
+		
+		btnCancelarReservaInstalacionesSocio = new JButton("Cancelar Reserva de Instalaciones para Socios");
+		btnCancelarReservaInstalacionesSocio.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnCancelarReservaInstalacionesSocio);
 		
 
 		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
@@ -209,6 +214,14 @@ public class MainView extends JFrame {
 
 	public void setBtnCancelarReservaInstalacionesAdmin(JButton btnCancelarReservaInstalacionesAdmin) {
 		this.btnCancelarReservaInstalacionesAdmin = btnCancelarReservaInstalacionesAdmin;
+	}
+	
+	public JButton getBtnCancelarReservaInstalacionesSocio() {
+		return btnCancelarReservaInstalacionesSocio;
+	}
+
+	public void setBtnCancelarReservaInstalacionesSocio(JButton btnCancelarReservaInstalacionesSocio) {
+		this.btnCancelarReservaInstalacionesSocio = btnCancelarReservaInstalacionesSocio;
 	}
 
 	// opcionales

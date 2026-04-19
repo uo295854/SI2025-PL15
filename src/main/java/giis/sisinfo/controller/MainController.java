@@ -8,6 +8,7 @@ import giis.sisinfo.util.Database;
 import giis.sisinfo.view.ActividadesOfertadasView;
 import giis.sisinfo.view.CancelarActividadAdminView;
 import giis.sisinfo.view.CancelarReservaInstalacionAdminView;
+import giis.sisinfo.view.CancelarReservaInstalacionSocioView;
 import giis.sisinfo.view.ConsultarReservasSocioView;
 import giis.sisinfo.view.MainView;
 import giis.sisinfo.view.PlanificarActividadView;
@@ -22,6 +23,7 @@ import giis.sisinfo.view.VisualizarReservasInstalacionesAdminView;
 import giis.sisinfo.model.ActividadesOfertadasModel;
 import giis.sisinfo.model.CancelarActividadAdminModel;
 import giis.sisinfo.model.CancelarReservaInstalacionAdminModel;
+import giis.sisinfo.model.CancelarReservaInstalacionSocioModel;
 import giis.sisinfo.model.ConsultarReservasSocioModel;
 import giis.sisinfo.model.PeriodoInscripcionModel;
 import giis.sisinfo.view.PeriodoInscripcionView;
@@ -66,6 +68,7 @@ public class MainController {
         view.getBtnActividadesOfertadas().addActionListener(e-> abrirActividadesOfertadas());
         view.getbtnCancelarActividadAdmin().addActionListener(e -> abrirCancelarActividadAdmin());
         view.getBtnCancelarReservaInstalacionesAdmin().addActionListener(e-> abrirCancelarReservasInstalacionesAdmin());
+        view.getBtnCancelarReservaInstalacionesSocio().addActionListener(e -> abrirCancelarReservasInstalacionesSocio());
 
         
         view.getBtnCerrarSesion().addActionListener(e -> cerrarSesion());
@@ -192,6 +195,13 @@ public class MainController {
 		 
 		 new CancelarReservaInstalacionAdminController(m,v);
 	 }
+	 
+	 private void abrirCancelarReservasInstalacionesSocio() {
+		 CancelarReservaInstalacionSocioModel m = new CancelarReservaInstalacionSocioModel();
+		 CancelarReservaInstalacionSocioView v = new CancelarReservaInstalacionSocioView();
+		 int idSocio = Session.get().getIdSocio();
+		 new CancelarReservaInstalacionSocioController(m,v, idSocio);
+	 }
     
     
     // Método para habilitar/deshabilitar botones según el rol del usuario
@@ -251,6 +261,9 @@ public class MainController {
         
         //Cancelar Reservas de Instalaciones como administrador
         view.getBtnCancelarReservaInstalacionesAdmin().setEnabled(isAdmin);
+        
+        //Cancelar Reservas de Instalaciones como socio
+        view.getBtnCancelarReservaInstalacionesSocio().setEnabled(s.isSocio());
         
     }
     
