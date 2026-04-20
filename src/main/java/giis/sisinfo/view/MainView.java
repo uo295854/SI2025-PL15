@@ -8,14 +8,9 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-
-import giis.sisinfo.controller.ActividadesOfertadasController;
-import giis.sisinfo.model.ActividadesOfertadasModel;
-
 
 public class MainView extends JFrame {
 
@@ -32,6 +27,7 @@ public class MainView extends JFrame {
 	private JButton btnConsultarReservasSocioView;
 	private JButton btnReservaInstalacionesAuto;
 	private JButton btnInscripcionActividad;
+	private JButton btnInscripcionNoSocioActividad;
 	private JButton btnListadoCargosMensuales;
 	private JButton btnReservaInstalacionSocio;
 	private JButton btnVisualizarDisponibilidadInstalacionesSocio;
@@ -39,27 +35,26 @@ public class MainView extends JFrame {
 	private JButton btnCancelarActividadAdmin;
 	private JButton btnCancelarReservaInstalacionesAdmin;
 	private JButton btnCancelarReservaInstalacionesSocio;
-	
+
 	private JButton btnCerrarSesion;
 
 	public MainView() {
 		setTitle("SisInfo - Gestión de Actividades");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(new Dimension(620, 528));
-		setLocationRelativeTo(null); // centrar
+		setSize(new Dimension(620, 560));
+		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout(10, 10));
 
 		JLabel lblTitle = new JLabel("Menú principal", SwingConstants.CENTER);
 		lblTitle.setFont(lblTitle.getFont().deriveFont(Font.BOLD, 18f));
 		lblTitle.setBorder(new EmptyBorder(15, 10, 5, 10));
-		
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.setBorder(new EmptyBorder(10, 10, 5, 10));
 
 		JPanel leftPanel = new JPanel();
 		leftPanel.setPreferredSize(new Dimension(120, 30));
-		
+
 		JPanel rightPanel = new JPanel();
 
 		btnCerrarSesion = new JButton("Cerrar sesión");
@@ -71,7 +66,6 @@ public class MainView extends JFrame {
 		topPanel.add(rightPanel, BorderLayout.EAST);
 
 		getContentPane().add(topPanel, BorderLayout.NORTH);
-		
 
 		JPanel panelMain = new JPanel(new BorderLayout(10, 10));
 		panelMain.setBorder(new EmptyBorder(10, 14, 10, 14));
@@ -97,22 +91,19 @@ public class MainView extends JFrame {
 		btnActividadesOfertadas = new JButton("Lista Actividades Ofertadas");
 		btnActividadesOfertadas.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnActividadesOfertadas);
-		
 
 		btnReservaInstalacionAdmin = new JButton("Reserva Instalaciones para una Actividad");
 		btnReservaInstalacionAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionAdmin);
 
-
 		btnReservaInstalacionAdminSocio = new JButton("Reserva Instalaciones para los Socios");
 		btnReservaInstalacionAdminSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionAdminSocio);
-		
+
 		btnVisualizarReservasInstalacionesAdmin = new JButton("Visualizar Reservas de Instalaciones");
 		btnVisualizarReservasInstalacionesAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnVisualizarReservasInstalacionesAdmin);
-		
-		// Botón Consultar Reservas de instalaciones (Socio)
+
 		btnConsultarReservasSocioView = new JButton("Consultar Reservas (Socio)");
 		btnConsultarReservasSocioView.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnConsultarReservasSocioView);
@@ -120,10 +111,14 @@ public class MainView extends JFrame {
 		btnReservaInstalacionesAuto = new JButton("Reserva automática de instalaciones para actividades");
 		btnReservaInstalacionesAuto.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionesAuto);
-		
+
 		btnInscripcionActividad = new JButton("Inscripción a Actividades");
 		btnInscripcionActividad.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnInscripcionActividad);
+
+		btnInscripcionNoSocioActividad = new JButton("Inscripción de no socio en actividad");
+		btnInscripcionNoSocioActividad.setPreferredSize(appBtnSize);
+		panelAppButtons.add(btnInscripcionNoSocioActividad);
 
 		btnListadoCargosMensuales = new JButton("Listado de cargos mensuales de clientes");
 		btnListadoCargosMensuales.setPreferredSize(appBtnSize);
@@ -132,82 +127,92 @@ public class MainView extends JFrame {
 		btnReservaInstalacionSocio = new JButton("Reserva Instalaciones por los Socios");
 		btnReservaInstalacionSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnReservaInstalacionSocio);
-		
+
 		btnVisualizarDisponibilidadInstalacionesSocio = new JButton("Visualizar Disponibilidad de Instalaciones");
 		btnVisualizarDisponibilidadInstalacionesSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnVisualizarDisponibilidadInstalacionesSocio);
-		
+
 		btnListadoCargosMensualesSocio = new JButton("Listado de mis cargos mensuales (Socio)");
 		btnListadoCargosMensualesSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnListadoCargosMensualesSocio);
-		
+
 		btnCancelarActividadAdmin = new JButton("Cancelar actividad (Admin)");
 		btnCancelarActividadAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnCancelarActividadAdmin);
-		
-		
+
 		btnCancelarReservaInstalacionesAdmin = new JButton("Cancelar Reserva de Instalaciones para Administradores");
 		btnCancelarReservaInstalacionesAdmin.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnCancelarReservaInstalacionesAdmin);
-		
+
 		btnCancelarReservaInstalacionesSocio = new JButton("Cancelar Reserva de Instalaciones para Socios");
 		btnCancelarReservaInstalacionesSocio.setPreferredSize(appBtnSize);
 		panelAppButtons.add(btnCancelarReservaInstalacionesSocio);
-		
-
-		// ===== BOTONES BD (sin lógica aquí; el Controller engancha listeners) =====
 
 		JLabel lblFooter = new JLabel("Grupo SisInfo", SwingConstants.CENTER);
 		lblFooter.setBorder(new EmptyBorder(0, 10, 10, 10));
 		getContentPane().add(lblFooter, BorderLayout.SOUTH);
 	}
 
-	public JButton getBtnGestionActividades() { return btnGestionActividades; }
-	public JButton getBtnReservas() { return btnReservas; }
-	public JButton getBtnPeriodoInscripcion() { return btnPeriodoInscripcion; }
-
-
-	
-	public JButton getBtnReservaInstalacionAdminSocio() {
-	    return btnReservaInstalacionAdminSocio;
+	public JButton getBtnGestionActividades() {
+		return btnGestionActividades;
 	}
+
+	public JButton getBtnReservas() {
+		return btnReservas;
+	}
+
+	public JButton getBtnPeriodoInscripcion() {
+		return btnPeriodoInscripcion;
+	}
+
+	public JButton getBtnReservaInstalacionAdminSocio() {
+		return btnReservaInstalacionAdminSocio;
+	}
+
 	public JButton getBtnVisualizarReservasInstalaciones() {
 		return btnVisualizarReservasInstalacionesAdmin;
 	}
+
 	public JButton getBtnReservaInstalacionesAuto() {
 		return btnReservaInstalacionesAuto;
 	}
+
 	public JButton getBtnInscripcionActividad() {
 		return btnInscripcionActividad;
+	}
+
+	public JButton getBtnInscripcionNoSocioActividad() {
+		return btnInscripcionNoSocioActividad;
 	}
 
 	public JButton getBtnConsultarReservasSocioView() {
 		return btnConsultarReservasSocioView;
 	}
-	
+
 	public JButton getBtnReservaInstalacionSocio() {
-	    return btnReservaInstalacionSocio;
+		return btnReservaInstalacionSocio;
 	}
 
 	public JButton getBtnListadoCargosMensuales() {
 		return btnListadoCargosMensuales;
 	}
-	
+
 	public JButton getBtnVisualizarDisponibilidadInstalaciones() {
 		return btnVisualizarDisponibilidadInstalacionesSocio;
 	}
+
 	public JButton getBtnCerrarSesion() {
-	    return btnCerrarSesion;
+		return btnCerrarSesion;
 	}
-	
+
 	public JButton getBtnListadoCargosMensualesSocio() {
 		return btnListadoCargosMensualesSocio;
 	}
-	
+
 	public JButton getbtnCancelarActividadAdmin() {
 		return btnCancelarActividadAdmin;
 	}
-	
+
 	public JButton getBtnCancelarReservaInstalacionesAdmin() {
 		return btnCancelarReservaInstalacionesAdmin;
 	}
@@ -215,7 +220,7 @@ public class MainView extends JFrame {
 	public void setBtnCancelarReservaInstalacionesAdmin(JButton btnCancelarReservaInstalacionesAdmin) {
 		this.btnCancelarReservaInstalacionesAdmin = btnCancelarReservaInstalacionesAdmin;
 	}
-	
+
 	public JButton getBtnCancelarReservaInstalacionesSocio() {
 		return btnCancelarReservaInstalacionesSocio;
 	}
@@ -224,10 +229,11 @@ public class MainView extends JFrame {
 		this.btnCancelarReservaInstalacionesSocio = btnCancelarReservaInstalacionesSocio;
 	}
 
-	// opcionales
-	public JButton getBtnActividadesOfertadas() { return btnActividadesOfertadas; }
-	public JButton getBtnReservaInstalacionAdmin() { return btnReservaInstalacionAdmin; }
+	public JButton getBtnActividadesOfertadas() {
+		return btnActividadesOfertadas;
+	}
 
-
-	
+	public JButton getBtnReservaInstalacionAdmin() {
+		return btnReservaInstalacionAdmin;
+	}
 }
