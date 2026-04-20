@@ -312,6 +312,20 @@ INSERT INTO Pago (
   'PENDIENTE'
 );
 
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='33333333C'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Clases Tenis Avanzado'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='33333333C')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Clases Tenis Avanzado')),
+  15.0,
+  'INSCRIPCION',
+  '2025-09-18',
+  'PENDIENTE'
+);
+
 -- =========================================================
 -- EJEMPLO H.U. INSCRIPCION EN ACTIVIDAD
 -- Actividad con varias sesiones dentro de las próximas dos semanas
@@ -368,3 +382,170 @@ INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VAL
 INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin) VALUES
   ((SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
    '2026-05-27 18:00', '2026-05-27 19:00');
+   
+   
+-- Pagos añadidos para testear HUs
+-- =========================================================
+-- NUEVOS PAGOS CON DIFERENTES ESTADOS
+-- =========================================================
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+  NULL,
+  12.0,
+  'INSCRIPCION',
+  '2025-09-10 09:30',
+  'PAGADO'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Yoga Mayo Tardes'),
+  NULL,
+  12.0,
+  'INSCRIPCION',
+  '2025-09-15 14:20',
+  'PENDIENTE'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='33333333C'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Clases Pádel Iniciación'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad 
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='33333333C')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Clases Pádel Iniciación')),
+  10.0,
+  'INSCRIPCION',
+  '2025-09-16 11:00',
+  'DEVUELTO'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  NULL,
+  NULL,
+  8.0,
+  'RESERVA',
+  '2025-09-12 16:45',
+  'CANCELADO'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, id_reservains, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  NULL,
+  NULL,
+  (SELECT id_reservains FROM Reserva_Instalacion 
+     WHERE datetime_ini='2025-09-16 10:00' LIMIT 1),
+  10.0,
+  'RESERVA',
+  '2025-09-14 12:00',
+  'PAGADO'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, id_reservains, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='33333333C'),
+  NULL,
+  NULL,
+  NULL,
+  10.0,
+  'RESERVA',
+  '2025-09-15 10:30',
+  'PENDIENTE'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Clases Tenis Avanzado'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='11111111A')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Clases Tenis Avanzado')),
+  15.0,
+  'INSCRIPCION',
+  '2025-09-19 09:00',
+  'DEVUELTO'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Entrenamiento Tenis Avanzado'),
+  NULL,
+  15.0,
+  'INSCRIPCION',
+  '2025-09-06 15:20',
+  'CANCELADO'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Partido Liga Tenis'),
+  NULL,
+  0.0,
+  'INSCRIPCION',
+  '2025-09-20 18:30',
+  'PAGADO'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='33333333C' AND al_corriente_pago=0),
+  NULL,
+  NULL,
+  25.0,
+  'RESERVA',
+  '2025-09-17 11:00',
+  'PENDIENTE'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='11111111A'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Conferencia Nutrición Deportiva'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='11111111A')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Conferencia Nutrición Deportiva')),
+  0.0,
+  'INSCRIPCION',
+  '2025-09-02 08:15',
+  'PAGADO'
+);
+
+INSERT INTO Reserva_Instalacion (id_instalacion, id_socio, datetime_ini, datetime_fin, estado) VALUES (
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Sala Multiusos'),
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  '2025-09-25 16:00', '2025-09-25 18:00',
+  'ACTIVA'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, id_reservains, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  NULL,
+  NULL,
+  (SELECT id_reservains FROM Reserva_Instalacion WHERE datetime_ini='2025-09-25 16:00'),
+  0.0,
+  'RESERVA',
+  '2025-09-18 10:00',
+  'PENDIENTE'
+);
