@@ -11,8 +11,6 @@ public class InscripcionActividadController {
 
 	private final InscripcionActividadView view;
 	private final InscripcionActividadModel model;
-
-	// Este id lo recibes al abrir la pantalla tras el login
 	private final int idSocio;
 
 	public InscripcionActividadController(InscripcionActividadView view, InscripcionActividadModel model, int idSocio) {
@@ -40,7 +38,7 @@ public class InscripcionActividadController {
 			}
 		});
 
-		view.getBtnInscribirse().addActionListener(e -> inscribirse());
+		view.getBtnInscribirse().addActionListener(e -> gestionarAccionActividad());
 	}
 
 	private void cargarActividades() {
@@ -48,6 +46,7 @@ public class InscripcionActividadController {
 		view.getCbFecha().removeAllItems();
 		view.limpiarDatosActividad();
 		view.getBtnInscribirse().setEnabled(false);
+		view.getBtnInscribirse().setText("Inscribirse");
 
 		List<String> actividades = model.getActividadesInscribiblesParaSocio(idSocio);
 
@@ -71,6 +70,7 @@ public class InscripcionActividadController {
 		view.getCbFecha().removeAllItems();
 		view.limpiarDatosActividad();
 		view.getBtnInscribirse().setEnabled(false);
+		view.getBtnInscribirse().setText("Inscribirse");
 
 		String nombreActividad = (String) view.getCbActividad().getSelectedItem();
 		if (nombreActividad == null || nombreActividad.trim().isEmpty()) {
@@ -102,26 +102,16 @@ public class InscripcionActividadController {
 		if (nombreActividad == null || fechaSeleccionada == null) {
 			view.limpiarDatosActividad();
 			view.getBtnInscribirse().setEnabled(false);
+			view.getBtnInscribirse().setText("Inscribirse");
 			return;
 		}
 
-		/*
-		 * El model deberá devolver la información necesaria para pintar la sesión:
-		 * - instalación
-		 * - horario
-		 * - plazas disponibles
-		 * - estado del periodo de inscripción
-		 *
-		 * Aquí NO metemos DTO todavía. Cuando hagamos el model puedes devolver:
-		 * - un pequeño objeto de datos
-		 * - un Map
-		 * - o varios getters separados
-		 */
 		DatosSesionInscripcion datos = model.getDatosSesion(nombreActividad, fechaSeleccionada, idSocio);
 
 		if (datos == null) {
 			view.limpiarDatosActividad();
 			view.getBtnInscribirse().setEnabled(false);
+			view.getBtnInscribirse().setText("Inscribirse");
 			JOptionPane.showMessageDialog(view,
 					"No se pudieron cargar los datos de la sesión seleccionada.");
 			return;
@@ -132,17 +122,18 @@ public class InscripcionActividadController {
 		view.setPlazasDisponibles(String.valueOf(datos.getPlazasDisponibles()));
 		view.setPeriodoInscripcion(datos.getEstadoPeriodo());
 
-		boolean inscripcionPermitida = datos.isPeriodoActivo() && datos.getPlazasDisponibles() > 0;
+		String estadoSocio = model.getEstadoInscripcionSocio(idSocio, nombreActividad);
 
-		view.getBtnInscribirse().setEnabled(inscripcionPermitida);
-
-		if (datos.getPlazasDisponibles() <= 0) {
-			JOptionPane.showMessageDialog(view,
-					"No quedan plazas disponibles para la sesión seleccionada.");
+		if ("ACTIVA".equals(estadoSocio) || "EN_ESPERA".equals(estadoSocio)) {
+			view.getBtnInscribirse().setText("Desinscribirse");
+			view.getBtnInscribirse().setEnabled(true);
+		} else {
+			view.getBtnInscribirse().setText("Inscribirse");
+			view.getBtnInscribirse().setEnabled(datos.isPeriodoActivo());
 		}
 	}
 
-	private void inscribirse() {
+	private void gestionarAccionActividad() {
 		String nombreActividad = (String) view.getCbActividad().getSelectedItem();
 		String fechaSeleccionada = (String) view.getCbFecha().getSelectedItem();
 
@@ -152,10 +143,26 @@ public class InscripcionActividadController {
 			return;
 		}
 
+		String estadoSocio = model.getEstadoInscripcionSocio(idSocio, nombreActividad);
+
+		if ("ACTIVA".equals(estadoSocio) || "EN_ESPERA".equals(estadoSocio)) {
+			boolean ok = model.cancelarInscripcionYPromover(idSocio, nombreActividad);
+
+			if (ok) {
+				JOptionPane.showMessageDialog(view,
+						"Te has desinscrito correctamente de la actividad.");
+				cargarActividades();
+			} else {
+				JOptionPane.showMessageDialog(view,
+						"No se pudo realizar la desinscripción.");
+			}
+			return;
+		}
+
 		DatosSesionInscripcion datos = model.getDatosSesion(nombreActividad, fechaSeleccionada, idSocio);
 		if (datos == null) {
 			JOptionPane.showMessageDialog(view,
-					"No se pudo validar la sesión seleccionada.");
+					"No se pudo validar la actividad seleccionada.");
 			return;
 		}
 
@@ -165,23 +172,22 @@ public class InscripcionActividadController {
 			return;
 		}
 
-		if (datos.getPlazasDisponibles() <= 0) {
-			JOptionPane.showMessageDialog(view,
-					"No hay plazas disponibles.");
-			return;
-		}
-
-		if (model.estaYaInscrito(idSocio, nombreActividad, fechaSeleccionada)) {
-			JOptionPane.showMessageDialog(view,
-					"El socio ya está inscrito en esta actividad para esa fecha.");
-			return;
-		}
-
 		boolean ok = model.inscribirSocioEnActividad(idSocio, nombreActividad, fechaSeleccionada);
 
 		if (ok) {
-			JOptionPane.showMessageDialog(view,
-					"Inscripción realizada correctamente.\nEl pago se añadirá al recibo mensual del socio.");
+			String estado = model.getEstadoInscripcionSocio(idSocio, nombreActividad);
+
+			if ("ACTIVA".equals(estado)) {
+				JOptionPane.showMessageDialog(view,
+						"Inscripción realizada correctamente.\nEl pago se añadirá al recibo mensual del socio.");
+			} else if ("EN_ESPERA".equals(estado)) {
+				JOptionPane.showMessageDialog(view,
+						"No había plazas disponibles.\nHas sido añadido a la lista de espera.");
+			} else {
+				JOptionPane.showMessageDialog(view,
+						"Inscripción registrada correctamente.");
+			}
+
 			cargarActividades();
 		} else {
 			JOptionPane.showMessageDialog(view,
@@ -189,11 +195,6 @@ public class InscripcionActividadController {
 		}
 	}
 
-	/*
-	 * Clase auxiliar temporal para que el controller quede claro y ordenado.
-	 * Si prefieres, en el siguiente paso esto lo sustituimos por DTO o por lo
-	 * que uses finalmente en el model.
-	 */
 	public static class DatosSesionInscripcion {
 		private String instalacion;
 		private String horario;

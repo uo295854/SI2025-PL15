@@ -15,12 +15,26 @@ public class ReservaInstalacionesModel {
 		String sql =
 			"SELECT DISTINCT a.nombre " +
 			"FROM Actividad a " +
-			"WHERE a.estado = 'ACTIVA' " +
-			"  AND EXISTS ( " +
+			"WHERE EXISTS ( " +
+			"    SELECT 1 " +
+			"    FROM Bloqueo_por_Actividad b1 " +
+			"    JOIN Actividad a2 " +
+			"      ON a2.id_instalacion = a.id_instalacion " +
+			"     AND a2.id_actividad <> a.id_actividad " +
+			"    JOIN Bloqueo_por_Actividad b2 " +
+			"      ON b2.id_actividad = a2.id_actividad " +
+			"    WHERE b1.id_actividad = a.id_actividad " +
+			"      AND b2.datetime_ini < b1.datetime_fin " +
+			"      AND b2.datetime_fin > b1.datetime_ini " +
+			") " +
+			"OR EXISTS ( " +
 			"    SELECT 1 " +
 			"    FROM Bloqueo_por_Actividad b " +
+			"    JOIN Reserva_Instalacion r " +
+			"      ON r.id_instalacion = a.id_instalacion " +
+			"     AND r.datetime_ini < b.datetime_fin " +
+			"     AND r.datetime_fin > b.datetime_ini " +
 			"    WHERE b.id_actividad = a.id_actividad " +
-			"      AND b.estado_reserva IN ('PENDIENTE','CONFLICTO') " +
 			") " +
 			"ORDER BY a.nombre";
 
@@ -43,16 +57,10 @@ public class ReservaInstalacionesModel {
 		boolean hayAlgunConflicto = false;
 
 		for (BloqueActividad bloque : bloques) {
-			// Solo ignoramos los bloques ya resueltos correctamente
-			if ("RESERVADO".equalsIgnoreCase(bloque.estadoReserva)) {
-				continue;
-			}
-
 			List<ConflictoActividad> conflictos = getConflictosDeBloque(actividad.idActividad, bloque.idBloqueo);
 
 			if (!conflictos.isEmpty()) {
 				hayAlgunConflicto = true;
-				actualizarEstadoReservaBloque(bloque.idBloqueo, "CONFLICTO");
 
 				for (ConflictoActividad conflicto : conflictos) {
 					incidencias.add(new Object[] {
@@ -73,8 +81,6 @@ public class ReservaInstalacionesModel {
 			);
 
 			if (reservasSolapadas.isEmpty()) {
-				actualizarEstadoReservaBloque(bloque.idBloqueo, "RESERVADO");
-
 				incidencias.add(new Object[] {
 					"-",
 					actividad.nombre,
@@ -94,6 +100,7 @@ public class ReservaInstalacionesModel {
 					actividad.idActividad
 				);
 
+				
 				generarAvisoCancelacionTXT(
 					reserva.idSocio,
 					reserva.socio,
@@ -103,8 +110,7 @@ public class ReservaInstalacionesModel {
 					estadoPago
 				);
 
-				cancelarReservaSocio(reserva.idReserva);
-				actualizarEstadoReservaBloque(bloque.idBloqueo, "RESERVADO");
+				eliminarReservaSocio(reserva.idReserva);
 
 				incidencias.add(new Object[] {
 					reserva.socio,
@@ -112,7 +118,7 @@ public class ReservaInstalacionesModel {
 					reserva.instalacion,
 					reserva.fecha,
 					reserva.horas,
-					"Reserva socio cancelada + aviso generado"
+					"Reserva socio eliminada + aviso generado"
 				});
 			}
 		}
@@ -136,13 +142,12 @@ public class ReservaInstalacionesModel {
 			"SELECT a.id_actividad, a.nombre, a.id_instalacion, i.nombre_instalacion " +
 			"FROM Actividad a " +
 			"JOIN Instalacion i ON i.id_instalacion = a.id_instalacion " +
-			"WHERE a.nombre = ? " +
-			"  AND a.estado = 'ACTIVA'";
+			"WHERE a.nombre = ?";
 
 		List<Object[]> rows = db.executeQueryArray(sql, nombreActividad);
 
 		if (rows.isEmpty()) {
-			throw new RuntimeException("No existe ninguna actividad activa con nombre: " + nombreActividad);
+			throw new RuntimeException("No existe ninguna actividad con nombre: " + nombreActividad);
 		}
 
 		Object[] row = rows.get(0);
@@ -160,7 +165,6 @@ public class ReservaInstalacionesModel {
 			"  id_bloqueo, " +
 			"  datetime_ini, " +
 			"  datetime_fin, " +
-			"  estado_reserva, " +
 			"  substr(datetime_ini, 1, 10) AS fecha, " +
 			"  substr(datetime_ini, 12, 5) || '-' || substr(datetime_fin, 12, 5) AS horas " +
 			"FROM Bloqueo_por_Actividad " +
@@ -176,8 +180,7 @@ public class ReservaInstalacionesModel {
 				(String) row[1],
 				(String) row[2],
 				(String) row[3],
-				(String) row[4],
-				(String) row[5]
+				(String) row[4]
 			));
 		}
 		return bloques;
@@ -195,8 +198,6 @@ public class ReservaInstalacionesModel {
 			"JOIN Bloqueo_por_Actividad b2 ON b2.id_actividad = a2.id_actividad " +
 			"WHERE a1.id_actividad = ? " +
 			"  AND b1.id_bloqueo = ? " +
-			"  AND a1.estado = 'ACTIVA' " +
-			"  AND a2.estado = 'ACTIVA' " +
 			"  AND b2.datetime_ini < b1.datetime_fin " +
 			"  AND b2.datetime_fin > b1.datetime_ini";
 
@@ -225,7 +226,6 @@ public class ReservaInstalacionesModel {
 			"JOIN Bloqueo_por_Actividad b ON b.id_bloqueo = ? " +
 			"WHERE b.id_actividad = a.id_actividad " +
 			"  AND r.id_instalacion = a.id_instalacion " +
-			"  AND r.estado = 'ACTIVA' " +
 			"  AND r.datetime_ini < b.datetime_fin " +
 			"  AND r.datetime_fin > b.datetime_ini " +
 			"ORDER BY r.datetime_ini";
@@ -260,11 +260,10 @@ public class ReservaInstalacionesModel {
 		if ("PENDIENTE".equalsIgnoreCase(estado)) {
 			cancelarPagoPendiente(idPago);
 			return "- Su pago pendiente ha sido cancelado.";
-		} else if ("PAGADO".equalsIgnoreCase(estado)) {
+		} 
+		else if ("PAGADO".equalsIgnoreCase(estado)) {
 			crearPagoDevolucion(idSocio, idActividad, importe);
 			return "- Su pago ha sido devuelto (pendiente de procesamiento).";
-		} else if ("DEVUELTO".equalsIgnoreCase(estado)) {
-			return "- El importe de la reserva ya figuraba como devuelto.";
 		}
 
 		return "- Estado de pago no reconocido.";
@@ -303,22 +302,9 @@ public class ReservaInstalacionesModel {
 		db.executeUpdate(sql, idSocio, idActividad, importe, nowAsText());
 	}
 
-	private void cancelarReservaSocio(int idReserva) {
-		String sql =
-			"UPDATE Reserva_Instalacion " +
-			"SET estado = 'CANCELADA' " +
-			"WHERE id_reservains = ?";
-
+	private void eliminarReservaSocio(int idReserva) {
+		String sql = "DELETE FROM Reserva_Instalacion WHERE id_reservains = ?";
 		db.executeUpdate(sql, idReserva);
-	}
-
-	private void actualizarEstadoReservaBloque(int idBloqueo, String estadoReserva) {
-		String sql =
-			"UPDATE Bloqueo_por_Actividad " +
-			"SET estado_reserva = ? " +
-			"WHERE id_bloqueo = ?";
-
-		db.executeUpdate(sql, estadoReserva, idBloqueo);
 	}
 
 	private String nowAsText() {
@@ -391,15 +377,13 @@ public class ReservaInstalacionesModel {
 		private final int idBloqueo;
 		private final String datetimeIni;
 		private final String datetimeFin;
-		private final String estadoReserva;
 		private final String fecha;
 		private final String horas;
 
-		public BloqueActividad(int idBloqueo, String datetimeIni, String datetimeFin, String estadoReserva, String fecha, String horas) {
+		public BloqueActividad(int idBloqueo, String datetimeIni, String datetimeFin, String fecha, String horas) {
 			this.idBloqueo = idBloqueo;
 			this.datetimeIni = datetimeIni;
 			this.datetimeFin = datetimeFin;
-			this.estadoReserva = estadoReserva;
 			this.fecha = fecha;
 			this.horas = horas;
 		}
@@ -430,7 +414,7 @@ public class ReservaInstalacionesModel {
 			this.horas = horas;
 		}
 	}
-
+	
 	private void generarAvisoCancelacionTXT(
 			int idSocio,
 			String nombreSocio,

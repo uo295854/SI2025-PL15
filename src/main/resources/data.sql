@@ -549,3 +549,92 @@ INSERT INTO Pago (
   '2025-09-18 10:00',
   'PENDIENTE'
 );
+
+-- =========================================================
+-- EJEMPLO ACTIVIDAD LLENA PARA PROBAR LISTA DE ESPERA
+-- El periodo de inscripción va desde hoy hasta la semana que viene
+-- =========================================================
+
+INSERT OR IGNORE INTO PeriodoInscripcion (
+  nombre, descripcion, fecha_inicio_socio, fecha_fin_socio, fecha_fin_nosocio
+) VALUES (
+  'Inscripción Lista Espera Abril 2026',
+  'Periodo abierto desde hoy hasta la semana que viene para actividad completa',
+  '2026-04-20',
+  '2026-04-27',
+  '2026-04-30'
+);
+
+INSERT OR IGNORE INTO Actividad (
+  id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
+  nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
+  cuota_socio, cuota_nosocio, estado
+) VALUES (
+  (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='ENERO'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Lista Espera Abril 2026'),
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Sala Multiusos'),
+  'Pilates Mayo Grupo Reducido', 'CLASE', 1, 5, 60, '2026-05-04', '2026-05-27',
+  'Actividad de prueba con aforo completo para lista de espera', 18, 25, 'ACTIVA'
+);
+
+-- Bloqueos: lunes y miércoles de mayo
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-04 18:00', '2026-05-04 19:00', 'RESERVADO');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-06 18:00', '2026-05-06 19:00', 'RESERVADO');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-11 18:00', '2026-05-11 19:00', 'RESERVADO');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-13 18:00', '2026-05-13 19:00', 'RESERVADO');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-18 18:00', '2026-05-18 19:00', 'RESERVADO');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-20 18:00', '2026-05-20 19:00', 'RESERVADO');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-25 18:00', '2026-05-25 19:00', 'RESERVADO');
+
+INSERT INTO Bloqueo_por_Actividad (id_actividad, datetime_ini, datetime_fin, estado_reserva) VALUES
+  ((SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+   '2026-05-27 18:00', '2026-05-27 19:00', 'RESERVADO');
+
+-- =========================================================
+-- INSCRIPCION DE EJEMPLO
+-- María ocupa la única plaza -> actividad llena
+-- Juan (socio1) NO está inscrito, así que sí le aparecerá
+-- =========================================================
+
+INSERT INTO Inscripcion_Actividad (
+  id_socio, id_actividad, fecha_inscripcion, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+  '2026-04-21',
+  'ACTIVA'
+);
+
+INSERT INTO Pago (
+  id_socio, id_actividad, id_inscripcion, importe, concepto, fecha, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido'),
+  (SELECT id_inscripcion FROM Inscripcion_Actividad
+     WHERE id_socio = (SELECT id_socio FROM Socio WHERE dni='22222222B')
+       AND id_actividad = (SELECT id_actividad FROM Actividad WHERE nombre='Pilates Mayo Grupo Reducido')),
+  18.0,
+  'INSCRIPCION',
+  '2026-04-21',
+  'PENDIENTE'
+);

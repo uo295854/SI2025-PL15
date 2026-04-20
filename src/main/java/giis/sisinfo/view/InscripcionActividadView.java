@@ -1,6 +1,7 @@
 package giis.sisinfo.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
@@ -97,7 +98,7 @@ public class InscripcionActividadView extends JFrame {
 
 		lblPlazasValor = new JLabel("");
 		lblPlazasValor.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblPlazasValor.setBounds(300, 270, 100, 35);
+		lblPlazasValor.setBounds(300, 270, 220, 35);
 		panelCentral.add(lblPlazasValor);
 
 		JLabel lblPeriodo = new JLabel("Periodo de inscripción:");
@@ -106,13 +107,13 @@ public class InscripcionActividadView extends JFrame {
 		panelCentral.add(lblPeriodo);
 
 		lblPeriodoValor = new JLabel("");
-		lblPeriodoValor.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblPeriodoValor.setBounds(340, 360, 200, 35);
+		lblPeriodoValor.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblPeriodoValor.setBounds(340, 360, 360, 35);
 		panelCentral.add(lblPeriodoValor);
 
 		lblPagoInfo = new JLabel("El pago se añadirá al recibo mensual del socio");
 		lblPagoInfo.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblPagoInfo.setBounds(80, 470, 500, 35);
+		lblPagoInfo.setBounds(80, 470, 520, 35);
 		panelCentral.add(lblPagoInfo);
 
 		btnInscribirse = new JButton("Inscribirse");
@@ -171,11 +172,27 @@ public class InscripcionActividadView extends JFrame {
 	}
 
 	public void setPlazasDisponibles(String plazas) {
-		lblPlazasValor.setText(plazas);
+		if ("0".equals(plazas)) {
+			lblPlazasValor.setText("0 (lista de espera)");
+		} else {
+			lblPlazasValor.setText(plazas);
+		}
 	}
 
 	public void setPeriodoInscripcion(String periodo) {
 		lblPeriodoValor.setText(periodo);
+
+		if ("ACTIVO".equalsIgnoreCase(periodo)) {
+			lblPeriodoValor.setForeground(new Color(0, 128, 0));
+		} else if ("EN LISTA DE ESPERA".equalsIgnoreCase(periodo)) {
+			lblPeriodoValor.setForeground(Color.ORANGE);
+		} else if ("INSCRIPCIÓN YA REALIZADA".equalsIgnoreCase(periodo)) {
+			lblPeriodoValor.setForeground(Color.RED);
+		} else if ("CERRADO".equalsIgnoreCase(periodo)) {
+			lblPeriodoValor.setForeground(Color.GRAY);
+		} else {
+			lblPeriodoValor.setForeground(Color.BLACK);
+		}
 	}
 
 	public void limpiarDatosActividad() {
@@ -183,6 +200,7 @@ public class InscripcionActividadView extends JFrame {
 		lblHorarioValor.setText("");
 		lblPlazasValor.setText("");
 		lblPeriodoValor.setText("");
+		lblPeriodoValor.setForeground(Color.BLACK);
 	}
 
 	public void close() {
