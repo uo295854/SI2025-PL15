@@ -1,0 +1,32 @@
+CENTRO DEPORTIVO SISINFO
+Recibo de inscripción de actividad
+==================================================
+Nº recibo: REC-INS-5
+Fecha de emisión: 2026-04-20 22:09:30
+
+DATOS DEL INSCRITO
+--------------------------------------------------
+Nombre: Carlos García
+DNI: 44444444D
+Tipo de usuario: No socio
+
+DATOS DE LA ACTIVIDAD
+--------------------------------------------------
+Actividad: Tenis HU
+Instalación: Pista Tenis HU
+Fecha sesión: 20/04/2026
+Horario: 18:00 - 19:00
+Duración: 60 min
+
+DATOS ECONÓMICOS
+--------------------------------------------------
+Concepto: INSCRIPCION
+Importe abonado: 20,00 €
+Estado del pago: PAGADO
+
+OBSERVACIONES
+--------------------------------------------------
+Este documento acredita el pago y la inscripción en la actividad indicada.
+Conserve este recibo como justificante.
+
+Centro Deportivo SisInfo
