@@ -202,12 +202,18 @@ public class ListadoCargosMensualesSocioController {
 				if(cargosActividades.get(i).getEstado().equals("PENDIENTE")) {
 					total+=cargosActividades.get(i).getImporte();
 				}
+				if(cargosReservas.get(i).getEstado().equals("DEVUELTO")) {
+					total-=cargosReservas.get(i).getImporte();
+				}
 			}
 		}
 		if (cargosReservas!=null) {
 			for(int i=0; i<cargosReservas.size(); i++) {
 				if(cargosReservas.get(i).getEstado().equals("PENDIENTE")) {
 					total+=cargosReservas.get(i).getImporte();
+				}
+				if(cargosReservas.get(i).getEstado().equals("DEVUELTO")) {
+					total-=cargosReservas.get(i).getImporte();
 				}
 			}
 		}
