@@ -202,8 +202,8 @@ public class ListadoCargosMensualesSocioController {
 				if(cargosActividades.get(i).getEstado().equals("PENDIENTE")) {
 					total+=cargosActividades.get(i).getImporte();
 				}
-				if(cargosReservas.get(i).getEstado().equals("DEVUELTO")) {
-					total-=cargosReservas.get(i).getImporte();
+				if(cargosActividades.get(i).getEstado().equals("DEVUELTO")) {
+					total-=cargosActividades.get(i).getImporte();
 				}
 			}
 		}

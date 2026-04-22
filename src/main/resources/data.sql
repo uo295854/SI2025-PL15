@@ -645,14 +645,11 @@ INSERT INTO Pago (
 INSERT INTO PeriodoInscripcion (nombre,descripcion,fecha_inicio_socio,fecha_fin_socio,fecha_fin_nosocio) VALUES
 ('Abril HU','Periodo abril','2026-04-01','2026-04-15','2026-04-30');
 
-INSERT INTO Instalacion (nombre_instalacion,tipo_deporte,tipo_instalacion,aforo_max,coste) VALUES
-('Pista Tenis HU','TENIS','CANCHA',10,5);
-
 INSERT INTO Actividad (id_periodo_oficial,id_periodo_inscripcion,id_instalacion,nombre,tipo,aforo,duracion,fecha_inicio,fecha_fin,descripcion,cuota_socio,cuota_nosocio) VALUES
 ((SELECT id_periodo_oficial FROM PeriodoOficial LIMIT 1),
  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Abril HU'),
- (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis HU'),
+ (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Pista Tenis 1'),
  'Tenis HU','CLASE',10,60,'2026-04-10','2026-04-25','Basico',10,20);
 
 INSERT INTO Bloqueo_por_Actividad (id_actividad,datetime_ini,datetime_fin) VALUES
-((SELECT id_actividad FROM Actividad WHERE nombre='Tenis HU'),'2026-04-20 18:00:00','2026-04-20 19:00:00');
+((SELECT id_actividad FROM Actividad WHERE nombre='Tenis HU'),'2026-04-20 18:00','2026-04-20 19:00');
