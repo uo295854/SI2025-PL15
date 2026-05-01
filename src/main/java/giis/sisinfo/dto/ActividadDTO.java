@@ -71,6 +71,16 @@ public class ActividadDTO {
 	public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
 	public void setFechaInicio(String fechaInicio) {this.fechaInicio = fechaInicio;}
 	public void setFechaFin(String fechaFin) {this.fechaFin = fechaFin;}
+
+	public void setInstalacionNombre(String instalacionNombre) {this.instalacionNombre = instalacionNombre;}
+	public void setTipoUi(String tipoUi) {this.tipoUi = tipoUi;}
+	public void setAforo(int aforo) {this.aforo = aforo;}
+	public void setDuracionMinutos(int duracionMinutos) {this.duracionMinutos = duracionMinutos;}
+	public void setPeriodoInscripcionNombre(String periodoInscripcionNombre) {this.periodoInscripcionNombre = periodoInscripcionNombre;}
+	public void setCuotaSocio(double cuotaSocio) {this.cuotaSocio = cuotaSocio;}
+	public void setCuotaNoSocio(double cuotaNoSocio) {this.cuotaNoSocio = cuotaNoSocio;}
+	
+	
 	
 	
 	

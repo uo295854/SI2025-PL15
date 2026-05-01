@@ -653,3 +653,38 @@ INSERT INTO Actividad (id_periodo_oficial,id_periodo_inscripcion,id_instalacion,
 
 INSERT INTO Bloqueo_por_Actividad (id_actividad,datetime_ini,datetime_fin) VALUES
 ((SELECT id_actividad FROM Actividad WHERE nombre='Tenis HU'),'2026-04-20 18:00','2026-04-20 19:00');
+
+
+-- ==================================
+-- ACTVIDAD AÑADIDA PARA TESTS DE ALEX
+-- ==================================
+INSERT OR IGNORE INTO Actividad (
+  id_periodo_oficial, id_periodo_inscripcion, id_instalacion,
+  nombre, tipo, aforo, dias, duracion, fecha_inicio, fecha_fin, descripcion,
+  cuota_socio, cuota_nosocio
+) VALUES (
+  (SELECT id_periodo_oficial FROM PeriodoOficial WHERE nombre='ENERO'),
+  (SELECT id_periodo_inscripcion FROM PeriodoInscripcion WHERE nombre='Inscripción Abril 2026'),
+  (SELECT id_instalacion FROM Instalacion WHERE nombre_instalacion='Sala Multiusos'),
+  'ActividadLlena', 'CLASE', 2, 1, 60, '2026-05-04', '2026-05-27',
+  'Actividad llena para tests', 12, 15
+);
+
+INSERT INTO Inscripcion_Actividad (
+  id_socio, id_actividad, fecha_inscripcion, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='33333333C'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='ActividadLlena'),
+  '1990-01-01',
+  'ACTIVA'
+);
+
+INSERT INTO Inscripcion_Actividad (
+  id_socio, id_actividad, fecha_inscripcion, estado
+) VALUES (
+  (SELECT id_socio FROM Socio WHERE dni='22222222B'),
+  (SELECT id_actividad FROM Actividad WHERE nombre='ActividadLlena'),
+  '1990-01-01',
+  'ACTIVA'
+);
+
